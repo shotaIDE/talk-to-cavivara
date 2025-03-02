@@ -10,25 +10,26 @@ import 'package:house_worker/models/household.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Initialize Firebase
   await Firebase.initializeApp();
-  
-  // Initialize Isar
-  final dir = await getApplicationDocumentsDirectory();
-  final isar = await Isar.open(
-    [TaskSchema, UserSchema, HouseholdSchema],
-    directory: dir.path,
-  );
 
-  runApp(
-    ProviderScope(
-      child: HouseWorkerApp(),
-    ),
-  );
+  // Initialize Isar and store instance for later use
+  final dir = await getApplicationDocumentsDirectory();
+  final isar = await Isar.open([
+    TaskSchema,
+    UserSchema,
+    HouseholdSchema,
+  ], directory: dir.path);
+
+  runApp(ProviderScope(child: HouseWorkerApp(isar: isar)));
 }
 
 class HouseWorkerApp extends StatelessWidget {
+  final Isar isar;
+
+  const HouseWorkerApp({super.key, required this.isar});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -46,10 +47,6 @@ class AuthWrapper extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // TODO: Implement auth state listener
-    return const Scaffold(
-      body: Center(
-        child: CircularProgressIndicator(),
-      ),
-    );
+    return const Scaffold(body: Center(child: CircularProgressIndicator()));
   }
 }
