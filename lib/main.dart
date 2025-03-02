@@ -4,6 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/common/theme/app_theme.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:house_worker/models/task.dart';
+import 'package:house_worker/models/user.dart';
+import 'package:house_worker/models/household.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

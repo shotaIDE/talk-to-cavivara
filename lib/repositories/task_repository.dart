@@ -7,23 +7,23 @@ class TaskRepository extends BaseRepository<Task> {
 
   Future<List<Task>> getIncompleteTasks() async {
     return await collection
-        .where()
+        .filter()
         .isCompletedEqualTo(false)
-        .sortByPriorityDesc()
+        .sortByPriority()
         .findAll();
   }
 
   Future<List<Task>> getCompletedTasks() async {
     return await collection
-        .where()
+        .filter()
         .isCompletedEqualTo(true)
-        .sortByCompletedAtDesc()
+        .sortByCompletedAt()
         .findAll();
   }
 
   Future<List<Task>> getTasksByUser(String userId) async {
     return await collection
-        .where()
+        .filter()
         .createdByEqualTo(userId)
         .or()
         .completedByEqualTo(userId)
@@ -32,17 +32,17 @@ class TaskRepository extends BaseRepository<Task> {
 
   Future<List<Task>> getSharedTasks() async {
     return await collection
-        .where()
+        .filter()
         .isSharedEqualTo(true)
-        .sortByPriorityDesc()
+        .sortByPriority()
         .findAll();
   }
 
   Future<List<Task>> getRecurringTasks() async {
     return await collection
-        .where()
+        .filter()
         .isRecurringEqualTo(true)
-        .sortByPriorityDesc()
+        .sortByPriority()
         .findAll();
   }
 

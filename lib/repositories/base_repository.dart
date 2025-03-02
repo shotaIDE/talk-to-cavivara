@@ -34,7 +34,7 @@ abstract class BaseRepository<T> {
 
   Future<int> deleteAll() async {
     return await isar.writeTxn(() async {
-      return await collection.deleteAll();
+      return await collection.clear();
     });
   }
 }

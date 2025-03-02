@@ -38,8 +38,7 @@ class Task {
   Duration? get recurringInterval => 
     recurringIntervalMs != null ? Duration(milliseconds: recurringIntervalMs!) : null;
 
-  @ignore
-  set recurringInterval(Duration? value) {
+  void setRecurringInterval(Duration? value) {
     recurringIntervalMs = value?.inMilliseconds;
   }
 }
