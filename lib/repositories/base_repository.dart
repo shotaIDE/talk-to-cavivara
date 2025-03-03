@@ -32,7 +32,7 @@ abstract class BaseRepository<T> {
     });
   }
 
-  Future<int> deleteAll() async {
+  Future<void> deleteAll() async {
     return await isar.writeTxn(() async {
       return collection.clear();
     });
