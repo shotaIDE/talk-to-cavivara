@@ -10,7 +10,9 @@ class Task {
   String? description;
   DateTime createdAt;
   DateTime? completedAt;
+  @Index()
   String createdBy;
+  @Index()
   String? completedBy;
   bool isShared;
   bool isRecurring;
