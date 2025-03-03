@@ -6,7 +6,7 @@ class TaskRepository extends BaseRepository<Task> {
   TaskRepository(super.isar);
 
   Future<List<Task>> getIncompleteTasks() async {
-    return await collection
+    return await this.collection
         .where()
         .isCompletedEqualTo(false)
         .sortByPriority()
@@ -14,7 +14,7 @@ class TaskRepository extends BaseRepository<Task> {
   }
 
   Future<List<Task>> getCompletedTasks() async {
-    return await collection
+    return await this.collection
         .where()
         .isCompletedEqualTo(true)
         .sortByCompletedAt()
@@ -22,7 +22,7 @@ class TaskRepository extends BaseRepository<Task> {
   }
 
   Future<List<Task>> getTasksByUser(String userId) async {
-    return await collection
+    return await this.collection
         .where()
         .createdByEqualTo(userId)
         .or()
@@ -31,7 +31,7 @@ class TaskRepository extends BaseRepository<Task> {
   }
 
   Future<List<Task>> getSharedTasks() async {
-    return await collection
+    return await this.collection
         .where()
         .isSharedEqualTo(true)
         .sortByPriority()
@@ -39,7 +39,7 @@ class TaskRepository extends BaseRepository<Task> {
   }
 
   Future<List<Task>> getRecurringTasks() async {
-    return await collection
+    return await this.collection
         .where()
         .isRecurringEqualTo(true)
         .sortByPriority()
@@ -51,7 +51,7 @@ class TaskRepository extends BaseRepository<Task> {
       task.isCompleted = true;
       task.completedAt = DateTime.now();
       task.completedBy = userId;
-      await collection.put(task);
+      await this.collection.put(task);
     });
   }
 }
