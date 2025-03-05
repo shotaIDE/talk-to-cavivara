@@ -2,11 +2,17 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/common/theme/app_theme.dart';
+import 'package:house_worker/features/auth/login_screen.dart';
+import 'package:house_worker/features/home/home_screen.dart';
+import 'package:house_worker/services/auth_service.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:house_worker/models/task.dart';
 import 'package:house_worker/models/user.dart';
 import 'package:house_worker/models/household.dart';
+
+// Isarインスタンスのプロバイダー
+final isarProvider = Provider<Isar>((ref) => throw UnimplementedError());
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,13 +36,18 @@ void main() async {
     HouseholdSchema,
   ], directory: dir.path);
 
-  runApp(ProviderScope(child: HouseWorkerApp(isar: isar)));
+  runApp(
+    ProviderScope(
+      overrides: [
+        isarProvider.overrideWithValue(isar),
+      ],
+      child: const HouseWorkerApp(),
+    ),
+  );
 }
 
 class HouseWorkerApp extends StatelessWidget {
-  final Isar isar;
-
-  const HouseWorkerApp({super.key, required this.isar});
+  const HouseWorkerApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +65,40 @@ class AuthWrapper extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // TODO: Implement auth state listener
-    return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    final authState = ref.watch(authStateProvider);
+    
+    return authState.when(
+      data: (user) {
+        if (user != null) {
+          return const HomeScreen();
+        } else {
+          return const LoginScreen();
+        }
+      },
+      loading: () => const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      ),
+      error: (error, stackTrace) => Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('エラーが発生しました'),
+              const SizedBox(height: 10),
+              Text(error.toString()),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  ref.invalidate(authStateProvider);
+                },
+                child: const Text('再試行'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
