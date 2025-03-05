@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/models/user.dart';
 import 'package:house_worker/repositories/base_repository.dart';
 import 'package:isar/isar.dart';
+import 'package:house_worker/main.dart'; // isarProviderをインポート
 
 final userRepositoryProvider = Provider<UserRepository>((ref) {
   final isar = ref.watch(isarProvider);
