@@ -11,8 +11,16 @@ import 'package:house_worker/models/household.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase
-  await Firebase.initializeApp();
+  try {
+    // Initialize Firebase
+    await Firebase.initializeApp(
+      // options: DefaultFirebaseOptions.currentPlatform, // firebase_options.dart が生成されたらコメントを外す
+    );
+    print('Firebase initialized successfully');
+  } catch (e) {
+    print('Failed to initialize Firebase: $e');
+    // Firebase が初期化できなくても、アプリを続行する
+  }
 
   // Initialize Isar and store instance for later use
   final dir = await getApplicationDocumentsDirectory();
@@ -42,7 +50,7 @@ class HouseWorkerApp extends StatelessWidget {
 }
 
 class AuthWrapper extends ConsumerWidget {
-  const AuthWrapper({Key? key}) : super(key: key);
+  const AuthWrapper({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
