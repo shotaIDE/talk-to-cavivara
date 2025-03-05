@@ -30,11 +30,10 @@ void main() async {
 
   // Initialize Isar and store instance for later use
   final dir = await getApplicationDocumentsDirectory();
-  final isar = await Isar.open([
-    TaskSchema,
-    UserSchema,
-    HouseholdSchema,
-  ], directory: dir.path);
+  final isar = await Isar.open(
+    [UserSchema, TaskSchema, HouseholdSchema],
+    directory: dir.path,
+  );
 
   runApp(
     ProviderScope(
