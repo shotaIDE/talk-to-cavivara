@@ -5,6 +5,10 @@ resource "google_firestore_database" "default" {
   type                    = "FIRESTORE_NATIVE"
   delete_protection_state = "DELETE_PROTECTION_DISABLED"
   deletion_policy         = "ABANDON"
+
+  depends_on = [
+    google_project_service.default,
+  ]
 }
 
 resource "google_firebaserules_ruleset" "firestore" {
