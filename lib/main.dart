@@ -30,16 +30,15 @@ void main() async {
 
   // Initialize Isar and store instance for later use
   final dir = await getApplicationDocumentsDirectory();
-  final isar = await Isar.open(
-    [UserSchema, TaskSchema, HouseholdSchema],
-    directory: dir.path,
-  );
+  final isar = await Isar.open([
+    UserSchema,
+    TaskSchema,
+    HouseholdSchema,
+  ], directory: dir.path);
 
   runApp(
     ProviderScope(
-      overrides: [
-        isarProvider.overrideWithValue(isar),
-      ],
+      overrides: [isarProvider.overrideWithValue(isar)],
       child: const HouseWorkerApp(),
     ),
   );
@@ -65,7 +64,7 @@ class AuthWrapper extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authStateProvider);
-    
+
     return authState.when(
       data: (user) {
         if (user != null) {
@@ -74,30 +73,29 @@ class AuthWrapper extends ConsumerWidget {
           return const LoginScreen();
         }
       },
-      loading: () => const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      ),
-      error: (error, stackTrace) => Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text('エラーが発生しました'),
-              const SizedBox(height: 10),
-              Text(error.toString()),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  ref.invalidate(authStateProvider);
-                },
-                child: const Text('再試行'),
+      loading:
+          () =>
+              const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error:
+          (error, stackTrace) => Scaffold(
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('エラーが発生しました'),
+                  const SizedBox(height: 10),
+                  Text(error.toString()),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      ref.invalidate(authStateProvider);
+                    },
+                    child: const Text('再試行'),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
-      ),
     );
   }
 }
