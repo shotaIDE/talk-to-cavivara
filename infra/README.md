@@ -23,3 +23,12 @@ Apply.
 ```shell
 terraform apply -var-file=dev.tfvars
 ```
+
+## Development
+
+### Launch Firebase emulator
+
+```shell
+firebase use default
+firebase emulators:start --import=./emulator-data --export-on-exit=./emulator-data
+```
