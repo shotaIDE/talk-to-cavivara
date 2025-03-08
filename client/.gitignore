@@ -1,4 +1,9 @@
 *.g.dart
+google-services.json
+GoogleService-Info.plist
+
+/emulator-config.json
+/lib/firebase_options*.dart
 
 # Miscellaneous
 *.class

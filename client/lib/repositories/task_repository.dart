@@ -3,7 +3,7 @@ import 'package:house_worker/repositories/base_repository.dart';
 import 'package:isar/isar.dart';
 
 class TaskRepository extends BaseRepository<Task> {
-  TaskRepository(super.isar);
+  TaskRepository(Isar isar) : super(isar, isar.collection<Task>());
 
   Future<List<Task>> getIncompleteTasks() async {
     return await this.collection

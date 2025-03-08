@@ -1,5 +1,11 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/common/theme/app_theme.dart';
 import 'package:house_worker/features/auth/login_screen.dart';
@@ -14,15 +20,52 @@ import 'package:house_worker/models/household.dart';
 // Isarインスタンスのプロバイダー
 final isarProvider = Provider<Isar>((ref) => throw UnimplementedError());
 
+// Firebase Emulatorの設定を読み込むためのプロバイダー
+final emulatorConfigProvider = Provider<Map<String, dynamic>>(
+  (ref) => throw UnimplementedError(),
+);
+
+// Firebase Emulatorのホスト情報を取得する関数
+Future<String> getEmulatorHost() async {
+  try {
+    // Dart Definesから設定を読み込む
+    final String configJson = await rootBundle.loadString(
+      'emulator-config.json',
+    );
+    final Map<String, dynamic> config = json.decode(configJson);
+    return config['emulator_host'] ?? 'localhost';
+  } catch (e) {
+    print('エミュレーター設定の読み込みに失敗しました: $e');
+    // デフォルト値を返す
+    return 'localhost';
+  }
+}
+
+// Firebase Emulatorの設定を行う関数
+void setupFirebaseEmulators(String host) {
+  FirebaseAuth.instance.useAuthEmulator(host, 9099);
+  FirebaseFirestore.instance.useFirestoreEmulator(host, 8080);
+  // Functionsも使用する場合は以下を追加
+  // FirebaseFunctions.instance.useFunctionsEmulator(host, 5001);
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   try {
-    // Initialize Firebase
+    // Firebase初期化
     await Firebase.initializeApp(
       // options: DefaultFirebaseOptions.currentPlatform, // firebase_options.dart が生成されたらコメントを外す
     );
     print('Firebase initialized successfully');
+
+    // エミュレーターのホスト情報を取得
+    final emulatorHost = await getEmulatorHost();
+    print('エミュレーターホスト: $emulatorHost');
+
+    // エミュレーターの設定を適用
+    setupFirebaseEmulators(emulatorHost);
+    print('Firebase Emulator設定を適用しました');
   } catch (e) {
     print('Failed to initialize Firebase: $e');
     // Firebase が初期化できなくても、アプリを続行する
