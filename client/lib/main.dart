@@ -30,7 +30,7 @@ Future<String> getEmulatorHost() async {
   try {
     // Dart Definesから設定を読み込む
     final String configJson = await rootBundle.loadString(
-      'emulator_config.json',
+      'emulator-config.json',
     );
     final Map<String, dynamic> config = json.decode(configJson);
     return config['emulator_host'] ?? 'localhost';
