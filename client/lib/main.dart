@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' hide User;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,7 +14,7 @@ import 'package:house_worker/services/auth_service.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:house_worker/models/task.dart';
-import 'package:house_worker/models/user.dart';
+import 'package:house_worker/models/user.dart' as app_models;
 import 'package:house_worker/models/household.dart';
 
 // Isarインスタンスのプロバイダー
@@ -74,7 +74,7 @@ void main() async {
   // Initialize Isar and store instance for later use
   final dir = await getApplicationDocumentsDirectory();
   final isar = await Isar.open([
-    UserSchema,
+    app_models.UserSchema,
     TaskSchema,
     HouseholdSchema,
   ], directory: dir.path);
