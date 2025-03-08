@@ -20,13 +20,17 @@ import 'package:house_worker/models/household.dart';
 final isarProvider = Provider<Isar>((ref) => throw UnimplementedError());
 
 // Firebase Emulatorの設定を読み込むためのプロバイダー
-final emulatorConfigProvider = Provider<Map<String, dynamic>>((ref) => throw UnimplementedError());
+final emulatorConfigProvider = Provider<Map<String, dynamic>>(
+  (ref) => throw UnimplementedError(),
+);
 
 // Firebase Emulatorのホスト情報を取得する関数
 Future<String> getEmulatorHost() async {
   try {
     // Dart Definesから設定を読み込む
-    final String configJson = await rootBundle.loadString('emulator_config.json');
+    final String configJson = await rootBundle.loadString(
+      'emulator_config.json',
+    );
     final Map<String, dynamic> config = json.decode(configJson);
     return config['emulator_host'] ?? 'localhost';
   } catch (e) {
@@ -38,9 +42,7 @@ Future<String> getEmulatorHost() async {
 
 // Firebase Emulatorの設定を行う関数
 void setupFirebaseEmulators(String host) {
-  FirebaseAuth.instance.useAuthEmulator(host, 9099);
   FirebaseFirestore.instance.useFirestoreEmulator(host, 8080);
-  FirebaseStorage.instance.useStorageEmulator(host, 9199);
   // Functionsも使用する場合は以下を追加
   // FirebaseFunctions.instance.useFunctionsEmulator(host, 5001);
 }
@@ -54,11 +56,11 @@ void main() async {
       // options: DefaultFirebaseOptions.currentPlatform, // firebase_options.dart が生成されたらコメントを外す
     );
     print('Firebase initialized successfully');
-    
+
     // エミュレーターのホスト情報を取得
     final emulatorHost = await getEmulatorHost();
     print('エミュレーターホスト: $emulatorHost');
-    
+
     // エミュレーターの設定を適用
     setupFirebaseEmulators(emulatorHost);
     print('Firebase Emulator設定を適用しました');
