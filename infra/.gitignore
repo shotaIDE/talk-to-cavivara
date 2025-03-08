@@ -1,5 +1,7 @@
 *.log
 
+/emulator-data
+
 # Local .terraform directories
 **/.terraform/*
 
