@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:house_worker/models/user.dart';
+import 'package:house_worker/models/user.dart' as app_user;
 import 'package:house_worker/repositories/base_repository.dart';
 import 'package:isar/isar.dart';
 import 'package:house_worker/main.dart'; // isarProviderをインポート
@@ -9,23 +9,23 @@ final userRepositoryProvider = Provider<UserRepository>((ref) {
   return UserRepository(isar);
 });
 
-class UserRepository extends BaseRepository {
-  UserRepository(Isar isar) : super(isar);
+class UserRepository extends BaseRepository<app_user.User> {
+  UserRepository(Isar isar) : super(isar, isar.collection<app_user.User>());
 
   // ユーザーを作成
-  Future<void> createUser(User user) async {
+  Future<void> createUser(app_user.User user) async {
     await isar.writeTxn(() async {
       await isar.users.put(user);
     });
   }
 
   // Firebase UIDでユーザーを取得
-  Future<User?> getUserByUid(String uid) async {
+  Future<app_user.User?> getUserByUid(String uid) async {
     return await isar.users.filter().uidEqualTo(uid).findFirst();
   }
 
   // ユーザーを更新
-  Future<void> updateUser(User user) async {
+  Future<void> updateUser(app_user.User user) async {
     await isar.writeTxn(() async {
       await isar.users.put(user);
     });
@@ -39,7 +39,7 @@ class UserRepository extends BaseRepository {
   }
 
   // 全ユーザーを取得
-  Future<List<User>> getAllUsers() async {
+  Future<List<app_user.User>> getAllUsers() async {
     return await isar.users.where().findAll();
   }
 }

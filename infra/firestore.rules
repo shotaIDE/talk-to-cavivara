@@ -1,17 +1,24 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+    // デバッグ用に全てのコレクションに対して読み書きを許可
+    // 注意: 本番環境では絶対に使用しないでください
+    match /{document=**} {
+      allow read, write: if true;
     }
-    match /userMedia/{userId}/generatedPieces/{id} {
-      allow read: if request.auth != null && request.auth.uid == userId;
-    }
-    match /systemMedia/{id} {
-      allow read: if request.auth != null;
-    }
-    match /localized/{languageTag}/systemMedia/{id} {
-      allow read: if request.auth != null;
-    }
+    
+    // 以下は本来のルール（現在はコメントアウト）
+    // match /users/{userId} {
+    //   allow read, write: if request.auth != null && request.auth.uid == userId;
+    // }
+    // match /userMedia/{userId}/generatedPieces/{id} {
+    //   allow read: if request.auth != null && request.auth.uid == userId;
+    // }
+    // match /systemMedia/{id} {
+    //   allow read: if request.auth != null;
+    // }
+    // match /localized/{languageTag}/systemMedia/{id} {
+    //   allow read: if request.auth != null;
+    // }
   }
 }

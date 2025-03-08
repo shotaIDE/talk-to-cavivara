@@ -4,7 +4,7 @@ abstract class BaseRepository<T> {
   final Isar isar;
   final IsarCollection<T> collection;
 
-  BaseRepository(this.isar) : collection = isar.collection();
+  BaseRepository(this.isar, this.collection);
 
   Future<int> save(T entity) async {
     return await isar.writeTxn(() async {
