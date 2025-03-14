@@ -16,6 +16,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:house_worker/models/task.dart';
 import 'package:house_worker/models/user.dart';
 import 'package:house_worker/models/household.dart';
+import 'firebase_options_dev.dart';
 
 // Isarインスタンスのプロバイダー
 final isarProvider = Provider<Isar>((ref) => throw UnimplementedError());
@@ -55,7 +56,7 @@ void main() async {
   try {
     // Firebase初期化
     await Firebase.initializeApp(
-      // options: DefaultFirebaseOptions.currentPlatform, // firebase_options.dart が生成されたらコメントを外す
+      options: DefaultFirebaseOptions.currentPlatform,
     );
     print('Firebase initialized successfully');
 
