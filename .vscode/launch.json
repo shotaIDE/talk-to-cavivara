@@ -19,33 +19,36 @@
       "name": "Emulator-Profile",
       "request": "launch",
       "type": "dart",
-      "program": "client/lib/main.dart",
+      "cwd": "${workspaceFolder}/client",
+      "program": "lib/main.dart",
       "flutterMode": "profile",
       "args": [
         "--flavor",
         "emulator",
         "--dart-define-from-file",
-        "client/emulator-config.json"
+        "emulator-config.json"
       ]
     },
     {
       "name": "Emulator-Release",
       "request": "launch",
       "type": "dart",
-      "program": "client/lib/main.dart",
+      "cwd": "${workspaceFolder}/client",
+      "program": "lib/main.dart",
       "flutterMode": "release",
       "args": [
         "--flavor",
         "emulator",
         "--dart-define-from-file",
-        "client/emulator-config.json"
+        "emulator-config.json"
       ]
     },
     {
       "name": "Dev-Debug",
       "request": "launch",
       "type": "dart",
-      "program": "client/lib/main.dart",
+      "cwd": "${workspaceFolder}/client",
+      "program": "lib/main.dart",
       "flutterMode": "debug",
       "args": [
         "--flavor",
@@ -56,7 +59,8 @@
       "name": "Dev-Profile",
       "request": "launch",
       "type": "dart",
-      "program": "client/lib/main.dart",
+      "cwd": "${workspaceFolder}/client",
+      "program": "lib/main.dart",
       "flutterMode": "profile",
       "args": [
         "--flavor",
@@ -67,7 +71,8 @@
       "name": "Dev-Release",
       "request": "launch",
       "type": "dart",
-      "program": "client/lib/main.dart",
+      "cwd": "${workspaceFolder}/client",
+      "program": "lib/main.dart",
       "flutterMode": "release",
       "args": [
         "--flavor",
@@ -78,7 +83,8 @@
       "name": "Prod-Debug",
       "request": "launch",
       "type": "dart",
-      "program": "client/lib/main.dart",
+      "cwd": "${workspaceFolder}/client",
+      "program": "lib/main.dart",
       "flutterMode": "debug",
       "args": [
         "--flavor",
@@ -89,7 +95,8 @@
       "name": "Prod-Profile",
       "request": "launch",
       "type": "dart",
-      "program": "client/lib/main.dart",
+      "cwd": "${workspaceFolder}/client",
+      "program": "lib/main.dart",
       "flutterMode": "profile",
       "args": [
         "--flavor",
@@ -100,7 +107,8 @@
       "name": "Prod-Release",
       "request": "launch",
       "type": "dart",
-      "program": "client/lib/main.dart",
+      "cwd": "${workspaceFolder}/client",
+      "program": "lib/main.dart",
       "flutterMode": "release",
       "args": [
         "--flavor",
