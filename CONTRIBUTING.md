@@ -18,6 +18,7 @@ Emulator 環境用。
 ```shell
 PROJECT_ID_SUFFIX="-emulator"
 APPLICATION_ID_SUFFIX=".emulator"
+DART_FILE_NAME_SUFFIX="_emulator"
 DIRECTORY_NAME_FOR_IOS="Emulator"
 DIRECTORY_NAME_FOR_ANDROID="emulator"
 PROJECT_ID="${PROJECT_ID_BASE}${PROJECT_ID_SUFFIX}"
@@ -28,7 +29,7 @@ APPLICATION_ID="${APPLICATION_ID_BASE}${APPLICATION_ID_SUFFIX}"
 cd client/
 flutterfire config \
   --project="${PROJECT_ID}" \
-  --out=lib/firebase_options_emulator.dart \
+  --out="lib/firebase_options${DART_FILE_NAME_SUFFIX}.dart" \
   --ios-bundle-id="${APPLICATION_ID}" \
   --ios-out="ios/Runner/Firebase/${DIRECTORY_NAME_FOR_IOS}/GoogleService-Info.plist" \
   --android-package-name="${APPLICATION_ID}" \
@@ -40,6 +41,7 @@ Dev 環境用。
 ```shell
 PROJECT_ID_SUFFIX="-dev"
 APPLICATION_ID_SUFFIX=".dev"
+DART_FILE_NAME_SUFFIX="_dev"
 DIRECTORY_NAME_FOR_IOS="Dev"
 DIRECTORY_NAME_FOR_ANDROID="dev"
 PROJECT_ID="${PROJECT_ID_BASE}${PROJECT_ID_SUFFIX}"
@@ -51,6 +53,7 @@ Prod 環境用。
 ```shell
 PROJECT_ID_SUFFIX=""
 APPLICATION_ID_SUFFIX=""
+DART_FILE_NAME_SUFFIX="_prod"
 DIRECTORY_NAME_FOR_IOS="Prod"
 DIRECTORY_NAME_FOR_ANDROID="prod"
 ```
