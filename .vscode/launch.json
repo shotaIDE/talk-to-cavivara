@@ -74,7 +74,7 @@
       ]
     },
     {
-      "name": "Release-Debug",
+      "name": "Prod-Debug",
       "request": "launch",
       "type": "dart",
       "program": "client/lib/main.dart",
@@ -85,7 +85,7 @@
       ]
     },
     {
-      "name": "Release-Profile",
+      "name": "Prod-Profile",
       "request": "launch",
       "type": "dart",
       "program": "client/lib/main.dart",
@@ -96,7 +96,7 @@
       ]
     },
     {
-      "name": "Release-Release",
+      "name": "Prod-Release",
       "request": "launch",
       "type": "dart",
       "program": "client/lib/main.dart",
