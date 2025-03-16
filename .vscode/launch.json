@@ -39,6 +39,72 @@
         "--dart-define-from-file",
         "client/emulator-config.json"
       ]
+    },
+    {
+      "name": "Dev-Debug",
+      "request": "launch",
+      "type": "dart",
+      "program": "client/lib/main.dart",
+      "flutterMode": "debug",
+      "args": [
+        "--flavor",
+        "dev"
+      ]
+    },
+    {
+      "name": "Dev-Profile",
+      "request": "launch",
+      "type": "dart",
+      "program": "client/lib/main.dart",
+      "flutterMode": "profile",
+      "args": [
+        "--flavor",
+        "dev"
+      ]
+    },
+    {
+      "name": "Dev-Release",
+      "request": "launch",
+      "type": "dart",
+      "program": "client/lib/main.dart",
+      "flutterMode": "release",
+      "args": [
+        "--flavor",
+        "dev"
+      ]
+    },
+    {
+      "name": "Release-Debug",
+      "request": "launch",
+      "type": "dart",
+      "program": "client/lib/main.dart",
+      "flutterMode": "debug",
+      "args": [
+        "--flavor",
+        "prod"
+      ]
+    },
+    {
+      "name": "Release-Profile",
+      "request": "launch",
+      "type": "dart",
+      "program": "client/lib/main.dart",
+      "flutterMode": "profile",
+      "args": [
+        "--flavor",
+        "prod"
+      ]
+    },
+    {
+      "name": "Release-Release",
+      "request": "launch",
+      "type": "dart",
+      "program": "client/lib/main.dart",
+      "flutterMode": "release",
+      "args": [
+        "--flavor",
+        "prod"
+      ]
     }
   ]
 }
