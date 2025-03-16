@@ -25,6 +25,7 @@ APPLICATION_ID="${APPLICATION_ID_BASE}${APPLICATION_ID_SUFFIX}"
 ```
 
 ```shell
+cd client/
 flutterfire config \
   --project="${PROJECT_ID}" \
   --out=lib/firebase_options_emulator.dart \
