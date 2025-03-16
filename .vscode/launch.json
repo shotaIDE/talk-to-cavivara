@@ -5,13 +5,14 @@
       "name": "Emulator-Debug",
       "request": "launch",
       "type": "dart",
-      "program": "client/lib/main.dart",
+      "cwd": "${workspaceFolder}/client",
+      "program": "lib/main.dart",
       "flutterMode": "debug",
       "args": [
         "--flavor",
         "emulator",
         "--dart-define-from-file",
-        "client/emulator-config.json"
+        "emulator-config.json"
       ]
     },
     {
