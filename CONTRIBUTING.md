@@ -12,8 +12,7 @@ https://docs.flutter.dev/deployment/flavors-ios
 
 https://firebase.google.com/docs/flutter/setup?hl=ja&platform=ios#install-cli-tools
 
-以下コマンドを実行します。 途中の選択肢は、"Build configutaion"と、"Debug-emulator"または"Debug-dev"を選択します。
-
+以下コマンドを実行します。 途中の選択肢は、"Build configuration"と、"Debug-emulator"または"Debug-dev"を選択します。
 ```shell
 PROJECT_ID_BASE="colomney-house-worker"
 APPLICATION_ID_BASE="ide.shota.colomney.HouseWorker"
