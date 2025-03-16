@@ -17,6 +17,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:house_worker/models/task.dart';
 import 'package:house_worker/models/user.dart';
 import 'package:house_worker/models/household.dart';
+import 'firebase_options_dev.dart' as dev;
+import 'firebase_options_prod.dart' as prod;
 
 // Isarインスタンスのプロバイダー
 final isarProvider = Provider<Isar>((ref) => throw UnimplementedError());
@@ -50,8 +52,50 @@ void setupFirebaseEmulators(String host) {
   // FirebaseFunctions.instance.useFunctionsEmulator(host, 5001);
 }
 
+// 環境設定を行う関数
+void setupFlavorConfig() {
+  // dart-define から flavor を取得
+  // デフォルトは dev
+  final flavorName = const String.fromEnvironment('FLAVOR', defaultValue: 'dev');
+  
+  switch (flavorName.toLowerCase()) {
+    case 'prod':
+      FlavorConfig(
+        flavor: Flavor.prod,
+        name: 'PROD',
+        color: Colors.blue,
+        firebaseOptions: prod.DefaultFirebaseOptions.currentPlatform,
+        useFirebaseEmulator: false,
+      );
+      break;
+    case 'emulator':
+      FlavorConfig(
+        flavor: Flavor.emulator,
+        name: 'EMULATOR',
+        color: Colors.purple,
+        useFirebaseEmulator: true,
+      );
+      break;
+    case 'dev':
+    default:
+      FlavorConfig(
+        flavor: Flavor.dev,
+        name: 'DEV',
+        color: Colors.green,
+        firebaseOptions: dev.DefaultFirebaseOptions.currentPlatform,
+        useFirebaseEmulator: false,
+      );
+      break;
+  }
+  
+  print('アプリケーション環境: ${FlavorConfig.instance.name}');
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // 環境設定の初期化
+  setupFlavorConfig();
 
   try {
     // Firebase初期化
