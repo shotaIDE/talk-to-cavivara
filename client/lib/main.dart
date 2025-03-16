@@ -29,18 +29,18 @@ final emulatorConfigProvider = Provider<Map<String, dynamic>>(
 );
 
 // Firebase Emulatorのホスト情報を取得する関数
-Future<String> getEmulatorHost() async {
+String getEmulatorHost() {
   try {
-    // Dart Definesから設定を読み込む
-    final String configJson = await rootBundle.loadString(
-      'emulator-config.json',
+    // dart-define-from-fileから設定を読み込む
+    final String emulatorHost = const String.fromEnvironment(
+      'EMULATOR_HOST',
+      defaultValue: '127.0.0.1',
     );
-    final Map<String, dynamic> config = json.decode(configJson);
-    return config['emulator_host'] ?? 'localhost';
+    return emulatorHost;
   } catch (e) {
     print('エミュレーター設定の読み込みに失敗しました: $e');
     // デフォルト値を返す
-    return 'localhost';
+    return '127.0.0.1';
   }
 }
 
@@ -116,7 +116,7 @@ void main() async {
     // エミュレーターの設定が有効な場合のみ適用
     if (FlavorConfig.instance.useFirebaseEmulator) {
       // エミュレーターのホスト情報を取得
-      final emulatorHost = await getEmulatorHost();
+      final emulatorHost = getEmulatorHost();
       print('エミュレーターホスト: $emulatorHost');
 
       // エミュレーターの設定を適用

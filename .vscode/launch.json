@@ -9,7 +9,9 @@
       "flutterMode": "debug",
       "args": [
         "--flavor",
-        "emulator"
+        "emulator",
+        "--dart-define-from-file",
+        "client/emulator-config.json"
       ]
     },
     {
@@ -20,7 +22,9 @@
       "flutterMode": "profile",
       "args": [
         "--flavor",
-        "emulator"
+        "emulator",
+        "--dart-define-from-file",
+        "client/emulator-config.json"
       ]
     },
     {
@@ -31,7 +35,9 @@
       "flutterMode": "release",
       "args": [
         "--flavor",
-        "emulator"
+        "emulator",
+        "--dart-define-from-file",
+        "client/emulator-config.json"
       ]
     }
   ]
