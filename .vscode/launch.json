@@ -50,10 +50,7 @@
       "cwd": "${workspaceFolder}/client",
       "program": "lib/main.dart",
       "flutterMode": "debug",
-      "args": [
-        "--flavor",
-        "dev"
-      ]
+      "args": ["--flavor", "dev"]
     },
     {
       "name": "Dev-Profile",
@@ -62,10 +59,7 @@
       "cwd": "${workspaceFolder}/client",
       "program": "lib/main.dart",
       "flutterMode": "profile",
-      "args": [
-        "--flavor",
-        "dev"
-      ]
+      "args": ["--flavor", "dev"]
     },
     {
       "name": "Dev-Release",
@@ -74,10 +68,7 @@
       "cwd": "${workspaceFolder}/client",
       "program": "lib/main.dart",
       "flutterMode": "release",
-      "args": [
-        "--flavor",
-        "dev"
-      ]
+      "args": ["--flavor", "dev"]
     },
     {
       "name": "Prod-Debug",
@@ -86,10 +77,7 @@
       "cwd": "${workspaceFolder}/client",
       "program": "lib/main.dart",
       "flutterMode": "debug",
-      "args": [
-        "--flavor",
-        "prod"
-      ]
+      "args": ["--flavor", "prod"]
     },
     {
       "name": "Prod-Profile",
@@ -98,10 +86,7 @@
       "cwd": "${workspaceFolder}/client",
       "program": "lib/main.dart",
       "flutterMode": "profile",
-      "args": [
-        "--flavor",
-        "prod"
-      ]
+      "args": ["--flavor", "prod"]
     },
     {
       "name": "Prod-Release",
@@ -110,10 +95,7 @@
       "cwd": "${workspaceFolder}/client",
       "program": "lib/main.dart",
       "flutterMode": "release",
-      "args": [
-        "--flavor",
-        "prod"
-      ]
+      "args": ["--flavor", "prod"]
     }
   ]
 }
