@@ -1,5 +1,11 @@
 # 開発手順
 
+## Flavor の追加手順
+
+公式ドキュメントに従いセットアップします。
+
+https://docs.flutter.dev/deployment/flavors-ios
+
 ## コミットされている Firebase のプロジェクト情報を更新
 
 事前準備として、以下のドキュメントに従って Firebase CLI をインストールし、ログインしておきます。
