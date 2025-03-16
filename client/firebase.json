@@ -12,6 +12,11 @@
             "projectId": "colomney-house-worker-dev-tf1",
             "appId": "1:916996426069:android:e524af5030bdbf22ebc7dc",
             "fileOutput": "android/app/src/dev/google-services.json"
+          },
+          "src/emulator": {
+            "projectId": "colomney-house-worker-dev-tf1",
+            "appId": "1:916996426069:android:6813917a841891e9ebc7dc",
+            "fileOutput": "android/app/src/emulator/google-services.json"
           }
         }
       },
@@ -35,8 +40,8 @@
         "lib/firebase_options_emulator.dart": {
           "projectId": "colomney-house-worker-dev-tf1",
           "configurations": {
-            "android": "1:916996426069:android:e524af5030bdbf22ebc7dc",
-            "ios": "1:916996426069:ios:2f191d0f385f2c60ebc7dc"
+            "android": "1:916996426069:android:6813917a841891e9ebc7dc",
+            "ios": "1:916996426069:ios:97f6b03907d54197ebc7dc"
           }
         },
         "lib/firebase_options_dev.dart": {
