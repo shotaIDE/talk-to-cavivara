@@ -35,9 +35,9 @@
         "buildConfigurations": {
           "Debug": {
             "projectId": "colomney-house-worker-dev-tf1",
-            "appId": "1:916996426069:ios:30475e9eb5d1dafdebc7dc",
+            "appId": "1:916996426069:ios:97f6b03907d54197ebc7dc",
             "uploadDebugSymbols": false,
-            "fileOutput": "ios/Runner/Firebase/Prod/GoogleService-Info.plist"
+            "fileOutput": "ios/Runner/Firebase/Emulator/GoogleService-Info.plist"
           }
         }
       },
