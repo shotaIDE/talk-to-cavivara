@@ -54,10 +54,15 @@ void setupFirebaseEmulators(String host) {
 
 // 環境設定を行う関数
 void setupFlavorConfig() {
-  // dart-define から flavor を取得
-  // デフォルトは dev
-  final flavorName = const String.fromEnvironment('FLAVOR', defaultValue: 'dev');
-  
+  // Flutterのビルド設定から自動的にflavorを取得
+  // Flutterのビルドシステムで設定されたFLAVOR環境変数を使用
+  final flavorName = const String.fromEnvironment(
+    'FLUTTER_APP_FLAVOR',
+    defaultValue: 'emulator',
+  );
+
+  print('検出されたflavor: $flavorName');
+
   switch (flavorName.toLowerCase()) {
     case 'prod':
       FlavorConfig(
@@ -87,13 +92,13 @@ void setupFlavorConfig() {
       );
       break;
   }
-  
+
   print('アプリケーション環境: ${FlavorConfig.instance.name}');
 }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // 環境設定の初期化
   setupFlavorConfig();
 
