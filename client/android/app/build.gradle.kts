@@ -23,15 +23,34 @@ android {
     }
 
     defaultConfig {
-        applicationId = "ide.shota.colomney.HouseWorker.dev"
+        // applicationId は flavorDimensions で上書きされます
+        applicationId = "ide.shota.colomney.HouseWorker"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        manifestPlaceholders = [
-            // TODO: 本番アプリでは無効化する
-                usesCleartextTraffic: "true"
-        ]
+    }
+
+    flavorDimensions += "environment"
+    productFlavors {
+        create("emulator") {
+            dimension = "environment"
+            applicationIdSuffix = ".emulator"
+            manifestPlaceholders["usesCleartextTraffic"] = "true"
+            resValue("string", "app_name", "House Worker [Emulator]")
+        }
+        create("dev") {
+            dimension = "environment"
+            applicationIdSuffix = ".dev"
+            manifestPlaceholders["usesCleartextTraffic"] = "true"
+            resValue("string", "app_name", "House Worker [Dev]")
+        }
+        create("prod") {
+            dimension = "environment"
+            // 本番環境はサフィックスなし
+            manifestPlaceholders["usesCleartextTraffic"] = "false"
+            resValue("string", "app_name", "House Worker")
+        }
     }
 
     buildTypes {

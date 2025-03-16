@@ -10,13 +10,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/common/theme/app_theme.dart';
 import 'package:house_worker/features/auth/login_screen.dart';
 import 'package:house_worker/features/home/home_screen.dart';
+import 'package:house_worker/flavor_config.dart';
 import 'package:house_worker/services/auth_service.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:house_worker/models/task.dart';
 import 'package:house_worker/models/user.dart';
 import 'package:house_worker/models/household.dart';
-import 'firebase_options_dev.dart';
 
 // Isarインスタンスのプロバイダー
 final isarProvider = Provider<Isar>((ref) => throw UnimplementedError());
@@ -55,18 +55,25 @@ void main() async {
 
   try {
     // Firebase初期化
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+    if (FlavorConfig.instance.firebaseOptions != null) {
+      await Firebase.initializeApp(
+        options: FlavorConfig.instance.firebaseOptions!,
+      );
+    } else {
+      await Firebase.initializeApp();
+    }
     print('Firebase initialized successfully');
 
-    // エミュレーターのホスト情報を取得
-    final emulatorHost = await getEmulatorHost();
-    print('エミュレーターホスト: $emulatorHost');
+    // エミュレーターの設定が有効な場合のみ適用
+    if (FlavorConfig.instance.useFirebaseEmulator) {
+      // エミュレーターのホスト情報を取得
+      final emulatorHost = await getEmulatorHost();
+      print('エミュレーターホスト: $emulatorHost');
 
-    // エミュレーターの設定を適用
-    setupFirebaseEmulators(emulatorHost);
-    print('Firebase Emulator設定を適用しました');
+      // エミュレーターの設定を適用
+      setupFirebaseEmulators(emulatorHost);
+      print('Firebase Emulator設定を適用しました');
+    }
   } catch (e) {
     print('Failed to initialize Firebase: $e');
     // Firebase が初期化できなくても、アプリを続行する
@@ -94,10 +101,23 @@ class HouseWorkerApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'House Worker',
+      title: 'House Worker ${FlavorConfig.instance.name}',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       home: const AuthWrapper(),
+      debugShowCheckedModeBanner: !FlavorConfig.isProd,
+      builder: (context, child) {
+        // Flavorに応じたバナーを表示（本番環境以外）
+        if (!FlavorConfig.isProd) {
+          return Banner(
+            message: FlavorConfig.instance.name,
+            location: BannerLocation.topEnd,
+            color: FlavorConfig.instance.color,
+            child: child!,
+          );
+        }
+        return child!;
+      },
     );
   }
 }
