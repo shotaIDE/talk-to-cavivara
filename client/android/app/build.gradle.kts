@@ -23,14 +23,34 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.house_worker"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
+        // applicationId は flavorDimensions で上書きされます
+        applicationId = "ide.shota.colomney.HouseWorker"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+    }
+
+    flavorDimensions += "environment"
+    productFlavors {
+        create("emulator") {
+            dimension = "environment"
+            applicationIdSuffix = ".emulator"
+            manifestPlaceholders["usesCleartextTraffic"] = "true"
+            resValue("string", "app_name", "House Worker [Emulator]")
+        }
+        create("dev") {
+            dimension = "environment"
+            applicationIdSuffix = ".dev"
+            manifestPlaceholders["usesCleartextTraffic"] = "true"
+            resValue("string", "app_name", "House Worker [Dev]")
+        }
+        create("prod") {
+            dimension = "environment"
+            // 本番環境はサフィックスなし
+            manifestPlaceholders["usesCleartextTraffic"] = "false"
+            resValue("string", "app_name", "House Worker")
+        }
     }
 
     buildTypes {

@@ -6,6 +6,23 @@
           "projectId": "colomney-house-worker-dev-tf1",
           "appId": "1:916996426069:android:e524af5030bdbf22ebc7dc",
           "fileOutput": "android/app/google-services.json"
+        },
+        "buildConfigurations": {
+          "src/dev": {
+            "projectId": "colomney-house-worker-dev-tf1",
+            "appId": "1:916996426069:android:e524af5030bdbf22ebc7dc",
+            "fileOutput": "android/app/src/dev/google-services.json"
+          },
+          "src/emulator": {
+            "projectId": "colomney-house-worker-dev-tf1",
+            "appId": "1:916996426069:android:6813917a841891e9ebc7dc",
+            "fileOutput": "android/app/src/emulator/google-services.json"
+          },
+          "src/prod": {
+            "projectId": "colomney-house-worker-dev-tf1",
+            "appId": "1:916996426069:android:95c12dd6e6ce222cebc7dc",
+            "fileOutput": "android/app/src/prod/google-services.json"
+          }
         }
       },
       "ios": {
@@ -14,14 +31,36 @@
           "appId": "1:916996426069:ios:2f191d0f385f2c60ebc7dc",
           "uploadDebugSymbols": false,
           "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        },
+        "buildConfigurations": {
+          "Debug": {
+            "projectId": "colomney-house-worker-dev-tf1",
+            "appId": "1:916996426069:ios:97f6b03907d54197ebc7dc",
+            "uploadDebugSymbols": false,
+            "fileOutput": "ios/Runner/Firebase/Emulator/GoogleService-Info.plist"
+          }
         }
       },
       "dart": {
         "lib/firebase_options_emulator.dart": {
           "projectId": "colomney-house-worker-dev-tf1",
           "configurations": {
+            "android": "1:916996426069:android:6813917a841891e9ebc7dc",
+            "ios": "1:916996426069:ios:97f6b03907d54197ebc7dc"
+          }
+        },
+        "lib/firebase_options_dev.dart": {
+          "projectId": "colomney-house-worker-dev-tf1",
+          "configurations": {
             "android": "1:916996426069:android:e524af5030bdbf22ebc7dc",
             "ios": "1:916996426069:ios:2f191d0f385f2c60ebc7dc"
+          }
+        },
+        "lib/firebase_options_prod.dart": {
+          "projectId": "colomney-house-worker-dev-tf1",
+          "configurations": {
+            "android": "1:916996426069:android:95c12dd6e6ce222cebc7dc",
+            "ios": "1:916996426069:ios:30475e9eb5d1dafdebc7dc"
           }
         }
       }

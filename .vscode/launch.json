@@ -1,0 +1,101 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Emulator-Debug",
+      "request": "launch",
+      "type": "dart",
+      "cwd": "${workspaceFolder}/client",
+      "program": "lib/main.dart",
+      "flutterMode": "debug",
+      "args": [
+        "--flavor",
+        "emulator",
+        "--dart-define-from-file",
+        "emulator-config.json"
+      ]
+    },
+    {
+      "name": "Emulator-Profile",
+      "request": "launch",
+      "type": "dart",
+      "cwd": "${workspaceFolder}/client",
+      "program": "lib/main.dart",
+      "flutterMode": "profile",
+      "args": [
+        "--flavor",
+        "emulator",
+        "--dart-define-from-file",
+        "emulator-config.json"
+      ]
+    },
+    {
+      "name": "Emulator-Release",
+      "request": "launch",
+      "type": "dart",
+      "cwd": "${workspaceFolder}/client",
+      "program": "lib/main.dart",
+      "flutterMode": "release",
+      "args": [
+        "--flavor",
+        "emulator",
+        "--dart-define-from-file",
+        "emulator-config.json"
+      ]
+    },
+    {
+      "name": "Dev-Debug",
+      "request": "launch",
+      "type": "dart",
+      "cwd": "${workspaceFolder}/client",
+      "program": "lib/main.dart",
+      "flutterMode": "debug",
+      "args": ["--flavor", "dev"]
+    },
+    {
+      "name": "Dev-Profile",
+      "request": "launch",
+      "type": "dart",
+      "cwd": "${workspaceFolder}/client",
+      "program": "lib/main.dart",
+      "flutterMode": "profile",
+      "args": ["--flavor", "dev"]
+    },
+    {
+      "name": "Dev-Release",
+      "request": "launch",
+      "type": "dart",
+      "cwd": "${workspaceFolder}/client",
+      "program": "lib/main.dart",
+      "flutterMode": "release",
+      "args": ["--flavor", "dev"]
+    },
+    {
+      "name": "Prod-Debug",
+      "request": "launch",
+      "type": "dart",
+      "cwd": "${workspaceFolder}/client",
+      "program": "lib/main.dart",
+      "flutterMode": "debug",
+      "args": ["--flavor", "prod"]
+    },
+    {
+      "name": "Prod-Profile",
+      "request": "launch",
+      "type": "dart",
+      "cwd": "${workspaceFolder}/client",
+      "program": "lib/main.dart",
+      "flutterMode": "profile",
+      "args": ["--flavor", "prod"]
+    },
+    {
+      "name": "Prod-Release",
+      "request": "launch",
+      "type": "dart",
+      "cwd": "${workspaceFolder}/client",
+      "program": "lib/main.dart",
+      "flutterMode": "release",
+      "args": ["--flavor", "prod"]
+    }
+  ]
+}
