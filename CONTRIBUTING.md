@@ -5,8 +5,7 @@
 ## 目次
 
 - [開発環境のセットアップ](#開発環境のセットアップ)
-- [Flavor の設定](#flavorの設定)
-- [Firebase プロジェクト情報の更新](#firebaseプロジェクト情報の更新)
+- [初期プロジェクト設定](#初期プロジェクト設定)
 - [Emulator の設定](#emulatorの設定)
 
 ## 開発環境のセットアップ
@@ -17,15 +16,19 @@
 - Firebase CLI
 - Android Studio / Xcode（モバイル開発用）
 
-## Flavor の設定
+## 初期プロジェクト設定
+
+以下の設定は、プロジェクトの初期構築時に実施した手順です。通常の開発作業では参照する必要はありません。
+
+### Flavor の設定
 
 Flavor を追加する場合は、公式ドキュメントに従ってセットアップしてください。
 
 詳細は[Flutter 公式ドキュメント](https://docs.flutter.dev/deployment/flavors-ios)を参照してください。
 
-## Firebase プロジェクト情報の更新
+### Firebase プロジェクト情報の更新
 
-### 事前準備
+#### 事前準備
 
 Firebase CLI をインストールし、ログインしておく必要があります。
 
@@ -39,7 +42,7 @@ firebase login
 
 詳細は[Firebase Flutter セットアップガイド](https://firebase.google.com/docs/flutter/setup?hl=ja&platform=ios#install-cli-tools)を参照してください。
 
-### 環境別の設定更新手順
+#### 環境別の設定更新手順
 
 以下の共通変数を設定します：
 
@@ -48,7 +51,7 @@ PROJECT_ID_BASE="colomney-house-worker"
 APPLICATION_ID_BASE="ide.shota.colomney.HouseWorker"
 ```
 
-#### Emulator 環境の設定
+##### Emulator 環境の設定
 
 ```shell
 # 環境固有の変数設定
@@ -76,7 +79,7 @@ flutterfire config \
 - "Build configuration"
 - "Debug-emulator"
 
-#### Dev 環境の設定
+##### Dev 環境の設定
 
 ```shell
 # 環境固有の変数設定
@@ -104,7 +107,7 @@ flutterfire config \
 - "Build configuration"
 - "Debug-dev"
 
-#### Prod 環境の設定
+##### Prod 環境の設定
 
 ```shell
 # 環境固有の変数設定
