@@ -30,17 +30,9 @@ Flavor を追加する場合は、公式ドキュメントに従ってセット�
 
 #### 事前準備
 
-Firebase CLI をインストールし、ログインしておく必要があります。
+Firebase CLI のインストールとログイン、FlutterFire CLI のインストールが必要です。以下を参照してください。
 
-```shell
-# Firebase CLIのインストール
-npm install -g firebase-tools
-
-# Firebaseにログイン
-firebase login
-```
-
-詳細は[Firebase Flutter セットアップガイド](https://firebase.google.com/docs/flutter/setup?hl=ja&platform=ios#install-cli-tools)を参照してください。
+https://firebase.google.com/docs/flutter/setup?hl=ja&platform=ios#install-cli-tools
 
 #### 環境別の設定更新手順
 
