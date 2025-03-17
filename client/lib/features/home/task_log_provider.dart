@@ -18,30 +18,24 @@ final undoDeleteTimerProvider = StateProvider<int?>((ref) => null);
 // タスク削除処理を行うプロバイダー
 final taskDeletionProvider = Provider((ref) {
   final taskRepository = ref.watch(taskRepositoryProvider);
-  
-  return TaskDeletionNotifier(
-    taskRepository: taskRepository,
-    ref: ref,
-  );
+
+  return TaskDeletionNotifier(taskRepository: taskRepository, ref: ref);
 });
 
 class TaskDeletionNotifier {
   final TaskRepository taskRepository;
   final Ref ref;
-  
-  TaskDeletionNotifier({
-    required this.taskRepository,
-    required this.ref,
-  });
-  
+
+  TaskDeletionNotifier({required this.taskRepository, required this.ref});
+
   // タスクを削除する
   Future<void> deleteTask(Task task) async {
     // 削除前にタスクを保存
     ref.read(deletedTaskProvider.notifier).state = task;
-    
+
     // タスクを削除
     await taskRepository.delete(task.id);
-    
+
     // 既存のタイマーがあればキャンセル
     final existingTimerId = ref.read(undoDeleteTimerProvider);
     if (existingTimerId != null) {
@@ -49,11 +43,11 @@ class TaskDeletionNotifier {
         ref.invalidate(undoDeleteTimerProvider);
       });
     }
-    
+
     // 5秒後に削除を確定するタイマーを設定
     final timerId = DateTime.now().millisecondsSinceEpoch;
     ref.read(undoDeleteTimerProvider.notifier).state = timerId;
-    
+
     Future.delayed(const Duration(seconds: 5), () {
       final currentTimerId = ref.read(undoDeleteTimerProvider);
       if (currentTimerId == timerId) {
@@ -63,14 +57,14 @@ class TaskDeletionNotifier {
       }
     });
   }
-  
+
   // 削除を取り消す
   Future<void> undoDelete() async {
     final deletedTask = ref.read(deletedTaskProvider);
     if (deletedTask != null) {
       // タスクを復元
       await taskRepository.save(deletedTask);
-      
+
       // 状態をリセット
       ref.read(deletedTaskProvider.notifier).state = null;
       ref.read(undoDeleteTimerProvider.notifier).state = null;
