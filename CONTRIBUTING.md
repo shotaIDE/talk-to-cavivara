@@ -22,13 +22,11 @@
 
 ### Flavor の設定
 
-Flavor を追加する場合は、公式ドキュメントに従ってセットアップしてください。
-
-詳細は以下を参照してください。
+Flavor を追加する場合は、以下の公式ドキュメントに従ってセットアップしてください。
 
 https://docs.flutter.dev/deployment/flavors-ios
 
-### Firebase プロジェクト情報の更新
+### Firebase プロジェクト情報の追加
 
 #### 事前準備
 
