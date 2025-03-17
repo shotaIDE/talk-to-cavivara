@@ -154,10 +154,6 @@ cp client/emulator-config.sample.json client/emulator-config.json
 
 ### 実行方法
 
-VSCode の起動設定では`--dart-define-from-file=client/emulator-config.json`引数を使用して設定ファイルを読み込みます。
+VSCode の起動設定を利用してください。プロジェクトには適切な起動構成が含まれており、自動的に `--dart-define-from-file=client/emulator-config.json` 引数を使用して設定ファイルを読み込みます。
 
-コマンドラインから実行する場合は以下のように指定します：
-
-```shell
-flutter run --dart-define-from-file=client/emulator-config.json
-```
+VSCode の「実行とデバッグ」パネルから適切な構成を選択して実行することをお勧めします。
