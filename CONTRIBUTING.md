@@ -24,7 +24,9 @@
 
 Flavor を追加する場合は、公式ドキュメントに従ってセットアップしてください。
 
-詳細は[Flutter 公式ドキュメント](https://docs.flutter.dev/deployment/flavors-ios)を参照してください。
+詳細は以下を参照してください。
+
+https://docs.flutter.dev/deployment/flavors-ios
 
 ### Firebase プロジェクト情報の更新
 
