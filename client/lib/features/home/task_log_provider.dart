@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/models/task.dart';
 import 'package:house_worker/repositories/task_repository.dart';
-import 'package:house_worker/services/auth_service.dart';
 
 // 完了済みタスクの一覧を提供するプロバイダー
 final completedTasksProvider = FutureProvider<List<Task>>((ref) async {
