@@ -43,6 +43,8 @@ PROJECT_ID_BASE="colomney-house-worker"
 APPLICATION_ID_BASE="ide.shota.colomney.HouseWorker"
 ```
 
+各環境ごとに以下の変数を設定し、共通のコマンドを実行します：
+
 ##### Emulator 環境の設定
 
 ```shell
@@ -54,20 +56,9 @@ DIRECTORY_NAME_FOR_IOS="Emulator"
 DIRECTORY_NAME_FOR_ANDROID="emulator"
 PROJECT_ID="${PROJECT_ID_BASE}${PROJECT_ID_SUFFIX}"
 APPLICATION_ID="${APPLICATION_ID_BASE}${APPLICATION_ID_SUFFIX}"
-
-# Firebaseの設定ファイル生成
-cd client/
-flutterfire config \
-  --project="${PROJECT_ID}" \
-  --out="lib/firebase_options${DART_FILE_NAME_SUFFIX}.dart" \
-  --ios-bundle-id="${APPLICATION_ID}" \
-  --ios-out="ios/Runner/Firebase/${DIRECTORY_NAME_FOR_IOS}/GoogleService-Info.plist" \
-  --android-package-name="${APPLICATION_ID}" \
-  --android-out="android/app/src/${DIRECTORY_NAME_FOR_ANDROID}/google-services.json"
 ```
 
 実行時、プロンプトの選択肢では以下を選んでください：
-
 - "Build configuration"
 - "Debug-emulator"
 
@@ -82,20 +73,9 @@ DIRECTORY_NAME_FOR_IOS="Dev"
 DIRECTORY_NAME_FOR_ANDROID="dev"
 PROJECT_ID="${PROJECT_ID_BASE}${PROJECT_ID_SUFFIX}"
 APPLICATION_ID="${APPLICATION_ID_BASE}${APPLICATION_ID_SUFFIX}"
-
-# Firebaseの設定ファイル生成
-cd client/
-flutterfire config \
-  --project="${PROJECT_ID}" \
-  --out="lib/firebase_options${DART_FILE_NAME_SUFFIX}.dart" \
-  --ios-bundle-id="${APPLICATION_ID}" \
-  --ios-out="ios/Runner/Firebase/${DIRECTORY_NAME_FOR_IOS}/GoogleService-Info.plist" \
-  --android-package-name="${APPLICATION_ID}" \
-  --android-out="android/app/src/${DIRECTORY_NAME_FOR_ANDROID}/google-services.json"
 ```
 
 実行時、プロンプトの選択肢では以下を選んでください：
-
 - "Build configuration"
 - "Debug-dev"
 
@@ -110,7 +90,13 @@ DIRECTORY_NAME_FOR_IOS="Prod"
 DIRECTORY_NAME_FOR_ANDROID="prod"
 PROJECT_ID="${PROJECT_ID_BASE}${PROJECT_ID_SUFFIX}"
 APPLICATION_ID="${APPLICATION_ID_BASE}${APPLICATION_ID_SUFFIX}"
+```
 
+##### 共通のコマンド実行
+
+環境ごとの変数を設定した後、以下の共通コマンドを実行します：
+
+```shell
 # Firebaseの設定ファイル生成
 cd client/
 flutterfire config \
