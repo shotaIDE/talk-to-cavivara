@@ -1,13 +1,13 @@
 # 開発貢献ガイド
 
-このドキュメントでは、House Workerプロジェクトの開発に貢献するための手順を説明します。
+このドキュメントでは、House Worker プロジェクトの開発に貢献するための手順を説明します。
 
 ## 目次
 
 - [開発環境のセットアップ](#開発環境のセットアップ)
-- [Flavorの設定](#flavorの設定)
-- [Firebaseプロジェクト情報の更新](#firebaseプロジェクト情報の更新)
-- [Emulatorの設定](#emulatorの設定)
+- [Flavor の設定](#flavorの設定)
+- [Firebase プロジェクト情報の更新](#firebaseプロジェクト情報の更新)
+- [Emulator の設定](#emulatorの設定)
 
 ## 開発環境のセットアップ
 
@@ -17,17 +17,17 @@
 - Firebase CLI
 - Android Studio / Xcode（モバイル開発用）
 
-## Flavorの設定
+## Flavor の設定
 
-Flavorを追加する場合は、公式ドキュメントに従ってセットアップしてください。
+Flavor を追加する場合は、公式ドキュメントに従ってセットアップしてください。
 
-詳細は[Flutter公式ドキュメント](https://docs.flutter.dev/deployment/flavors-ios)を参照してください。
+詳細は[Flutter 公式ドキュメント](https://docs.flutter.dev/deployment/flavors-ios)を参照してください。
 
-## Firebaseプロジェクト情報の更新
+## Firebase プロジェクト情報の更新
 
 ### 事前準備
 
-Firebase CLIをインストールし、ログインしておく必要があります。
+Firebase CLI をインストールし、ログインしておく必要があります。
 
 ```shell
 # Firebase CLIのインストール
@@ -48,7 +48,7 @@ PROJECT_ID_BASE="colomney-house-worker"
 APPLICATION_ID_BASE="ide.shota.colomney.HouseWorker"
 ```
 
-#### Emulator環境の設定
+#### Emulator 環境の設定
 
 ```shell
 # 環境固有の変数設定
@@ -72,10 +72,11 @@ flutterfire config \
 ```
 
 実行時、プロンプトの選択肢では以下を選んでください：
+
 - "Build configuration"
 - "Debug-emulator"
 
-#### Dev環境の設定
+#### Dev 環境の設定
 
 ```shell
 # 環境固有の変数設定
@@ -99,10 +100,11 @@ flutterfire config \
 ```
 
 実行時、プロンプトの選択肢では以下を選んでください：
+
 - "Build configuration"
 - "Debug-dev"
 
-#### Prod環境の設定
+#### Prod 環境の設定
 
 ```shell
 # 環境固有の変数設定
@@ -125,13 +127,20 @@ flutterfire config \
   --android-out="android/app/src/${DIRECTORY_NAME_FOR_ANDROID}/google-services.json"
 ```
 
-## Emulatorの設定
+## Emulator の設定
 
-プロジェクトではEmulatorのホストIPを`dart-define-from-file`から読み込む方法を採用しています。
+プロジェクトでは Emulator のホスト IP を`dart-define-from-file`から読み込む方法を採用しています。
 
 ### 設定ファイル
 
-`client/emulator-config.json`ファイルに以下の形式で設定を記述します：
+プロジェクトには`client/emulator-config.sample.json`というサンプルファイルが含まれています。このファイルをコピーして`client/emulator-config.json`を作成してください。
+
+```shell
+# サンプルファイルから設定ファイルを作成
+cp client/emulator-config.sample.json client/emulator-config.json
+```
+
+作成した`client/emulator-config.json`ファイルには以下の形式で設定が記述されています：
 
 ```json
 {
@@ -139,11 +148,16 @@ flutterfire config \
 }
 ```
 
+必要に応じて`EMULATOR_HOST`の値を変更してください。デフォルト値は`127.0.0.1`です。
+
+> **注意**: `emulator-config.json`は gitignore に設定されており、リポジトリにはコミットされません。各開発者が自分の環境に合わせて設定する必要があります。
+
 ### 実行方法
 
-VSCodeの起動設定では`--dart-define-from-file=client/emulator-config.json`引数を使用して設定ファイルを読み込みます。
+VSCode の起動設定では`--dart-define-from-file=client/emulator-config.json`引数を使用して設定ファイルを読み込みます。
 
 コマンドラインから実行する場合は以下のように指定します：
 
 ```shell
 flutter run --dart-define-from-file=client/emulator-config.json
+```
