@@ -80,7 +80,15 @@ class TaskLogItem extends ConsumerWidget {
         // スナックバーを表示
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('家事ログを削除しました'),
+            content: Row(
+              children: [
+                const Icon(Icons.delete, color: Colors.white),
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: Text('家事ログを削除しました'),
+                ),
+              ],
+            ),
             action: SnackBarAction(
               label: '元に戻す',
               onPressed: () {
@@ -89,6 +97,10 @@ class TaskLogItem extends ConsumerWidget {
               },
             ),
             duration: const Duration(seconds: 5),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
           ),
         );
       },
