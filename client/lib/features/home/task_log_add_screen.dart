@@ -219,17 +219,14 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
         // タスクを保存
         await ref.read(taskRepositoryProvider).save(newTask);
 
-        // completedTasksProviderを無効化して、一覧画面のデータを更新
-        ref.invalidate(completedTasksProvider);
-
         // 保存成功メッセージを表示
         if (mounted) {
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(const SnackBar(content: Text('家事ログを登録しました')));
 
-          // 一覧画面に戻る
-          Navigator.of(context).pop();
+          // 一覧画面に戻る（更新フラグをtrueにして渡す）
+          Navigator.of(context).pop(true);
         }
       } catch (e) {
         // エラーメッセージを表示

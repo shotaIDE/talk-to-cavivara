@@ -91,9 +91,18 @@ class HomeScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // タスク追加画面に遷移
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => const TaskLogAddScreen()),
-          );
+          Navigator.of(context)
+              .push(
+                MaterialPageRoute(
+                  builder: (context) => const TaskLogAddScreen(),
+                ),
+              )
+              .then((updated) {
+                // 家事ログが追加された場合（updatedがtrue）、データを更新
+                if (updated == true) {
+                  ref.invalidate(completedTasksProvider);
+                }
+              });
         },
         child: const Icon(Icons.add),
       ),
