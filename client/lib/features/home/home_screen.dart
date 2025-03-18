@@ -4,6 +4,7 @@ import 'package:house_worker/services/auth_service.dart';
 import 'package:house_worker/features/home/task_log_provider.dart';
 import 'package:house_worker/features/home/task_log_item.dart';
 import 'package:house_worker/features/home/task_log_detail_screen.dart';
+import 'package:house_worker/features/home/task_log_add_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -98,7 +99,12 @@ class HomeScreen extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // TODO: タスク追加画面に遷移
+          // タスク追加画面に遷移
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const TaskLogAddScreen(),
+            ),
+          );
         },
         child: const Icon(Icons.add),
       ),
