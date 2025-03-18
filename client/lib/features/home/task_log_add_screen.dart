@@ -6,7 +6,7 @@ import 'package:house_worker/services/auth_service.dart';
 import 'package:intl/intl.dart';
 
 class TaskLogAddScreen extends ConsumerStatefulWidget {
-  const TaskLogAddScreen({Key? key}) : super(key: key);
+  const TaskLogAddScreen({super.key});
 
   @override
   ConsumerState<TaskLogAddScreen> createState() => _TaskLogAddScreenState();
@@ -17,10 +17,10 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
   final _titleController = TextEditingController();
   final _categoryController = TextEditingController();
   final _iconController = TextEditingController();
-  
+
   int _priority = 2; // デフォルトは「中」
   DateTime _completedAt = DateTime.now();
-  
+
   @override
   void dispose() {
     _titleController.dispose();
@@ -35,9 +35,7 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
     final dateFormat = DateFormat('yyyy/MM/dd HH:mm');
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('家事ログ追加'),
-      ),
+      appBar: AppBar(title: const Text('家事ログ追加')),
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(
@@ -60,7 +58,7 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
                 },
               ),
               const SizedBox(height: 16),
-              
+
               // 家事ログのカテゴリー名入力欄
               TextFormField(
                 controller: _categoryController,
@@ -76,14 +74,11 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
                 },
               ),
               const SizedBox(height: 16),
-              
+
               // 家事ログの重要度選択欄
               const Text(
                 '重要度',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               Row(
@@ -96,7 +91,7 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
                 ],
               ),
               const SizedBox(height: 16),
-              
+
               // 家事ログのアイコン入力欄
               TextFormField(
                 controller: _iconController,
@@ -107,7 +102,7 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              
+
               // 家事ログの完了時刻入力欄
               ListTile(
                 title: const Text('完了時刻'),
@@ -116,7 +111,7 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
                 onTap: () => _selectDateTime(context),
               ),
               const SizedBox(height: 16),
-              
+
               // 家事ログの実行したユーザー表示
               ListTile(
                 title: const Text('実行したユーザー'),
@@ -124,7 +119,7 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
                 leading: const Icon(Icons.person),
               ),
               const SizedBox(height: 24),
-              
+
               // 登録ボタン
               SizedBox(
                 width: double.infinity,
@@ -174,13 +169,13 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
       firstDate: DateTime(2020),
       lastDate: DateTime.now(),
     );
-    
+
     if (pickedDate != null) {
       final TimeOfDay? pickedTime = await showTimePicker(
         context: context,
         initialTime: TimeOfDay.fromDateTime(_completedAt),
       );
-      
+
       if (pickedTime != null) {
         setState(() {
           _completedAt = DateTime(
@@ -198,14 +193,14 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
       final currentUser = ref.read(authServiceProvider).currentUser;
-      
+
       if (currentUser == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('ユーザー情報が取得できませんでした')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('ユーザー情報が取得できませんでした')));
         return;
       }
-      
+
       // 新しいタスクを作成
       final newTask = Task(
         title: _titleController.text,
@@ -219,26 +214,29 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
         priority: _priority,
         isCompleted: true, // 家事ログは完了済み
       );
-      
+
       try {
         // タスクを保存
         await ref.read(taskRepositoryProvider).save(newTask);
-        
+
+        // completedTasksProviderを無効化して、一覧画面のデータを更新
+        ref.invalidate(completedTasksProvider);
+
         // 保存成功メッセージを表示
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('家事ログを登録しました')),
-          );
-          
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('家事ログを登録しました')));
+
           // 一覧画面に戻る
           Navigator.of(context).pop();
         }
       } catch (e) {
         // エラーメッセージを表示
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('エラーが発生しました: $e')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('エラーが発生しました: $e')));
         }
       }
     }
