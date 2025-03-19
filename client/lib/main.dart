@@ -1,27 +1,16 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/common/theme/app_theme.dart';
 import 'package:house_worker/features/auth/login_screen.dart';
 import 'package:house_worker/features/home/home_screen.dart';
 import 'package:house_worker/flavor_config.dart';
 import 'package:house_worker/services/auth_service.dart';
-import 'package:isar/isar.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:house_worker/models/task.dart';
-import 'package:house_worker/models/user.dart';
-import 'package:house_worker/models/household.dart';
+
 import 'firebase_options_dev.dart' as dev;
 import 'firebase_options_prod.dart' as prod;
-
-// Isarインスタンスのプロバイダー
-final isarProvider = Provider<Isar>((ref) => throw UnimplementedError());
 
 // Firebase Emulatorの設定を読み込むためのプロバイダー
 final emulatorConfigProvider = Provider<Map<String, dynamic>>(
@@ -128,20 +117,7 @@ void main() async {
     // Firebase が初期化できなくても、アプリを続行する
   }
 
-  // Initialize Isar and store instance for later use
-  final dir = await getApplicationDocumentsDirectory();
-  final isar = await Isar.open([
-    UserSchema,
-    TaskSchema,
-    HouseholdSchema,
-  ], directory: dir.path);
-
-  runApp(
-    ProviderScope(
-      overrides: [isarProvider.overrideWithValue(isar)],
-      child: const HouseWorkerApp(),
-    ),
-  );
+  runApp(ProviderScope(child: const HouseWorkerApp()));
 }
 
 class HouseWorkerApp extends StatelessWidget {

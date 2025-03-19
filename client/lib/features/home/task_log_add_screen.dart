@@ -203,6 +203,7 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
 
       // 新しいタスクを作成
       final newTask = Task(
+        id: '', // 新規タスクの場合は空文字列を指定し、Firestoreが自動的にIDを生成
         title: _titleController.text,
         description: _categoryController.text, // カテゴリーをdescriptionに保存
         createdAt: DateTime.now(),

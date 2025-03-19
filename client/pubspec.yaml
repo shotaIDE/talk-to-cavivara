@@ -36,8 +36,6 @@ dependencies:
   flutter_riverpod: ^2.5.1
   
   # Database
-  isar: ^3.1.0+1
-  isar_flutter_libs: ^3.1.0+1
   path_provider: ^2.1.2
   
   # UI Components
@@ -60,7 +58,6 @@ dev_dependencies:
   
   # Code Generation
   build_runner: ^2.4.8
-  isar_generator: ^3.1.0+1
   
   flutter_lints: ^5.0.0
 
