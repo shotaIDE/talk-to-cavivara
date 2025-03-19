@@ -18,27 +18,29 @@ class AuthService {
 
   AuthService(this._firebaseAuth, this._userRepository);
 
-  Stream<firebase_auth.User?> get authStateChanges => _firebaseAuth.authStateChanges();
+  Stream<firebase_auth.User?> get authStateChanges =>
+      _firebaseAuth.authStateChanges();
 
   Future<void> signInAnonymously() async {
     try {
       final credential = await _firebaseAuth.signInAnonymously();
       final user = credential.user;
-      
+
       if (user != null) {
         // ユーザーがデータベースに存在するか確認
         final existingUser = await _userRepository.getUserByUid(user.uid);
-        
+
         if (existingUser == null) {
           // 新規ユーザーを作成
           final newUser = app_user.User(
+            id: '', // 新規ユーザーの場合は空文字列を指定し、Firestoreが自動的にIDを生成
             uid: user.uid,
             name: 'ゲスト',
             email: user.email ?? '',
             householdIds: [],
             createdAt: DateTime.now(),
           );
-          
+
           await _userRepository.createUser(newUser);
         }
       }
