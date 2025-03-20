@@ -8,12 +8,22 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 // 現在のユーザー情報を取得するプロバイダー
-final currentUserProvider = FutureProvider<app_user.User?>((ref) async {
+final currentUserProvider = FutureProvider.autoDispose<app_user.User?>((
+  ref,
+) async {
   final authService = ref.watch(authServiceProvider);
   final userRepository = ref.watch(userRepositoryProvider);
 
-  if (authService.currentUser != null) {
-    return await userRepository.getUserByUid(authService.currentUser!.uid);
+  final currentUser = authService.currentUser;
+  if (currentUser != null) {
+    try {
+      final user = await userRepository.getUserByUid(currentUser.uid);
+      print('ユーザー情報を取得しました: ${user?.name}');
+      return user;
+    } catch (e) {
+      print('ユーザー情報の取得に失敗しました: $e');
+      return null;
+    }
   }
   return null;
 });
