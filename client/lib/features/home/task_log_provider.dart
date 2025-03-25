@@ -8,6 +8,15 @@ final completedTasksProvider = FutureProvider<List<Task>>((ref) async {
   return await taskRepository.getCompletedTasks();
 });
 
+// タイトルでタスクを検索するプロバイダー
+final taskLogsByTitleProvider = FutureProvider.family<List<Task>, String>((
+  ref,
+  title,
+) async {
+  final taskRepository = ref.watch(taskRepositoryProvider);
+  return await taskRepository.getTasksByTitle(title);
+});
+
 // 削除されたタスクを一時的に保持するプロバイダー
 final deletedTaskProvider = StateProvider<Task?>((ref) => null);
 

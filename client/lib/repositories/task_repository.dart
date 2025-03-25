@@ -141,4 +141,14 @@ class TaskRepository {
 
     await _tasksCollection.doc(task.id).update(task.toFirestore());
   }
+
+  Future<List<Task>> getTasksByTitle(String title) async {
+    QuerySnapshot querySnapshot =
+        await _tasksCollection
+            .where('title', isEqualTo: title)
+            .orderBy('completedAt', descending: true)
+            .get();
+
+    return querySnapshot.docs.map((doc) => Task.fromFirestore(doc)).toList();
+  }
 }

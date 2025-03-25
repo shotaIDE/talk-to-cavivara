@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:house_worker/features/home/task_dashboard_screen.dart';
 import 'package:house_worker/features/home/task_log_add_screen.dart';
-import 'package:house_worker/features/home/task_log_detail_screen.dart';
 import 'package:house_worker/features/home/task_log_item.dart';
 import 'package:house_worker/features/home/task_log_provider.dart';
 import 'package:house_worker/features/settings/settings_screen.dart';
@@ -76,11 +76,11 @@ class HomeScreen extends ConsumerWidget {
                       return TaskLogItem(
                         task: task,
                         onTap: () {
-                          // タスク詳細画面に遷移
+                          // 家事ダッシュボード画面に遷移
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder:
-                                  (context) => TaskLogDetailScreen(task: task),
+                                  (context) => TaskDashboardScreen(task: task),
                             ),
                           );
                         },
