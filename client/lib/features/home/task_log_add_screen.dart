@@ -25,7 +25,6 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
   late final TextEditingController _iconController;
 
   late DateTime _completedAt;
-  int _priority = 2; // デフォルト値として「中」を設定
 
   @override
   void initState() {
@@ -37,7 +36,6 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
       );
       _iconController = TextEditingController(); // アイコンはまだ実装されていない
       _completedAt = DateTime.now(); // 現在時刻を設定
-      _priority = widget.existingTask!.priority;
     } else {
       _titleController = TextEditingController();
       _iconController = TextEditingController();
@@ -92,50 +90,6 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
                   border: OutlineInputBorder(),
                   hintText: 'アイコン名を入力',
                 ),
-              ),
-              const SizedBox(height: 16),
-
-              // 優先度選択
-              const Text('優先度', style: TextStyle(fontSize: 16)),
-              Row(
-                children: [
-                  Expanded(
-                    child: RadioListTile<int>(
-                      title: const Text('低'),
-                      value: 1,
-                      groupValue: _priority,
-                      onChanged: (value) {
-                        setState(() {
-                          _priority = value!;
-                        });
-                      },
-                    ),
-                  ),
-                  Expanded(
-                    child: RadioListTile<int>(
-                      title: const Text('中'),
-                      value: 2,
-                      groupValue: _priority,
-                      onChanged: (value) {
-                        setState(() {
-                          _priority = value!;
-                        });
-                      },
-                    ),
-                  ),
-                  Expanded(
-                    child: RadioListTile<int>(
-                      title: const Text('高'),
-                      value: 3,
-                      groupValue: _priority,
-                      onChanged: (value) {
-                        setState(() {
-                          _priority = value!;
-                        });
-                      },
-                    ),
-                  ),
-                ],
               ),
               const SizedBox(height: 16),
 
@@ -205,8 +159,9 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
     }
   }
 
-  void _submitForm() async {
+  void _submitForm() {
     if (_formKey.currentState!.validate()) {
+      final taskRepository = ref.read(taskRepositoryProvider);
       final currentUser = ref.read(authServiceProvider).currentUser;
 
       if (currentUser == null) {
@@ -216,24 +171,23 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
         return;
       }
 
-      // 新しいタスクを作成
-      final newTask = Task(
-        id: '', // 新規タスクの場合は空文字列を指定し、Firestoreが自動的にIDを生成
+      // 既存のタスクがある場合は、そのIDを使用して新しいタスクを作成
+      final task = Task(
+        id: widget.existingTask?.id ?? '',
         title: _titleController.text,
-        description: null, // カテゴリー欄を削除したのでnullに設定
         createdAt: DateTime.now(),
         completedAt: _completedAt,
         createdBy: currentUser.uid,
         completedBy: currentUser.uid,
         isShared: true, // デフォルトで共有
         isRecurring: false, // 家事ログは繰り返しなし
-        priority: _priority, // 選択された優先度を設定
+        priority: 2, // 固定値として「中」を設定
         isCompleted: true, // 家事ログは完了済み
       );
 
       try {
         // タスクを保存
-        await ref.read(taskRepositoryProvider).save(newTask);
+        taskRepository.save(task);
 
         // 保存成功メッセージを表示
         if (mounted) {
