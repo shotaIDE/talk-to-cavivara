@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/models/task.dart';
@@ -5,8 +7,75 @@ import 'package:house_worker/repositories/task_repository.dart';
 import 'package:house_worker/services/auth_service.dart';
 import 'package:intl/intl.dart';
 
+// ランダムな絵文字を生成するためのリスト
+const List<String> _emojiList = [
+  '🧹',
+  '🧼',
+  '🧽',
+  '🧺',
+  '🛁',
+  '🚿',
+  '🚽',
+  '🧻',
+  '🧯',
+  '🔥',
+  '💧',
+  '🌊',
+  '🍽️',
+  '🍴',
+  '🥄',
+  '🍳',
+  '🥘',
+  '🍲',
+  '🥣',
+  '🥗',
+  '🧂',
+  '🧊',
+  '🧴',
+  '🧷',
+  '🧺',
+  '🧹',
+  '🧻',
+  '🧼',
+  '🧽',
+  '🧾',
+  '📱',
+  '💻',
+  '🖥️',
+  '🖨️',
+  '⌨️',
+  '🖱️',
+  '🧮',
+  '📔',
+  '📕',
+  '📖',
+  '📗',
+  '📘',
+  '📙',
+  '📚',
+  '📓',
+  '📒',
+  '📃',
+  '📜',
+  '📄',
+  '📰',
+];
+
+// ランダムな絵文字を取得する関数
+String getRandomEmoji() {
+  final random = Random();
+  return _emojiList[random.nextInt(_emojiList.length)];
+}
+
 class TaskLogAddScreen extends ConsumerStatefulWidget {
-  const TaskLogAddScreen({super.key});
+  final Task? existingTask;
+
+  const TaskLogAddScreen({super.key, this.existingTask});
+
+  // 既存のタスクから新しいタスクを作成するためのファクトリコンストラクタ
+  factory TaskLogAddScreen.fromExistingTask(Task task) {
+    return TaskLogAddScreen(existingTask: task);
+  }
 
   @override
   ConsumerState<TaskLogAddScreen> createState() => _TaskLogAddScreenState();
@@ -14,17 +83,32 @@ class TaskLogAddScreen extends ConsumerStatefulWidget {
 
 class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _titleController = TextEditingController();
-  final _categoryController = TextEditingController();
-  final _iconController = TextEditingController();
+  late final TextEditingController _titleController;
+  late final TextEditingController _iconController;
 
-  int _priority = 2; // デフォルトは「中」
-  DateTime _completedAt = DateTime.now();
+  late DateTime _completedAt;
+
+  @override
+  void initState() {
+    super.initState();
+    // 既存のタスクがある場合は、そのデータを初期値として設定
+    if (widget.existingTask != null) {
+      _titleController = TextEditingController(
+        text: widget.existingTask!.title,
+      );
+      _iconController = TextEditingController(text: widget.existingTask!.icon);
+      _completedAt = DateTime.now(); // 現在時刻を設定
+    } else {
+      _titleController = TextEditingController();
+      // 新規作成時はランダムな絵文字を初期値として設定
+      _iconController = TextEditingController(text: getRandomEmoji());
+      _completedAt = DateTime.now();
+    }
+  }
 
   @override
   void dispose() {
     _titleController.dispose();
-    _categoryController.dispose();
     _iconController.dispose();
     super.dispose();
   }
@@ -35,7 +119,9 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
     final dateFormat = DateFormat('yyyy/MM/dd HH:mm');
 
     return Scaffold(
-      appBar: AppBar(title: const Text('家事ログ追加')),
+      appBar: AppBar(
+        title: Text(widget.existingTask != null ? '家事ログを記録' : '家事ログ追加'),
+      ),
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(
@@ -59,47 +145,21 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
               ),
               const SizedBox(height: 16),
 
-              // 家事ログのカテゴリー名入力欄
-              TextFormField(
-                controller: _categoryController,
-                decoration: const InputDecoration(
-                  labelText: '家事ログのカテゴリー名',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'カテゴリー名を入力してください';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // 家事ログの重要度選択欄
-              const Text(
-                '重要度',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  _buildPriorityRadio(1, '低', Colors.green),
-                  const SizedBox(width: 16),
-                  _buildPriorityRadio(2, '中', Colors.orange),
-                  const SizedBox(width: 16),
-                  _buildPriorityRadio(3, '高', Colors.red),
-                ],
-              ),
-              const SizedBox(height: 16),
-
               // 家事ログのアイコン入力欄
               TextFormField(
                 controller: _iconController,
                 decoration: const InputDecoration(
                   labelText: '家事ログのアイコン',
                   border: OutlineInputBorder(),
-                  hintText: 'アイコン名を入力',
+                  hintText: '絵文字1文字を入力',
                 ),
+                maxLength: 1, // 1文字のみ入力可能
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'アイコンを入力してください';
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 16),
 
@@ -141,27 +201,6 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
     );
   }
 
-  Widget _buildPriorityRadio(int value, String label, Color color) {
-    return Expanded(
-      child: RadioListTile<int>(
-        title: Text(
-          label,
-          style: TextStyle(color: color, fontWeight: FontWeight.bold),
-        ),
-        value: value,
-        groupValue: _priority,
-        activeColor: color,
-        onChanged: (newValue) {
-          if (newValue != null) {
-            setState(() {
-              _priority = newValue;
-            });
-          }
-        },
-      ),
-    );
-  }
-
   Future<void> _selectDateTime(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -190,8 +229,9 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
     }
   }
 
-  void _submitForm() async {
+  void _submitForm() {
     if (_formKey.currentState!.validate()) {
+      final taskRepository = ref.read(taskRepositoryProvider);
       final currentUser = ref.read(authServiceProvider).currentUser;
 
       if (currentUser == null) {
@@ -201,24 +241,23 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
         return;
       }
 
-      // 新しいタスクを作成
-      final newTask = Task(
-        id: '', // 新規タスクの場合は空文字列を指定し、Firestoreが自動的にIDを生成
+      // 既存のタスクがある場合は、そのIDを使用して新しいタスクを作成
+      final task = Task(
+        id: widget.existingTask?.id ?? '',
         title: _titleController.text,
-        description: _categoryController.text, // カテゴリーをdescriptionに保存
+        icon: _iconController.text, // アイコンを設定
         createdAt: DateTime.now(),
         completedAt: _completedAt,
         createdBy: currentUser.uid,
         completedBy: currentUser.uid,
         isShared: true, // デフォルトで共有
         isRecurring: false, // 家事ログは繰り返しなし
-        priority: _priority,
         isCompleted: true, // 家事ログは完了済み
       );
 
       try {
         // タスクを保存
-        await ref.read(taskRepositoryProvider).save(newTask);
+        taskRepository.save(task);
 
         // 保存成功メッセージを表示
         if (mounted) {
@@ -230,11 +269,11 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
           Navigator.of(context).pop(true);
         }
       } catch (e) {
-        // エラーメッセージを表示
+        // エラー時の処理
         if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('エラーが発生しました: $e')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('エラーが発生しました: ${e.toString()}')),
+          );
         }
       }
     }

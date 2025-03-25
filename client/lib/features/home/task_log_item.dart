@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:house_worker/features/home/task_log_add_screen.dart';
 import 'package:house_worker/features/home/task_log_provider.dart';
 import 'package:house_worker/models/task.dart';
 import 'package:intl/intl.dart';
@@ -14,48 +15,6 @@ class TaskLogItem extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // 日付フォーマッター
     final dateFormat = DateFormat('yyyy/MM/dd HH:mm');
-
-    // 優先度に応じた色を取得
-    Color getPriorityColor() {
-      switch (task.priority) {
-        case 1:
-          return Colors.green;
-        case 2:
-          return Colors.orange;
-        case 3:
-          return Colors.red;
-        default:
-          return Colors.grey;
-      }
-    }
-
-    // 優先度に応じたラベルを取得
-    String getPriorityLabel() {
-      switch (task.priority) {
-        case 1:
-          return '低';
-        case 2:
-          return '中';
-        case 3:
-          return '高';
-        default:
-          return '-';
-      }
-    }
-
-    // 優先度に応じたアイコンを取得
-    IconData getPriorityIcon() {
-      switch (task.priority) {
-        case 1:
-          return Icons.arrow_downward;
-        case 2:
-          return Icons.remove;
-        case 3:
-          return Icons.arrow_upward;
-        default:
-          return Icons.help_outline;
-      }
-    }
 
     return Dismissible(
       key: Key('task-${task.id}'),
@@ -107,8 +66,21 @@ class TaskLogItem extends ConsumerWidget {
               children: [
                 Row(
                   children: [
-                    Icon(getPriorityIcon(), color: getPriorityColor()),
-                    const SizedBox(width: 8),
+                    // アイコンを表示
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      alignment: Alignment.center,
+                      margin: const EdgeInsets.only(right: 12),
+                      child: Text(
+                        task.icon,
+                        style: const TextStyle(fontSize: 24),
+                      ),
+                    ),
                     Expanded(
                       child: Text(
                         task.title,
@@ -118,27 +90,21 @@ class TaskLogItem extends ConsumerWidget {
                         ),
                       ),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Chip(
-                      label: Text(
-                        '重要度: ${getPriorityLabel()}',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      backgroundColor: getPriorityColor(),
+                    // 記録ボタンを追加
+                    IconButton(
+                      icon: const Icon(Icons.add_circle_outline),
+                      tooltip: 'この家事を記録する',
+                      onPressed: () {
+                        // 家事ログ追加画面に遷移し、タスク情報を渡す
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder:
+                                (context) =>
+                                    TaskLogAddScreen.fromExistingTask(task),
+                          ),
+                        );
+                      },
                     ),
-                    const SizedBox(width: 8),
-                    if (task.isRecurring)
-                      const Chip(
-                        label: Text('繰り返し'),
-                        backgroundColor: Colors.blue,
-                      ),
                   ],
                 ),
                 const SizedBox(height: 8),

@@ -4,13 +4,13 @@ class Task {
   String id;
   String title;
   String? description;
+  String icon; // アイコンフィールド（1文字の絵文字）
   DateTime createdAt;
   DateTime? completedAt;
   String createdBy;
   String? completedBy;
   bool isShared;
   bool isRecurring;
-  int priority; // 1: Low, 2: Medium, 3: High
   int? recurringIntervalMs; // Store Duration in milliseconds
   bool isCompleted;
 
@@ -18,13 +18,13 @@ class Task {
     required this.id,
     required this.title,
     this.description,
+    required this.icon, // アイコンパラメータ
     required this.createdAt,
     this.completedAt,
     required this.createdBy,
     this.completedBy,
     required this.isShared,
     required this.isRecurring,
-    required this.priority,
     Duration? recurringInterval,
     this.isCompleted = false,
   }) : recurringIntervalMs = recurringInterval?.inMilliseconds;
@@ -45,6 +45,7 @@ class Task {
       id: doc.id,
       title: data['title'] ?? '',
       description: data['description'],
+      icon: data['icon'] ?? '🏠', // デフォルトアイコンを家の絵文字に設定
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       completedAt:
           data['completedAt'] != null
@@ -54,7 +55,6 @@ class Task {
       completedBy: data['completedBy'],
       isShared: data['isShared'] ?? false,
       isRecurring: data['isRecurring'] ?? false,
-      priority: data['priority'] ?? 1,
       recurringInterval:
           data['recurringIntervalMs'] != null
               ? Duration(milliseconds: data['recurringIntervalMs'])
@@ -68,6 +68,7 @@ class Task {
     return {
       'title': title,
       'description': description,
+      'icon': icon, // アイコンフィールド
       'createdAt': Timestamp.fromDate(createdAt),
       'completedAt':
           completedAt != null ? Timestamp.fromDate(completedAt!) : null,
@@ -75,7 +76,6 @@ class Task {
       'completedBy': completedBy,
       'isShared': isShared,
       'isRecurring': isRecurring,
-      'priority': priority,
       'recurringIntervalMs': recurringIntervalMs,
       'isCompleted': isCompleted,
     };
