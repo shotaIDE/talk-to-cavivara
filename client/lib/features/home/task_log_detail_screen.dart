@@ -6,48 +6,15 @@ import 'package:intl/intl.dart';
 class TaskLogDetailScreen extends ConsumerWidget {
   final Task task;
 
-  const TaskLogDetailScreen({
-    Key? key,
-    required this.task,
-  }) : super(key: key);
+  const TaskLogDetailScreen({super.key, required this.task});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // 日付フォーマッター
     final dateFormat = DateFormat('yyyy/MM/dd HH:mm');
-    
-    // 優先度に応じた色を取得
-    Color getPriorityColor() {
-      switch (task.priority) {
-        case 1:
-          return Colors.green;
-        case 2:
-          return Colors.orange;
-        case 3:
-          return Colors.red;
-        default:
-          return Colors.grey;
-      }
-    }
-    
-    // 優先度に応じたラベルを取得
-    String getPriorityLabel() {
-      switch (task.priority) {
-        case 1:
-          return '低';
-        case 2:
-          return '中';
-        case 3:
-          return '高';
-        default:
-          return '-';
-      }
-    }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('家事ログ詳細'),
-      ),
+      appBar: AppBar(title: const Text('家事ログ詳細')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -70,17 +37,6 @@ class TaskLogDetailScreen extends ConsumerWidget {
                     const SizedBox(height: 16),
                     Row(
                       children: [
-                        Chip(
-                          label: Text(
-                            '重要度: ${getPriorityLabel()}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          backgroundColor: getPriorityColor(),
-                        ),
-                        const SizedBox(width: 8),
                         if (task.isRecurring)
                           const Chip(
                             label: Text('繰り返し'),
@@ -89,7 +45,8 @@ class TaskLogDetailScreen extends ConsumerWidget {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    if (task.description != null && task.description!.isNotEmpty)
+                    if (task.description != null &&
+                        task.description!.isNotEmpty)
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -112,10 +69,18 @@ class TaskLogDetailScreen extends ConsumerWidget {
                     const SizedBox(height: 8),
                     _buildInfoRow('作成日時', dateFormat.format(task.createdAt)),
                     _buildInfoRow('作成者', task.createdBy),
-                    _buildInfoRow('完了日時', task.completedAt != null ? dateFormat.format(task.completedAt!) : '-'),
+                    _buildInfoRow(
+                      '完了日時',
+                      task.completedAt != null
+                          ? dateFormat.format(task.completedAt!)
+                          : '-',
+                    ),
                     _buildInfoRow('実行者', task.completedBy ?? '-'),
                     if (task.isRecurring && task.recurringInterval != null)
-                      _buildInfoRow('繰り返し間隔', _formatDuration(task.recurringInterval!)),
+                      _buildInfoRow(
+                        '繰り返し間隔',
+                        _formatDuration(task.recurringInterval!),
+                      ),
                   ],
                 ),
               ),
@@ -136,18 +101,10 @@ class TaskLogDetailScreen extends ConsumerWidget {
             width: 100,
             child: Text(
               '$label:',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ),
-          Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(fontSize: 16),
-            ),
-          ),
+          Expanded(child: Text(value, style: const TextStyle(fontSize: 16))),
         ],
       ),
     );
