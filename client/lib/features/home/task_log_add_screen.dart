@@ -15,16 +15,13 @@ class TaskLogAddScreen extends ConsumerStatefulWidget {
 class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
-  final _categoryController = TextEditingController();
   final _iconController = TextEditingController();
 
-  int _priority = 2; // デフォルトは「中」
   DateTime _completedAt = DateTime.now();
 
   @override
   void dispose() {
     _titleController.dispose();
-    _categoryController.dispose();
     _iconController.dispose();
     super.dispose();
   }
@@ -56,39 +53,6 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
                   }
                   return null;
                 },
-              ),
-              const SizedBox(height: 16),
-
-              // 家事ログのカテゴリー名入力欄
-              TextFormField(
-                controller: _categoryController,
-                decoration: const InputDecoration(
-                  labelText: '家事ログのカテゴリー名',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'カテゴリー名を入力してください';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // 家事ログの重要度選択欄
-              const Text(
-                '重要度',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  _buildPriorityRadio(1, '低', Colors.green),
-                  const SizedBox(width: 16),
-                  _buildPriorityRadio(2, '中', Colors.orange),
-                  const SizedBox(width: 16),
-                  _buildPriorityRadio(3, '高', Colors.red),
-                ],
               ),
               const SizedBox(height: 16),
 
@@ -141,27 +105,6 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
     );
   }
 
-  Widget _buildPriorityRadio(int value, String label, Color color) {
-    return Expanded(
-      child: RadioListTile<int>(
-        title: Text(
-          label,
-          style: TextStyle(color: color, fontWeight: FontWeight.bold),
-        ),
-        value: value,
-        groupValue: _priority,
-        activeColor: color,
-        onChanged: (newValue) {
-          if (newValue != null) {
-            setState(() {
-              _priority = newValue;
-            });
-          }
-        },
-      ),
-    );
-  }
-
   Future<void> _selectDateTime(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -205,14 +148,14 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
       final newTask = Task(
         id: '', // 新規タスクの場合は空文字列を指定し、Firestoreが自動的にIDを生成
         title: _titleController.text,
-        description: _categoryController.text, // カテゴリーをdescriptionに保存
+        description: null, // カテゴリー欄を削除したのでnullに設定
         createdAt: DateTime.now(),
         completedAt: _completedAt,
         createdBy: currentUser.uid,
         completedBy: currentUser.uid,
         isShared: true, // デフォルトで共有
         isRecurring: false, // 家事ログは繰り返しなし
-        priority: _priority,
+        priority: 2, // デフォルト値として「中」を設定
         isCompleted: true, // 家事ログは完了済み
       );
 

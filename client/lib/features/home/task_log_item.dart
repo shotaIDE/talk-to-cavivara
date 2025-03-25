@@ -122,27 +122,6 @@ class TaskLogItem extends ConsumerWidget {
                 ),
                 const SizedBox(height: 8),
                 Row(
-                  children: [
-                    Chip(
-                      label: Text(
-                        '重要度: ${getPriorityLabel()}',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      backgroundColor: getPriorityColor(),
-                    ),
-                    const SizedBox(width: 8),
-                    if (task.isRecurring)
-                      const Chip(
-                        label: Text('繰り返し'),
-                        backgroundColor: Colors.blue,
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Flexible(
