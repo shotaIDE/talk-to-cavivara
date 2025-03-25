@@ -241,9 +241,9 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
         return;
       }
 
-      // 既存のタスクがある場合は、そのIDを使用して新しいタスクを作成
+      // 既存のタスクを元にした場合でも、常に新規タスクとして登録するためIDは空文字列を指定
       final task = Task(
-        id: widget.existingTask?.id ?? '',
+        id: '', // 常に新規タスクとして登録するため空文字列を指定
         title: _titleController.text,
         icon: _iconController.text, // アイコンを設定
         createdAt: DateTime.now(),
