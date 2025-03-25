@@ -16,48 +16,6 @@ class TaskLogItem extends ConsumerWidget {
     // 日付フォーマッター
     final dateFormat = DateFormat('yyyy/MM/dd HH:mm');
 
-    // 優先度に応じた色を取得
-    Color getPriorityColor() {
-      switch (task.priority) {
-        case 1:
-          return Colors.green;
-        case 2:
-          return Colors.orange;
-        case 3:
-          return Colors.red;
-        default:
-          return Colors.grey;
-      }
-    }
-
-    // 優先度に応じたラベルを取得
-    String getPriorityLabel() {
-      switch (task.priority) {
-        case 1:
-          return '低';
-        case 2:
-          return '中';
-        case 3:
-          return '高';
-        default:
-          return '-';
-      }
-    }
-
-    // 優先度に応じたアイコンを取得
-    IconData getPriorityIcon() {
-      switch (task.priority) {
-        case 1:
-          return Icons.arrow_downward;
-        case 2:
-          return Icons.remove;
-        case 3:
-          return Icons.arrow_upward;
-        default:
-          return Icons.help_outline;
-      }
-    }
-
     return Dismissible(
       key: Key('task-${task.id}'),
       background: Container(
@@ -108,8 +66,6 @@ class TaskLogItem extends ConsumerWidget {
               children: [
                 Row(
                   children: [
-                    Icon(getPriorityIcon(), color: getPriorityColor()),
-                    const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         task.title,
