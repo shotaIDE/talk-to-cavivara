@@ -4,6 +4,7 @@ class Task {
   String id;
   String title;
   String? description;
+  String icon; // アイコンフィールド（1文字の絵文字）
   DateTime createdAt;
   DateTime? completedAt;
   String createdBy;
@@ -18,6 +19,7 @@ class Task {
     required this.id,
     required this.title,
     this.description,
+    required this.icon, // アイコンパラメータ
     required this.createdAt,
     this.completedAt,
     required this.createdBy,
@@ -45,6 +47,7 @@ class Task {
       id: doc.id,
       title: data['title'] ?? '',
       description: data['description'],
+      icon: data['icon'] ?? '🏠', // デフォルトアイコンを家の絵文字に設定
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       completedAt:
           data['completedAt'] != null
@@ -68,6 +71,7 @@ class Task {
     return {
       'title': title,
       'description': description,
+      'icon': icon, // アイコンフィールド
       'createdAt': Timestamp.fromDate(createdAt),
       'completedAt':
           completedAt != null ? Timestamp.fromDate(completedAt!) : null,

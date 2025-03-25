@@ -1,9 +1,71 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/models/task.dart';
 import 'package:house_worker/repositories/task_repository.dart';
 import 'package:house_worker/services/auth_service.dart';
 import 'package:intl/intl.dart';
+
+// ランダムな絵文字を生成するためのリスト
+const List<String> _emojiList = [
+  '🧹',
+  '🧼',
+  '🧽',
+  '🧺',
+  '🛁',
+  '🚿',
+  '🚽',
+  '🧻',
+  '🧯',
+  '🔥',
+  '💧',
+  '🌊',
+  '🍽️',
+  '🍴',
+  '🥄',
+  '🍳',
+  '🥘',
+  '🍲',
+  '🥣',
+  '🥗',
+  '🧂',
+  '🧊',
+  '🧴',
+  '🧷',
+  '🧺',
+  '🧹',
+  '🧻',
+  '🧼',
+  '🧽',
+  '🧾',
+  '📱',
+  '💻',
+  '🖥️',
+  '🖨️',
+  '⌨️',
+  '🖱️',
+  '🧮',
+  '📔',
+  '📕',
+  '📖',
+  '📗',
+  '📘',
+  '📙',
+  '📚',
+  '📓',
+  '📒',
+  '📃',
+  '📜',
+  '📄',
+  '📰',
+];
+
+// ランダムな絵文字を取得する関数
+String getRandomEmoji() {
+  final random = Random();
+  return _emojiList[random.nextInt(_emojiList.length)];
+}
 
 class TaskLogAddScreen extends ConsumerStatefulWidget {
   final Task? existingTask;
@@ -34,11 +96,12 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
       _titleController = TextEditingController(
         text: widget.existingTask!.title,
       );
-      _iconController = TextEditingController(); // アイコンはまだ実装されていない
+      _iconController = TextEditingController(text: widget.existingTask!.icon);
       _completedAt = DateTime.now(); // 現在時刻を設定
     } else {
       _titleController = TextEditingController();
-      _iconController = TextEditingController();
+      // 新規作成時はランダムな絵文字を初期値として設定
+      _iconController = TextEditingController(text: getRandomEmoji());
       _completedAt = DateTime.now();
     }
   }
@@ -88,8 +151,15 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
                 decoration: const InputDecoration(
                   labelText: '家事ログのアイコン',
                   border: OutlineInputBorder(),
-                  hintText: 'アイコン名を入力',
+                  hintText: '絵文字1文字を入力',
                 ),
+                maxLength: 1, // 1文字のみ入力可能
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'アイコンを入力してください';
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 16),
 
@@ -175,6 +245,7 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
       final task = Task(
         id: widget.existingTask?.id ?? '',
         title: _titleController.text,
+        icon: _iconController.text, // アイコンを設定
         createdAt: DateTime.now(),
         completedAt: _completedAt,
         createdBy: currentUser.uid,
@@ -199,11 +270,11 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
           Navigator.of(context).pop(true);
         }
       } catch (e) {
-        // エラーメッセージを表示
+        // エラー時の処理
         if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('エラーが発生しました: $e')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('エラーが発生しました: ${e.toString()}')),
+          );
         }
       }
     }
