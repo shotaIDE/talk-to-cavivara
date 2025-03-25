@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:house_worker/features/home/task_log_add_screen.dart';
 import 'package:house_worker/features/home/task_log_provider.dart';
 import 'package:house_worker/models/task.dart';
 import 'package:intl/intl.dart';
@@ -117,6 +118,21 @@ class TaskLogItem extends ConsumerWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
+                    ),
+                    // 記録ボタンを追加
+                    IconButton(
+                      icon: const Icon(Icons.add_circle_outline),
+                      tooltip: 'この家事を記録する',
+                      onPressed: () {
+                        // 家事ログ追加画面に遷移し、タスク情報を渡す
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder:
+                                (context) =>
+                                    TaskLogAddScreen.fromExistingTask(task),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),

@@ -6,7 +6,14 @@ import 'package:house_worker/services/auth_service.dart';
 import 'package:intl/intl.dart';
 
 class TaskLogAddScreen extends ConsumerStatefulWidget {
-  const TaskLogAddScreen({super.key});
+  final Task? existingTask;
+
+  const TaskLogAddScreen({super.key, this.existingTask});
+
+  // 既存のタスクから新しいタスクを作成するためのファクトリコンストラクタ
+  factory TaskLogAddScreen.fromExistingTask(Task task) {
+    return TaskLogAddScreen(existingTask: task);
+  }
 
   @override
   ConsumerState<TaskLogAddScreen> createState() => _TaskLogAddScreenState();
@@ -14,10 +21,29 @@ class TaskLogAddScreen extends ConsumerStatefulWidget {
 
 class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _titleController = TextEditingController();
-  final _iconController = TextEditingController();
+  late final TextEditingController _titleController;
+  late final TextEditingController _iconController;
 
-  DateTime _completedAt = DateTime.now();
+  late DateTime _completedAt;
+  int _priority = 2; // デフォルト値として「中」を設定
+
+  @override
+  void initState() {
+    super.initState();
+    // 既存のタスクがある場合は、そのデータを初期値として設定
+    if (widget.existingTask != null) {
+      _titleController = TextEditingController(
+        text: widget.existingTask!.title,
+      );
+      _iconController = TextEditingController(); // アイコンはまだ実装されていない
+      _completedAt = DateTime.now(); // 現在時刻を設定
+      _priority = widget.existingTask!.priority;
+    } else {
+      _titleController = TextEditingController();
+      _iconController = TextEditingController();
+      _completedAt = DateTime.now();
+    }
+  }
 
   @override
   void dispose() {
@@ -32,7 +58,9 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
     final dateFormat = DateFormat('yyyy/MM/dd HH:mm');
 
     return Scaffold(
-      appBar: AppBar(title: const Text('家事ログ追加')),
+      appBar: AppBar(
+        title: Text(widget.existingTask != null ? '家事ログを記録' : '家事ログ追加'),
+      ),
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(
@@ -64,6 +92,50 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
                   border: OutlineInputBorder(),
                   hintText: 'アイコン名を入力',
                 ),
+              ),
+              const SizedBox(height: 16),
+
+              // 優先度選択
+              const Text('優先度', style: TextStyle(fontSize: 16)),
+              Row(
+                children: [
+                  Expanded(
+                    child: RadioListTile<int>(
+                      title: const Text('低'),
+                      value: 1,
+                      groupValue: _priority,
+                      onChanged: (value) {
+                        setState(() {
+                          _priority = value!;
+                        });
+                      },
+                    ),
+                  ),
+                  Expanded(
+                    child: RadioListTile<int>(
+                      title: const Text('中'),
+                      value: 2,
+                      groupValue: _priority,
+                      onChanged: (value) {
+                        setState(() {
+                          _priority = value!;
+                        });
+                      },
+                    ),
+                  ),
+                  Expanded(
+                    child: RadioListTile<int>(
+                      title: const Text('高'),
+                      value: 3,
+                      groupValue: _priority,
+                      onChanged: (value) {
+                        setState(() {
+                          _priority = value!;
+                        });
+                      },
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 16),
 
@@ -155,7 +227,7 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
         completedBy: currentUser.uid,
         isShared: true, // デフォルトで共有
         isRecurring: false, // 家事ログは繰り返しなし
-        priority: 2, // デフォルト値として「中」を設定
+        priority: _priority, // 選択された優先度を設定
         isCompleted: true, // 家事ログは完了済み
       );
 
