@@ -6,6 +6,7 @@ import 'package:house_worker/services/auth_service.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 
 // 現在のユーザー情報を取得するプロバイダー
 final currentUserProvider = FutureProvider.autoDispose<app_user.User?>((
@@ -45,7 +46,43 @@ class SettingsScreen extends ConsumerWidget {
       appBar: AppBar(title: const Text('設定')),
       body: userAsync.when(
         data: (user) {
-          if (user == null) {
+          // 認証サービスから現在のFirebaseユーザーを取得
+          final authService = ref.watch(authServiceProvider);
+          final firebaseUser = authService.currentUser;
+
+          // ユーザーがnullの場合（匿名ユーザーなど）
+          if (user == null && firebaseUser != null) {
+            // 匿名ユーザー情報を表示するためのリストビュー
+            return ListView(
+              children: [
+                // ユーザー情報セクション
+                _buildSectionHeader(context, 'ユーザー情報'),
+                _buildAnonymousUserInfoTile(context, firebaseUser),
+
+                const Divider(),
+
+                // アプリ情報セクション
+                _buildSectionHeader(context, 'アプリについて'),
+                _buildReviewTile(context),
+                _buildShareAppTile(context),
+                _buildTermsOfServiceTile(context),
+                _buildPrivacyPolicyTile(context),
+
+                // デバッグセクション
+                _buildSectionHeader(context, 'デバッグ'),
+                _buildDebugTile(context),
+
+                // バージョン情報
+                _buildVersionInfo(context, packageInfoAsync),
+
+                const Divider(),
+
+                // アカウント管理セクション
+                _buildSectionHeader(context, 'アカウント管理'),
+                _buildLogoutTile(context, ref),
+              ],
+            );
+          } else if (user == null) {
             return const Center(child: Text('ユーザー情報が取得できません'));
           }
 
@@ -116,6 +153,28 @@ class SettingsScreen extends ConsumerWidget {
       subtitle: Text(user.name),
       trailing: const Icon(Icons.edit),
       onTap: () => _showEditNameDialog(context, user, ref),
+    );
+  }
+
+  Widget _buildAnonymousUserInfoTile(
+    BuildContext context,
+    firebase_auth.User firebaseUser,
+  ) {
+    return Column(
+      children: [
+        ListTile(
+          leading: const Icon(Icons.person),
+          title: const Text('ユーザー名'),
+          subtitle: const Text('ゲスト'),
+          trailing: const Icon(Icons.edit),
+          onTap: () => _showAnonymousUserInfoDialog(context),
+        ),
+        ListTile(
+          leading: const Icon(Icons.perm_identity),
+          title: const Text('ユーザーID'),
+          subtitle: Text(firebaseUser.uid),
+        ),
+      ],
     );
   }
 
@@ -355,6 +414,35 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ],
           ),
+    );
+  }
+
+  // 匿名ユーザー情報ダイアログ
+  void _showAnonymousUserInfoDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('匿名ユーザー情報'),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('現在、匿名ユーザーとしてログインしています。'),
+            SizedBox(height: 8),
+            Text('アカウント登録をすると、以下の機能が利用できるようになります：'),
+            SizedBox(height: 8),
+            Text('• データのバックアップと復元'),
+            Text('• 複数のデバイスでの同期'),
+            Text('• 家族や友人との家事の共有'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('閉じる'),
+          ),
+        ],
+      ),
     );
   }
 
