@@ -252,7 +252,6 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
         completedBy: currentUser.uid,
         isShared: true, // デフォルトで共有
         isRecurring: false, // 家事ログは繰り返しなし
-        priority: 2, // 固定値として「中」を設定
         isCompleted: true, // 家事ログは完了済み
       );
 

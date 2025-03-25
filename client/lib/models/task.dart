@@ -11,7 +11,6 @@ class Task {
   String? completedBy;
   bool isShared;
   bool isRecurring;
-  int priority; // 1: Low, 2: Medium, 3: High
   int? recurringIntervalMs; // Store Duration in milliseconds
   bool isCompleted;
 
@@ -26,7 +25,6 @@ class Task {
     this.completedBy,
     required this.isShared,
     required this.isRecurring,
-    required this.priority,
     Duration? recurringInterval,
     this.isCompleted = false,
   }) : recurringIntervalMs = recurringInterval?.inMilliseconds;
@@ -57,7 +55,6 @@ class Task {
       completedBy: data['completedBy'],
       isShared: data['isShared'] ?? false,
       isRecurring: data['isRecurring'] ?? false,
-      priority: data['priority'] ?? 1,
       recurringInterval:
           data['recurringIntervalMs'] != null
               ? Duration(milliseconds: data['recurringIntervalMs'])
@@ -79,7 +76,6 @@ class Task {
       'completedBy': completedBy,
       'isShared': isShared,
       'isRecurring': isRecurring,
-      'priority': priority,
       'recurringIntervalMs': recurringIntervalMs,
       'isCompleted': isCompleted,
     };
