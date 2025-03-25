@@ -66,6 +66,21 @@ class TaskLogItem extends ConsumerWidget {
               children: [
                 Row(
                   children: [
+                    // アイコンを表示
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      alignment: Alignment.center,
+                      margin: const EdgeInsets.only(right: 12),
+                      child: Text(
+                        task.icon,
+                        style: const TextStyle(fontSize: 24),
+                      ),
+                    ),
                     Expanded(
                       child: Text(
                         task.title,
