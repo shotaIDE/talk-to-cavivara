@@ -1,0 +1,5 @@
+# frozen_string_literal: true
+
+import '../../fastlane/Fastfile'
+
+default_platform(:android)

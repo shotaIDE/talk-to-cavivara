@@ -2,9 +2,10 @@
 google-services.json
 GoogleService-Info.plist
 
+/android/fastlane/report.xml
 /emulator-config.json
-/lib/firebase_options*.dart
 /ios/fastlane/report.xml
+/lib/firebase_options*.dart
 
 # Miscellaneous
 *.class
