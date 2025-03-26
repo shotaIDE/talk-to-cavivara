@@ -59,6 +59,7 @@ APPLICATION_ID="${APPLICATION_ID_BASE}${APPLICATION_ID_SUFFIX}"
 ```
 
 実行時、プロンプトの選択肢では以下を選んでください：
+
 - "Build configuration"
 - "Debug-emulator"
 
@@ -76,6 +77,7 @@ APPLICATION_ID="${APPLICATION_ID_BASE}${APPLICATION_ID_SUFFIX}"
 ```
 
 実行時、プロンプトの選択肢では以下を選んでください：
+
 - "Build configuration"
 - "Debug-dev"
 
@@ -107,6 +109,12 @@ flutterfire config \
   --android-package-name="${APPLICATION_ID}" \
   --android-out="android/app/src/${DIRECTORY_NAME_FOR_ANDROID}/google-services.json"
 ```
+
+## fastlane の設定
+
+以下を参考に、fastlane を設定します。
+
+https://docs.flutter.dev/deployment/cd#fastlane
 
 ## Emulator の設定
 
