@@ -15,9 +15,6 @@ class HomeScreen extends ConsumerWidget {
     // 完了済みタスクを取得
     final completedTasksAsync = ref.watch(completedTasksProvider);
 
-    // 削除されたタスクを監視
-    final deletedTask = ref.watch(deletedTaskProvider);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('家事ログ一覧'),

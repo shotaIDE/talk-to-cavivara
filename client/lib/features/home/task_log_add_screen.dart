@@ -209,13 +209,14 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
       lastDate: DateTime.now(),
     );
 
-    if (pickedDate != null) {
+    if (pickedDate != null && mounted) {
+      // BuildContextをローカル変数に保存して、マウント状態を確認した後に使用
       final TimeOfDay? pickedTime = await showTimePicker(
-        context: context,
+        context: mounted ? context : throw StateError('Widget is not mounted'),
         initialTime: TimeOfDay.fromDateTime(_completedAt),
       );
 
-      if (pickedTime != null) {
+      if (pickedTime != null && mounted) {
         setState(() {
           _completedAt = DateTime(
             pickedDate.year,

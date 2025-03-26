@@ -1,1 +1,9 @@
+.ruby-version @shotaIDE
+.tool-versions @shotaIDE
+.windsurfrules @shotaIDE
+fastlane/ @shotaIDE
+Gemfile @shotaIDE
+pubspec.yaml @shotaIDE
+
+/.github/ @shotaIDE
 /infra/ @shotaIDE

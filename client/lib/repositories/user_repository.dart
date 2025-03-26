@@ -1,12 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/models/user.dart' as app_user;
+import 'package:logging/logging.dart';
 
 final userRepositoryProvider = Provider<UserRepository>((ref) {
   return UserRepository();
 });
 
 class UserRepository {
+  final Logger _logger = Logger('UserRepository');
   final CollectionReference _usersCollection = FirebaseFirestore.instance
       .collection('users');
 
@@ -46,7 +48,7 @@ class UserRepository {
       await _usersCollection.doc(id).delete();
       return true;
     } catch (e) {
-      print('ユーザー削除エラー: $e');
+      _logger.warning('ユーザー削除エラー: $e');
       return false;
     }
   }

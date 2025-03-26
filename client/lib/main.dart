@@ -8,9 +8,34 @@ import 'package:house_worker/features/auth/login_screen.dart';
 import 'package:house_worker/features/home/home_screen.dart';
 import 'package:house_worker/flavor_config.dart';
 import 'package:house_worker/services/auth_service.dart';
+import 'package:logging/logging.dart';
 
 import 'firebase_options_dev.dart' as dev;
 import 'firebase_options_prod.dart' as prod;
+
+// アプリケーションのロガー
+final _logger = Logger('HouseWorker');
+
+// ロギングシステムの初期化
+void _setupLogging() {
+  // ルートロガーの設定
+  Logger.root.level = Level.ALL;
+  Logger.root.onRecord.listen((record) {
+    // 開発環境では詳細なログを出力
+    final message =
+        '${record.level.name}: ${record.time}: '
+        '${record.loggerName}: ${record.message}';
+
+    // エラーと警告はスタックトレースも出力
+    if (record.level >= Level.WARNING && record.error != null) {
+      debugPrint('$message\nError: ${record.error}\n${record.stackTrace}');
+    } else {
+      debugPrint(message);
+    }
+  });
+
+  _logger.info('ロギングシステムを初期化しました');
+}
 
 // Firebase Emulatorの設定を読み込むためのプロバイダー
 final emulatorConfigProvider = Provider<Map<String, dynamic>>(
@@ -27,7 +52,7 @@ String getEmulatorHost() {
     );
     return emulatorHost;
   } catch (e) {
-    print('エミュレーター設定の読み込みに失敗しました: $e');
+    _logger.warning('エミュレーター設定の読み込みに失敗しました', e);
     // デフォルト値を返す
     return '127.0.0.1';
   }
@@ -50,7 +75,7 @@ void setupFlavorConfig() {
     defaultValue: 'emulator',
   );
 
-  print('検出されたflavor: $flavorName');
+  _logger.info('検出されたflavor: $flavorName');
 
   switch (flavorName.toLowerCase()) {
     case 'prod':
@@ -82,11 +107,14 @@ void setupFlavorConfig() {
       break;
   }
 
-  print('アプリケーション環境: ${FlavorConfig.instance.name}');
+  _logger.info('アプリケーション環境: ${FlavorConfig.instance.name}');
 }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // ロギングシステムの初期化
+  _setupLogging();
 
   // 環境設定の初期化
   setupFlavorConfig();
@@ -100,20 +128,20 @@ void main() async {
     } else {
       await Firebase.initializeApp();
     }
-    print('Firebase initialized successfully');
+    _logger.info('Firebase initialized successfully');
 
     // エミュレーターの設定が有効な場合のみ適用
     if (FlavorConfig.instance.useFirebaseEmulator) {
       // エミュレーターのホスト情報を取得
       final emulatorHost = getEmulatorHost();
-      print('エミュレーターホスト: $emulatorHost');
+      _logger.info('エミュレーターホスト: $emulatorHost');
 
       // エミュレーターの設定を適用
       setupFirebaseEmulators(emulatorHost);
-      print('Firebase Emulator設定を適用しました');
+      _logger.info('Firebase Emulator設定を適用しました');
     }
   } catch (e) {
-    print('Failed to initialize Firebase: $e');
+    _logger.severe('Failed to initialize Firebase', e);
     // Firebase が初期化できなくても、アプリを続行する
   }
 

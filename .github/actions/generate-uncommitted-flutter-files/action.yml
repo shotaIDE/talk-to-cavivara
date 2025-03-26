@@ -1,0 +1,28 @@
+inputs:
+  firebase-options-dart-base64-emulator:
+    required: true
+  firebase-options-dart-base64-dev:
+    required: true
+  firebase-options-dart-base64-prod:
+    required: true
+  working-parent-directory:
+    required: false
+    default: .
+  working-child-directory:
+    required: false
+    default: ios
+
+runs:
+  using: "composite"
+  steps:
+    - name: Generate Firebase options files
+      run: |
+        echo "${{ inputs.firebase-options-dart-base64-emulator }}" | base64 -d > lib/firebase_options_emulator.dart
+        echo "${{ inputs.firebase-options-dart-base64-dev }}" | base64 -d > lib/firebase_options_dev.dart
+        echo "${{ inputs.firebase-options-dart-base64-prod }}" | base64 -d > lib/firebase_options_prod.dart
+      working-directory: ${{ inputs.working-parent-directory }}
+      shell: bash
+    - name: Generate automatic codes
+      run: bundle exec fastlane generate
+      working-directory: ${{ inputs.working-parent-directory }}/${{ inputs.working-child-directory }}
+      shell: bash
