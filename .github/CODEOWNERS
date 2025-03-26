@@ -1,4 +1,8 @@
 /.github/ @shotaIDE
-/client/android/fastlane/ @shotaIDE
-/client/ios/fastlane/ @shotaIDE
 /infra/ @shotaIDE
+
+.ruby-version @shotaIDE
+.tool-versions @shotaIDE
+fastlane/ @shotaIDE
+Gemfile @shotaIDE
+pubspec.yaml @shotaIDE
