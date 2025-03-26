@@ -3,7 +3,7 @@ inputs:
     required: true
   firebase-options-dart-base64-dev:
     required: true
-  dart-defines-json-base64-dev:
+  firebase-options-dart-base64-prod:
     required: true
   working-directory:
     required: true
@@ -16,10 +16,7 @@ runs:
       run: |
         echo "${{ inputs.firebase-options-dart-base64-emulator }}" | base64 -d > lib/firebase_options_emulator.dart
         echo "${{ inputs.firebase-options-dart-base64-dev }}" | base64 -d > lib/firebase_options_dev.dart
-    - name: Generate dart defines json file
-      shell: bash
-      run: |
-        echo "${{ inputs.dart-defines-json-base64-dev }}" | base64 -d > dart-defines_dev.json
+        echo "${{ inputs.firebase-options-dart-base64-dev }}" | base64 -d > lib/firebase_options_prod.dart
     - name: Generate automatic codes
       shell: bash
       run: bundle exec fastlane generate
