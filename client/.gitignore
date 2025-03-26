@@ -4,6 +4,7 @@ GoogleService-Info.plist
 
 /emulator-config.json
 /lib/firebase_options*.dart
+/ios/fastlane/report.xml
 
 # Miscellaneous
 *.class
