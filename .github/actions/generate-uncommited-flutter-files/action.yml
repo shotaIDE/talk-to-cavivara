@@ -19,7 +19,7 @@ runs:
       run: |
         echo "${{ inputs.firebase-options-dart-base64-emulator }}" | base64 -d > lib/firebase_options_emulator.dart
         echo "${{ inputs.firebase-options-dart-base64-dev }}" | base64 -d > lib/firebase_options_dev.dart
-        echo "${{ inputs.firebase-options-dart-base64-dev }}" | base64 -d > lib/firebase_options_prod.dart
+        echo "${{ inputs.firebase-options-dart-base64-prod }}" | base64 -d > lib/firebase_options_prod.dart
       working-directory: ${{ inputs.working-parent-directory }}
       shell: bash
     - name: Generate automatic codes
