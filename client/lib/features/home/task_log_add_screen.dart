@@ -209,13 +209,13 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
       lastDate: DateTime.now(),
     );
 
-    if (pickedDate != null) {
+    if (pickedDate != null && mounted) {
       final TimeOfDay? pickedTime = await showTimePicker(
         context: context,
         initialTime: TimeOfDay.fromDateTime(_completedAt),
       );
 
-      if (pickedTime != null) {
+      if (pickedTime != null && mounted) {
         setState(() {
           _completedAt = DateTime(
             pickedDate.year,
