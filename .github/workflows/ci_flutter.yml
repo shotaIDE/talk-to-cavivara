@@ -30,7 +30,7 @@ jobs:
       - name: Setup Ruby
         uses: ./.github/actions/setup-ruby
         with:
-          working-directory: ./client
+          working-directory: ./client/ios
       - name: Generate uncommited Flutter files
         uses: ./.github/actions/generate-uncommited-flutter-files
         with:
