@@ -22,5 +22,5 @@ runs:
       shell: bash
     - name: Generate automatic codes
       run: bundle exec fastlane generate
-      working-directory: ${{ inputs.working-parent-directory }}${{ inputs.working-child-directory }}
+      working-directory: ${{ inputs.working-parent-directory }}/${{ inputs.working-child-directory }}
       shell: bash
