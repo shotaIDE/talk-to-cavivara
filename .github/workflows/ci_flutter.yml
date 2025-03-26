@@ -15,7 +15,7 @@ permissions:
 
 defaults:
   run:
-    working-directory: client
+    working-directory: ./client
 
 jobs:
   lint-and-test:
@@ -29,14 +29,19 @@ jobs:
           working-directory: ./client
       - name: Setup Ruby
         uses: ./.github/actions/setup-ruby
+        with:
+          working-directory: ./client
       - name: Generate uncommited Flutter files
         uses: ./.github/actions/generate-uncommited-flutter-files
         with:
           firebase-options-dart-base64-emulator: ${{ secrets.FIREBASE_OPTIONS_DART_BASE64_EMULATOR }}
           firebase-options-dart-base64-dev: ${{ secrets.FIREBASE_OPTIONS_DART_BASE64_DEV }}
           firebase-options-dart-base64-prod: ${{ secrets.FIREBASE_OPTIONS_DART_BASE64_PROD }}
+          working-parent-directory: ./client
+          working-child-directory: ios
       - name: Generate automatic codes
         run: bundle exec fastlane generate
+        working-directory: ./client/ios
       - name: Flutter analyze
         run: flutter analyze --fatal-infos > flutter-analyze.log
       - name: Run reviewdog for Flutter Analyzer
