@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/models/task.dart';
+import 'package:logging/logging.dart';
+
+final _logger = Logger('TaskRepository');
 
 final taskRepositoryProvider = Provider<TaskRepository>((ref) {
   return TaskRepository();
@@ -49,7 +52,7 @@ class TaskRepository {
       await _tasksCollection.doc(id).delete();
       return true;
     } catch (e) {
-      print('タスク削除エラー: $e');
+      _logger.warning('タスク削除エラー', e);
       return false;
     }
   }
