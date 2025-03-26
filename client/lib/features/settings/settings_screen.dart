@@ -1,13 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/models/user.dart' as app_user;
 import 'package:house_worker/repositories/user_repository.dart';
 import 'package:house_worker/services/auth_service.dart';
+import 'package:logging/logging.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
-import 'package:logging/logging.dart';
 
 // ロガーの設定
 final _logger = Logger('SettingsScreen');
@@ -425,28 +425,29 @@ class SettingsScreen extends ConsumerWidget {
   void _showAnonymousUserInfoDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('匿名ユーザー情報'),
-        content: const Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('現在、匿名ユーザーとしてログインしています。'),
-            SizedBox(height: 8),
-            Text('アカウント登録をすると、以下の機能が利用できるようになります：'),
-            SizedBox(height: 8),
-            Text('• データのバックアップと復元'),
-            Text('• 複数のデバイスでの同期'),
-            Text('• 家族や友人との家事の共有'),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('閉じる'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('匿名ユーザー情報'),
+            content: const Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('現在、匿名ユーザーとしてログインしています。'),
+                SizedBox(height: 8),
+                Text('アカウント登録をすると、以下の機能が利用できるようになります：'),
+                SizedBox(height: 8),
+                Text('• データのバックアップと復元'),
+                Text('• 複数のデバイスでの同期'),
+                Text('• 家族や友人との家事の共有'),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('閉じる'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
