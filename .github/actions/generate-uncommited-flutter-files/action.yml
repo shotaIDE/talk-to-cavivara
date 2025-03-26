@@ -6,9 +6,11 @@ inputs:
   firebase-options-dart-base64-prod:
     required: true
   working-parent-directory:
-    required: true
+    required: false
+    default: .
   working-child-directory:
-    required: true
+    required: false
+    default: ios
 
 runs:
   using: "composite"
