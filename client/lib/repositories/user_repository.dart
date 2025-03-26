@@ -46,7 +46,7 @@ class UserRepository {
       await _usersCollection.doc(id).delete();
       return true;
     } catch (e) {
-      print('ユーザー削除エラー: $e');
+      print('ユーザー削除エラー: $e'); // どうですか？
       return false;
     }
   }
