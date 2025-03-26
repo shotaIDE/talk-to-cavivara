@@ -39,9 +39,9 @@ class TaskDashboardScreen extends ConsumerWidget {
                           width: 50,
                           height: 50,
                           decoration: BoxDecoration(
-                            color: Theme.of(
-                              context,
-                            ).primaryColor.withOpacity(0.1),
+                            color: Theme.of(context).primaryColor.withAlpha(
+                              26, // 0.1 = 約10%の透明度 = 255 * 0.1 ≈ 26
+                            ),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           alignment: Alignment.center,
