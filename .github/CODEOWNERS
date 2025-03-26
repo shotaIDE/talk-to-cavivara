@@ -1,2 +1,4 @@
 /.github/ @shotaIDE
+/client/android/fastlane/ @shotaIDE
+/client/ios/fastlane/ @shotaIDE
 /infra/ @shotaIDE
