@@ -7,6 +7,10 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+import 'package:logging/logging.dart';
+
+// ロガーの設定
+final _logger = Logger('SettingsScreen');
 
 // 現在のユーザー情報を取得するプロバイダー
 final currentUserProvider = FutureProvider.autoDispose<app_user.User?>((
@@ -19,10 +23,10 @@ final currentUserProvider = FutureProvider.autoDispose<app_user.User?>((
   if (currentUser != null) {
     try {
       final user = await userRepository.getUserByUid(currentUser.uid);
-      print('ユーザー情報を取得しました: ${user?.name}');
+      _logger.info('ユーザー情報を取得しました: ${user?.name}');
       return user;
     } catch (e) {
-      print('ユーザー情報の取得に失敗しました: $e');
+      _logger.warning('ユーザー情報の取得に失敗しました: $e');
       return null;
     }
   }
