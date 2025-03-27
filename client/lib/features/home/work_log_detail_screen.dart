@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:house_worker/models/task.dart';
+import 'package:house_worker/models/work_log.dart';
 import 'package:intl/intl.dart';
 
-class TaskLogDetailScreen extends ConsumerWidget {
-  final Task task;
+class WorkLogDetailScreen extends ConsumerWidget {
+  final WorkLog workLog;
 
-  const TaskLogDetailScreen({super.key, required this.task});
+  const WorkLogDetailScreen({super.key, required this.workLog});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -28,7 +28,7 @@ class TaskLogDetailScreen extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      task.title,
+                      workLog.title,
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -37,7 +37,7 @@ class TaskLogDetailScreen extends ConsumerWidget {
                     const SizedBox(height: 16),
                     Row(
                       children: [
-                        if (task.isRecurring)
+                        if (workLog.isRecurring)
                           const Chip(
                             label: Text('繰り返し'),
                             backgroundColor: Colors.blue,
@@ -45,8 +45,8 @@ class TaskLogDetailScreen extends ConsumerWidget {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    if (task.description != null &&
-                        task.description!.isNotEmpty)
+                    if (workLog.description != null &&
+                        workLog.description!.isNotEmpty)
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -59,7 +59,7 @@ class TaskLogDetailScreen extends ConsumerWidget {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            task.description!,
+                            workLog.description!,
                             style: const TextStyle(fontSize: 16),
                           ),
                           const SizedBox(height: 16),
@@ -67,19 +67,19 @@ class TaskLogDetailScreen extends ConsumerWidget {
                       ),
                     const Divider(),
                     const SizedBox(height: 8),
-                    _buildInfoRow('作成日時', dateFormat.format(task.createdAt)),
-                    _buildInfoRow('作成者', task.createdBy),
+                    _buildInfoRow('作成日時', dateFormat.format(workLog.createdAt)),
+                    _buildInfoRow('作成者', workLog.createdBy),
                     _buildInfoRow(
                       '完了日時',
-                      task.completedAt != null
-                          ? dateFormat.format(task.completedAt!)
+                      workLog.completedAt != null
+                          ? dateFormat.format(workLog.completedAt!)
                           : '-',
                     ),
-                    _buildInfoRow('実行者', task.completedBy ?? '-'),
-                    if (task.isRecurring && task.recurringInterval != null)
+                    _buildInfoRow('実行者', workLog.completedBy ?? '-'),
+                    if (workLog.isRecurring && workLog.recurringInterval != null)
                       _buildInfoRow(
                         '繰り返し間隔',
-                        _formatDuration(task.recurringInterval!),
+                        _formatDuration(workLog.recurringInterval!),
                       ),
                   ],
                 ),
