@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Task {
+class WorkLog {
   String id;
   String title;
   String? description;
@@ -15,7 +15,7 @@ class Task {
   bool isCompleted;
   int priority; // 優先度（数値が大きいほど優先度が高い）
 
-  Task({
+  WorkLog({
     required this.id,
     required this.title,
     this.description,
@@ -41,9 +41,9 @@ class Task {
   }
 
   // Firestoreからのデータ変換
-  factory Task.fromFirestore(DocumentSnapshot doc) {
+  factory WorkLog.fromFirestore(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-    return Task(
+    return WorkLog(
       id: doc.id,
       title: data['title'] ?? '',
       description: data['description'],

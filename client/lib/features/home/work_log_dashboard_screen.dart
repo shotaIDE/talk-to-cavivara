@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:house_worker/features/home/task_log_provider.dart';
-import 'package:house_worker/models/task.dart';
+import 'package:house_worker/features/home/work_log_provider.dart';
+import 'package:house_worker/models/work_log.dart';
 import 'package:intl/intl.dart';
 
-class TaskDashboardScreen extends ConsumerWidget {
-  final Task task;
+class WorkLogDashboardScreen extends ConsumerWidget {
+  final WorkLog workLog;
 
-  const TaskDashboardScreen({super.key, required this.task});
+  const WorkLogDashboardScreen({super.key, required this.workLog});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -15,10 +15,10 @@ class TaskDashboardScreen extends ConsumerWidget {
     final dateFormat = DateFormat('yyyy/MM/dd HH:mm');
 
     // この家事に関連するログを取得
-    final taskLogsAsyncValue = ref.watch(taskLogsByTitleProvider(task.title));
+    final workLogsAsyncValue = ref.watch(workLogsByTitleProvider(workLog.title));
 
     return Scaffold(
-      appBar: AppBar(title: Text('${task.title}のダッシュボード')),
+      appBar: AppBar(title: Text('${workLog.title}のダッシュボード')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -47,13 +47,13 @@ class TaskDashboardScreen extends ConsumerWidget {
                           alignment: Alignment.center,
                           margin: const EdgeInsets.only(right: 16),
                           child: Text(
-                            task.icon,
+                            workLog.icon,
                             style: const TextStyle(fontSize: 30),
                           ),
                         ),
                         Expanded(
                           child: Text(
-                            task.title,
+                            workLog.title,
                             style: const TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
@@ -64,7 +64,7 @@ class TaskDashboardScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 24),
                     // 完了ログ件数
-                    taskLogsAsyncValue.when(
+                    workLogsAsyncValue.when(
                       data: (logs) => _buildCompletionStats(context, logs),
                       loading:
                           () =>
@@ -84,7 +84,7 @@ class TaskDashboardScreen extends ConsumerWidget {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            taskLogsAsyncValue.when(
+            workLogsAsyncValue.when(
               data:
                   (logs) =>
                       logs.isEmpty
@@ -125,7 +125,7 @@ class TaskDashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildCompletionStats(BuildContext context, List<Task> logs) {
+  Widget _buildCompletionStats(BuildContext context, List<WorkLog> logs) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(

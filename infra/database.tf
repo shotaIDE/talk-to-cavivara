@@ -37,9 +37,9 @@ resource "google_firebaserules_release" "firestore" {
   ]
 }
 
-resource "google_firestore_index" "tasks_user_created" {
+resource "google_firestore_index" "work_logs_user_created" {
   project    = google_project.default.project_id
-  collection = "tasks"
+  collection = "workLogs"
   database   = google_firestore_database.default.name
 
   fields {
