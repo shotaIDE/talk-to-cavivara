@@ -1,11 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:house_worker/features/home/task_log_add_screen.dart'; // currentHouseIdProviderをインポート
 import 'package:house_worker/models/task.dart';
 import 'package:house_worker/repositories/task_repository.dart';
 
 // 完了済みタスクの一覧を提供するプロバイダー
 final completedTasksProvider = FutureProvider<List<Task>>((ref) async {
   final taskRepository = ref.watch(taskRepositoryProvider);
-  return await taskRepository.getCompletedTasks();
+  final houseId = ref.watch(currentHouseIdProvider);
+  return await taskRepository.getCompletedTasks(houseId);
 });
 
 // タイトルでタスクを検索するプロバイダー
@@ -14,7 +16,8 @@ final taskLogsByTitleProvider = FutureProvider.family<List<Task>, String>((
   title,
 ) async {
   final taskRepository = ref.watch(taskRepositoryProvider);
-  return await taskRepository.getTasksByTitle(title);
+  final houseId = ref.watch(currentHouseIdProvider);
+  return await taskRepository.getTasksByTitle(houseId, title);
 });
 
 // 削除されたタスクを一時的に保持するプロバイダー
@@ -41,8 +44,11 @@ class TaskDeletionNotifier {
     // 削除前にタスクを保存
     ref.read(deletedTaskProvider.notifier).state = task;
 
+    // ハウスIDを取得
+    final houseId = ref.read(currentHouseIdProvider);
+
     // タスクを削除
-    await taskRepository.delete(task.id);
+    await taskRepository.delete(houseId, task.id);
 
     // 既存のタイマーがあればキャンセル
     final existingTimerId = ref.read(undoDeleteTimerProvider);
@@ -70,8 +76,11 @@ class TaskDeletionNotifier {
   Future<void> undoDelete() async {
     final deletedTask = ref.read(deletedTaskProvider);
     if (deletedTask != null) {
+      // ハウスIDを取得
+      final houseId = ref.read(currentHouseIdProvider);
+
       // タスクを復元
-      await taskRepository.save(deletedTask);
+      await taskRepository.save(houseId, deletedTask);
 
       // 状態をリセット
       ref.read(deletedTaskProvider.notifier).state = null;

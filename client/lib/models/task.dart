@@ -13,6 +13,7 @@ class Task {
   bool isRecurring;
   int? recurringIntervalMs; // Store Duration in milliseconds
   bool isCompleted;
+  int priority; // 優先度（数値が大きいほど優先度が高い）
 
   Task({
     required this.id,
@@ -27,6 +28,7 @@ class Task {
     required this.isRecurring,
     Duration? recurringInterval,
     this.isCompleted = false,
+    this.priority = 0, // デフォルト優先度
   }) : recurringIntervalMs = recurringInterval?.inMilliseconds;
 
   Duration? get recurringInterval =>
@@ -60,6 +62,7 @@ class Task {
               ? Duration(milliseconds: data['recurringIntervalMs'])
               : null,
       isCompleted: data['isCompleted'] ?? false,
+      priority: data['priority'] ?? 0, // デフォルト優先度
     );
   }
 
@@ -78,6 +81,7 @@ class Task {
       'isRecurring': isRecurring,
       'recurringIntervalMs': recurringIntervalMs,
       'isCompleted': isCompleted,
+      'priority': priority, // 優先度フィールド
     };
   }
 }

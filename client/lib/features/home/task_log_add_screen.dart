@@ -67,6 +67,13 @@ String getRandomEmoji() {
   return _emojiList[random.nextInt(_emojiList.length)];
 }
 
+// ハウスIDを提供するプロバイダー（実際のアプリケーションに合わせて調整してください）
+final currentHouseIdProvider = Provider<String>((ref) {
+  // 実際のアプリケーションでは、ユーザーが選択したハウスIDを返すロジックを実装
+  // 例: ユーザー設定から取得、状態管理から取得など
+  return 'default-house-id'; // デフォルト値（実際の実装では適切な値に置き換えてください）
+});
+
 class TaskLogAddScreen extends ConsumerStatefulWidget {
   final Task? existingTask;
 
@@ -234,6 +241,7 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
     if (_formKey.currentState!.validate()) {
       final taskRepository = ref.read(taskRepositoryProvider);
       final currentUser = ref.read(authServiceProvider).currentUser;
+      final houseId = ref.read(currentHouseIdProvider); // ハウスIDを取得
 
       if (currentUser == null) {
         ScaffoldMessenger.of(
@@ -257,8 +265,8 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
       );
 
       try {
-        // タスクを保存
-        taskRepository.save(task);
+        // タスクを保存（houseIdを指定）
+        taskRepository.save(houseId, task);
 
         // 保存成功メッセージを表示
         if (mounted) {
