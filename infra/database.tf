@@ -37,62 +37,18 @@ resource "google_firebaserules_release" "firestore" {
   ]
 }
 
-# Firestoreのインデックス定義
-# 複合インデックスの例: tasks コレクションに対して userId と createdAt でのクエリを最適化
 resource "google_firestore_index" "tasks_user_created" {
-  project     = google_project.default.project_id
-  collection  = "tasks"
-  database    = google_firestore_database.default.name
-  
+  project    = google_project.default.project_id
+  collection = "tasks"
+  database   = google_firestore_database.default.name
+
   fields {
-    field_path = "userId"
+    field_path = "title"
     order      = "ASCENDING"
   }
-  
+
   fields {
     field_path = "createdAt"
-    order      = "DESCENDING"
-  }
-
-  depends_on = [
-    google_firestore_database.default,
-  ]
-}
-
-# 複合インデックスの例: tasks コレクションに対して status と dueDate でのクエリを最適化
-resource "google_firestore_index" "tasks_status_due_date" {
-  project     = google_project.default.project_id
-  collection  = "tasks"
-  database    = google_firestore_database.default.name
-  
-  fields {
-    field_path = "status"
-    order      = "ASCENDING"
-  }
-  
-  fields {
-    field_path = "dueDate"
-    order      = "ASCENDING"
-  }
-
-  depends_on = [
-    google_firestore_database.default,
-  ]
-}
-
-# 複合インデックスの例: houses コレクションに対して ownerId と lastUpdated でのクエリを最適化
-resource "google_firestore_index" "houses_owner_updated" {
-  project     = google_project.default.project_id
-  collection  = "houses"
-  database    = google_firestore_database.default.name
-  
-  fields {
-    field_path = "ownerId"
-    order      = "ASCENDING"
-  }
-  
-  fields {
-    field_path = "lastUpdated"
     order      = "DESCENDING"
   }
 
