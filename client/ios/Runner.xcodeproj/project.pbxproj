@@ -159,13 +159,14 @@
 			buildConfigurationList = 97C147051CF9000F007C117D /* Build configuration list for PBXNativeTarget "Runner" */;
 			buildPhases = (
 				786AB1A12D96687000DC1456 /* Check Xcode version */,
+				786AB1A22D96855E00DC1456 /* Select Google Service Info File */,
 				9740EEB61CF901F6004384FC /* Run Script */,
 				97C146EA1CF9000F007C117D /* Sources */,
 				97C146EB1CF9000F007C117D /* Frameworks */,
-				EB2A191459EF3077B136258F /* FlutterFire: "flutterfire bundle-service-file" */,
 				97C146EC1CF9000F007C117D /* Resources */,
 				9705A1C41CF9048500538489 /* Embed Frameworks */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
+				EB2A191459EF3077B136258F /* FlutterFire: "flutterfire bundle-service-file" */,
 			);
 			buildRules = (
 			);
@@ -258,7 +259,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" embed_and_thin";
+			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" embed_and_thin\n";
 		};
 		786AB1A12D96687000DC1456 /* Check Xcode version */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -278,6 +279,25 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "REQUIRED_XCODE_VERSION_ACTUAL=\"$(cat $SCRIPT_INPUT_FILE_0 | tr -d . | xargs printf '%-4d' | tr ' ' 0)\"\nif [ $REQUIRED_XCODE_VERSION_ACTUAL != $XCODE_VERSION_ACTUAL ]; then\n    echo \\\"error: Detected wrong Xcode version. Expected=$REQUIRED_XCODE_VERSION_ACTUAL, actual=$XCODE_VERSION_ACTUAL.\\\"\n    exit 1\nfi\n";
+		};
+		786AB1A22D96855E00DC1456 /* Select Google Service Info File */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Select Google Service Info File";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(SRCROOT)/Runner/GoogleService-Info.plist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [[ $FLAVOR == \"emulator\" ]]; then\n  cp \"$SRCROOT/Runner/Firebase/Emulator/GoogleService-Info.plist\" \"$SRCROOT/Runner/GoogleService-Info.plist\"\nelif [[ $FLAVOR == \"dev\" ]]; then\n  cp \"$SRCROOT/Runner/Firebase/Dev/GoogleService-Info.plist\" \"$SRCROOT/Runner/GoogleService-Info.plist\"\nelif [[ $FLAVOR == \"prod\" ]]; then\n  cp \"$SRCROOT/Runner/Firebase/Prod/GoogleService-Info.plist\" \"$SRCROOT/Runner/GoogleService-Info.plist\"\nelse\n  echo \"error: \\\"$FLAVOR\\\" didn't match any flavors.\"\n  exit 1\nfi\n";
 		};
 		9740EEB61CF901F6004384FC /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
