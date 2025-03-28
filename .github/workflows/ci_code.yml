@@ -127,11 +127,10 @@ jobs:
         id: check-related-files
         uses: tj-actions/changed-files@dcc7a0cba800f454d79fff4b993e8c3555bcc0a8 # v45
         with:
-          dir_names: ./client
           files: |
-            ios/**
-            .tool-versions
-            pubspec.lock
+            client/ios/**
+            client/.tool-versions
+            client/pubspec.lock
   build-ios:
     name: Build iOS app
     needs: check-impact-ios
@@ -182,11 +181,10 @@ jobs:
         id: check-related-files
         uses: tj-actions/changed-files@dcc7a0cba800f454d79fff4b993e8c3555bcc0a8 # v45
         with:
-          dir_names: ./client
           files: |
-            android/**
-            .tool-versions
-            pubspec.lock
+            client/android/**
+            client/.tool-versions
+            client/pubspec.lock
   build-android:
     name: Build Android app
     needs: check-impact-android
