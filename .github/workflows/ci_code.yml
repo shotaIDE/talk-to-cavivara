@@ -212,11 +212,11 @@ jobs:
           working-parent-directory: ./client
           working-child-directory: android
       # 以下から修正開始
-      - name: Generate uncommited Android files for dev
-        uses: ./.github/actions/generate-uncommited-android-files-dev
+      - name: Generate uncommitted Android files for dev
+        uses: ./.github/actions/generate-uncommitted-android-files-dev
         with:
           google-service-json-base64-dev: ${{ secrets.GOOGLE_SERVICE_JSON_BASE64_DEV }}
-          working-directory: ./client/android
+          working-directory: ./client
       - name: Generate key store
         uses: ./.github/actions/generate-key-store
         with:
