@@ -158,7 +158,6 @@ jobs:
           firebase-options-dart-base64-prod: ${{ secrets.FIREBASE_OPTIONS_DART_BASE64_PROD }}
           working-parent-directory: ./client
           working-child-directory: ios
-      # 以下から修正開始
       - name: Generate uncommitted iOS files for dev
         uses: ./.github/actions/generate-uncommitted-ios-files-dev
         with:
