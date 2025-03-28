@@ -5,35 +5,6 @@ import '../../fastlane/Fastfile'
 default_platform(:ios)
 
 platform :ios do
-  desc 'Dev環境向けアプリをビルドします。'
-  lane :build_dev do
-    Dotenv.load '.env'
-
-    apple_api_issuer_id = ENV['APPLE_API_ISSUER_ID'].to_s
-    apple_api_key_id = ENV['APPLE_API_KEY_ID'].to_s
-
-    app_store_connect_api_key_path = 'ios/fastlane/app-store-connect-api-key.p8'
-    export_options_plist_path = './ios/ExportOptions.plist'
-
-    build_dev_with_no_code_sign
-
-    Dir.chdir('../../') do
-      sh(
-        'set -o pipefail && '\
-        'xcodebuild -exportArchive '\
-        '-archivePath ./build/ios/Runner.xcarchive '\
-        '-exportPath ./build/ios/ipa '\
-        "-exportOptionsPlist #{export_options_plist_path} "\
-        '-allowProvisioningUpdates '\
-        "-authenticationKeyIssuerID '#{apple_api_issuer_id}' "\
-        "-authenticationKeyID '#{apple_api_key_id}' "\
-        "-authenticationKeyPath `pwd`/#{app_store_connect_api_key_path}"
-      )
-    end
-
-    lane_context[SharedValues::IPA_OUTPUT_PATH] = '../build/ios/ipa/異世界Q.ipa'
-  end
-
   desc 'Dev環境向けアプリを電子署名なしにビルドします。'
   lane :build_dev_with_no_code_sign do
     build_flutter_with_no_code_sign
@@ -50,7 +21,7 @@ platform :ios do
     end
   end
 
-  private_lane :build_flutter_with_no_code_sign do |_options|
+  private_lane :build_flutter_with_no_code_sign do
     Dir.chdir('../../') do
       sh('flutter build ios --flavor dev --no-codesign')
     end
