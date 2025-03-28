@@ -1,6 +1,7 @@
 .ruby-version @shotaIDE
 .tool-versions @shotaIDE
 .windsurfrules @shotaIDE
+*.gradle.kts @shotaIDE
 cspell.json @shotaIDE
 fastlane/ @shotaIDE
 Gemfile @shotaIDE
