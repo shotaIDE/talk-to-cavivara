@@ -71,6 +71,7 @@ class SettingsScreen extends ConsumerWidget {
                 _buildShareAppTile(context),
                 _buildTermsOfServiceTile(context),
                 _buildPrivacyPolicyTile(context),
+                _buildLicenseTile(context),
 
                 // デバッグセクション
                 _buildSectionHeader(context, 'デバッグ'),
@@ -109,6 +110,7 @@ class SettingsScreen extends ConsumerWidget {
               _buildShareAppTile(context),
               _buildTermsOfServiceTile(context),
               _buildPrivacyPolicyTile(context),
+              _buildLicenseTile(context),
 
               // デバッグセクション
               _buildSectionHeader(context, 'デバッグ'),
@@ -290,6 +292,22 @@ class SettingsScreen extends ConsumerWidget {
             ).showSnackBar(const SnackBar(content: Text('URLを開けませんでした')));
           }
         }
+      },
+    );
+  }
+
+  Widget _buildLicenseTile(BuildContext context) {
+    return ListTile(
+      leading: const Icon(Icons.description_outlined),
+      title: const Text('ライセンス'),
+      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+      onTap: () {
+        // ライセンス表示画面へ遷移
+        showLicensePage(
+          context: context,
+          applicationName: 'House Worker',
+          applicationLegalese: ' 2025 House Worker',
+        );
       },
     );
   }
