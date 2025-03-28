@@ -3,7 +3,7 @@
     { "name": "domain", "path": "./dictionary/domain.txt" },
     { "name": "dependency", "path": "./dictionary/dependency.txt" }
   ],
-  "dictionaries": ["isekai", "dependency"],
+  "dictionaries": ["domain", "dependency"],
   "ignorePaths": [
     "*.freezed.dart",
     "*.g.dart",
