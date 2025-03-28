@@ -8,7 +8,7 @@ platform :android do
   desc 'Dev環境向けアプリ(App Bundle)をビルドします。'
   lane :build_dev do
     Dir.chdir('../../') do
-      sh('flutter build appbundle --flavor dev --dart-define-from-file dart-defines_dev.json')
+      sh('flutter build appbundle --flavor dev')
     end
 
     lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH] = '../build/app/outputs/bundle/devRelease/app-dev-release.aab'
