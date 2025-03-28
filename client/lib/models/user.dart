@@ -1,23 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:json_annotation/json_annotation.dart';
 
-class User {
-  String id; // Firestore ドキュメントID
-  String uid; // Firebase UID
-  String name;
-  String email;
-  List<String> householdIds;
-  DateTime createdAt;
-  bool isPremium;
+part 'user.freezed.dart';
+part 'user.g.dart';
 
-  User({
-    required this.id,
-    required this.uid,
-    required this.name,
-    required this.email,
-    required this.householdIds,
-    required this.createdAt,
-    this.isPremium = false,
-  });
+@freezed
+class User with _$User {
+  const User._();
+
+  const factory User({
+    required String id,
+    required String uid,
+    required String name,
+    required String email,
+    required List<String> householdIds,
+    required DateTime createdAt,
+    @Default(false) bool isPremium,
+  }) = _User;
 
   // Firestoreからのデータ変換
   factory User.fromFirestore(DocumentSnapshot doc) {
@@ -44,4 +44,7 @@ class User {
       'isPremium': isPremium,
     };
   }
+
+  // JSONからの変換（オプション）
+  factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
 }
