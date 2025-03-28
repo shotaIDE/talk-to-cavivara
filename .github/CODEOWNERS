@@ -6,4 +6,5 @@ Gemfile @shotaIDE
 pubspec.yaml @shotaIDE
 
 /.github/ @shotaIDE
+/client/libs/models/ @shotaIDE
 /infra/ @shotaIDE

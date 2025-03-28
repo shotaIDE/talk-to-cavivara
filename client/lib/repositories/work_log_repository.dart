@@ -153,13 +153,16 @@ class WorkLogRepository {
     WorkLog workLog,
     String userId,
   ) async {
-    workLog.isCompleted = true;
-    workLog.completedAt = DateTime.now();
-    workLog.completedBy = userId;
+    // freezedモデルはイミュータブルなので、copyWithを使用して新しいインスタンスを作成
+    final completedWorkLog = workLog.copyWith(
+      isCompleted: true,
+      completedAt: DateTime.now(),
+      completedBy: userId,
+    );
 
     await _getWorkLogsCollection(
       houseId,
-    ).doc(workLog.id).update(workLog.toFirestore());
+    ).doc(workLog.id).update(completedWorkLog.toFirestore());
   }
 
   Future<List<WorkLog>> getWorkLogsByTitle(String houseId, String title) async {

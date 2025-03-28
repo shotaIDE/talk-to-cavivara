@@ -1,44 +1,33 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-class WorkLog {
-  String id;
-  String title;
-  String? description;
-  String icon; // アイコンフィールド（1文字の絵文字）
-  DateTime createdAt;
-  DateTime? completedAt;
-  String createdBy;
-  String? completedBy;
-  bool isShared;
-  bool isRecurring;
-  int? recurringIntervalMs; // Store Duration in milliseconds
-  bool isCompleted;
-  int priority; // 優先度（数値が大きいほど優先度が高い）
+part 'work_log.freezed.dart';
+part 'work_log.g.dart';
 
-  WorkLog({
-    required this.id,
-    required this.title,
-    this.description,
-    required this.icon, // アイコンパラメータ
-    required this.createdAt,
-    this.completedAt,
-    required this.createdBy,
-    this.completedBy,
-    required this.isShared,
-    required this.isRecurring,
-    Duration? recurringInterval,
-    this.isCompleted = false,
-    this.priority = 0, // デフォルト優先度
-  }) : recurringIntervalMs = recurringInterval?.inMilliseconds;
+@freezed
+class WorkLog with _$WorkLog {
+  const WorkLog._();
+
+  const factory WorkLog({
+    required String id,
+    required String title,
+    String? description,
+    required String icon,
+    required DateTime createdAt,
+    DateTime? completedAt,
+    required String createdBy,
+    String? completedBy,
+    required bool isShared,
+    required bool isRecurring,
+    int? recurringIntervalMs,
+    @Default(false) bool isCompleted,
+    @Default(0) int priority,
+  }) = _WorkLog;
 
   Duration? get recurringInterval =>
       recurringIntervalMs != null
           ? Duration(milliseconds: recurringIntervalMs!)
           : null;
-
-  void setRecurringInterval(Duration? value) {
-    recurringIntervalMs = value?.inMilliseconds;
-  }
 
   // Firestoreからのデータ変換
   factory WorkLog.fromFirestore(DocumentSnapshot doc) {
@@ -57,10 +46,7 @@ class WorkLog {
       completedBy: data['completedBy'],
       isShared: data['isShared'] ?? false,
       isRecurring: data['isRecurring'] ?? false,
-      recurringInterval:
-          data['recurringIntervalMs'] != null
-              ? Duration(milliseconds: data['recurringIntervalMs'])
-              : null,
+      recurringIntervalMs: data['recurringIntervalMs'],
       isCompleted: data['isCompleted'] ?? false,
       priority: data['priority'] ?? 0, // デフォルト優先度
     );
@@ -84,4 +70,8 @@ class WorkLog {
       'priority': priority, // 優先度フィールド
     };
   }
+
+  // JSONからの変換（オプション）
+  factory WorkLog.fromJson(Map<String, dynamic> json) =>
+      _$WorkLogFromJson(json);
 }
