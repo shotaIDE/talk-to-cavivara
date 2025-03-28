@@ -22,15 +22,15 @@ void _setupLogging() {
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((record) {
     // 開発環境では詳細なログを出力
-    final messsage =
+    final message =
         '${record.level.name}: ${record.time}: '
         '${record.loggerName}: ${record.message}';
 
     // エラーと警告はスタックトレースも出力
     if (record.level >= Level.WARNING && record.error != null) {
-      debugPrint('$messsage\nError: ${record.error}\n${record.stackTrace}');
+      debugPrint('$message\nError: ${record.error}\n${record.stackTrace}');
     } else {
-      debugPrint(messsage);
+      debugPrint(message);
     }
   });
 
