@@ -1,0 +1,5 @@
+# Androidはベクター画像を用い、また、ライブラリがベクター画像に対応していないため、ライブラリを使わずに設定する。
+# https://github.com/fluttercommunity/flutter_launcher_icons/issues/91
+flutter_launcher_icons:
+  ios: true
+  image_path: "assets/launcher-icon/launcher-icon-ios_dev.png"
