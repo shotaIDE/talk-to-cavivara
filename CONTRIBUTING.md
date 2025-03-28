@@ -53,7 +53,7 @@ APPLICATION_ID_BASE="ide.shota.colomney.HouseWorker"
 
 ### アイコンの設定
 
-iOS は flutter_launcher_icons ライブラリを利用して生成します。
+iOS、Android ともに、flutter_launcher_icons ライブラリを利用して生成します。
 ライブラリが参照する設定ファイルは、以下の通りです。
 
 - [flutter_launcher_icons-emulator.yaml](client/flutter_launcher_icons-emulator.yaml)
