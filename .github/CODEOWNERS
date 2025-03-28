@@ -7,4 +7,5 @@ pubspec.yaml @shotaIDE
 
 /.github/ @shotaIDE
 /client/libs/models/ @shotaIDE
+/docs/ @shotaIDE
 /infra/ @shotaIDE
