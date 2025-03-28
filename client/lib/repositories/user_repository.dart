@@ -55,13 +55,16 @@ class UserRepository {
 
   // Firebase UIDでユーザーを取得
   Future<app_user.User?> getUserByUid(String uid) async {
-    QuerySnapshot querySnapshot =
-        await _usersCollection.where('uid', isEqualTo: uid).limit(1).get();
-
-    if (querySnapshot.docs.isNotEmpty) {
-      return app_user.User.fromFirestore(querySnapshot.docs.first);
+    try {
+      DocumentSnapshot doc = await _usersCollection.doc(uid).get();
+      if (doc.exists) {
+        return app_user.User.fromFirestore(doc);
+      }
+      return null;
+    } catch (e) {
+      _logger.warning('UIDによるユーザー取得エラー: $e');
+      return null;
     }
-    return null;
   }
 
   // ユーザーを作成

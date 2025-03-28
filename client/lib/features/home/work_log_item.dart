@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:house_worker/features/home/task_log_add_screen.dart';
-import 'package:house_worker/features/home/task_log_provider.dart';
-import 'package:house_worker/models/task.dart';
+import 'package:house_worker/features/home/work_log_add_screen.dart';
+import 'package:house_worker/features/home/work_log_provider.dart';
+import 'package:house_worker/models/work_log.dart';
 import 'package:intl/intl.dart';
 
-class TaskLogItem extends ConsumerWidget {
-  final Task task;
+class WorkLogItem extends ConsumerWidget {
+  final WorkLog workLog;
   final VoidCallback onTap;
 
-  const TaskLogItem({super.key, required this.task, required this.onTap});
+  const WorkLogItem({super.key, required this.workLog, required this.onTap});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -17,7 +17,7 @@ class TaskLogItem extends ConsumerWidget {
     final dateFormat = DateFormat('yyyy/MM/dd HH:mm');
 
     return Dismissible(
-      key: Key('task-${task.id}'),
+      key: Key('workLog-${workLog.id}'),
       background: Container(
         color: Colors.red,
         alignment: Alignment.centerRight,
@@ -26,8 +26,8 @@ class TaskLogItem extends ConsumerWidget {
       ),
       direction: DismissDirection.endToStart,
       onDismissed: (direction) {
-        // タスク削除処理
-        ref.read(taskDeletionProvider).deleteTask(task);
+        // ワークログ削除処理
+        ref.read(workLogDeletionProvider).deleteWorkLog(workLog);
 
         // スナックバーを表示
         ScaffoldMessenger.of(context).showSnackBar(
@@ -43,7 +43,7 @@ class TaskLogItem extends ConsumerWidget {
               label: '元に戻す',
               onPressed: () {
                 // 削除を取り消す
-                ref.read(taskDeletionProvider).undoDelete();
+                ref.read(workLogDeletionProvider).undoDelete();
               },
             ),
             duration: const Duration(seconds: 5),
@@ -79,13 +79,13 @@ class TaskLogItem extends ConsumerWidget {
                       alignment: Alignment.center,
                       margin: const EdgeInsets.only(right: 12),
                       child: Text(
-                        task.icon,
+                        workLog.icon,
                         style: const TextStyle(fontSize: 24),
                       ),
                     ),
                     Expanded(
                       child: Text(
-                        task.title,
+                        workLog.title,
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -97,12 +97,12 @@ class TaskLogItem extends ConsumerWidget {
                       icon: const Icon(Icons.add_circle_outline),
                       tooltip: 'この家事を記録する',
                       onPressed: () {
-                        // 家事ログ追加画面に遷移し、タスク情報を渡す
+                        // 家事ログ追加画面に遷移し、ワークログ情報を渡す
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder:
                                 (context) =>
-                                    TaskLogAddScreen.fromExistingTask(task),
+                                    WorkLogAddScreen.fromExistingWorkLog(workLog),
                           ),
                         );
                       },
@@ -116,7 +116,7 @@ class TaskLogItem extends ConsumerWidget {
                     Flexible(
                       flex: 1,
                       child: Text(
-                        '完了: ${dateFormat.format(task.completedAt ?? DateTime.now())}',
+                        '完了: ${dateFormat.format(workLog.completedAt ?? DateTime.now())}',
                         style: const TextStyle(
                           fontSize: 14,
                           color: Colors.grey,
@@ -128,7 +128,7 @@ class TaskLogItem extends ConsumerWidget {
                     Flexible(
                       flex: 1,
                       child: Text(
-                        '実行者: ${task.completedBy ?? "不明"}',
+                        '実行者: ${workLog.completedBy ?? "不明"}',
                         style: const TextStyle(
                           fontSize: 14,
                           color: Colors.grey,

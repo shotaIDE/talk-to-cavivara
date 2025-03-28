@@ -2,8 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:house_worker/models/task.dart';
-import 'package:house_worker/repositories/task_repository.dart';
+import 'package:house_worker/models/work_log.dart';
+import 'package:house_worker/repositories/work_log_repository.dart';
 import 'package:house_worker/services/auth_service.dart';
 import 'package:intl/intl.dart';
 
@@ -67,21 +67,28 @@ String getRandomEmoji() {
   return _emojiList[random.nextInt(_emojiList.length)];
 }
 
-class TaskLogAddScreen extends ConsumerStatefulWidget {
-  final Task? existingTask;
+// ハウスIDを提供するプロバイダー（実際のアプリケーションに合わせて調整してください）
+final currentHouseIdProvider = Provider<String>((ref) {
+  // 実際のアプリケーションでは、ユーザーが選択したハウスIDを返すロジックを実装
+  // 例: ユーザー設定から取得、状態管理から取得など
+  return 'default-house-id'; // デフォルト値（実際の実装では適切な値に置き換えてください）
+});
 
-  const TaskLogAddScreen({super.key, this.existingTask});
+class WorkLogAddScreen extends ConsumerStatefulWidget {
+  final WorkLog? existingWorkLog;
 
-  // 既存のタスクから新しいタスクを作成するためのファクトリコンストラクタ
-  factory TaskLogAddScreen.fromExistingTask(Task task) {
-    return TaskLogAddScreen(existingTask: task);
+  const WorkLogAddScreen({super.key, this.existingWorkLog});
+
+  // 既存のワークログから新しいワークログを作成するためのファクトリコンストラクタ
+  factory WorkLogAddScreen.fromExistingWorkLog(WorkLog workLog) {
+    return WorkLogAddScreen(existingWorkLog: workLog);
   }
 
   @override
-  ConsumerState<TaskLogAddScreen> createState() => _TaskLogAddScreenState();
+  ConsumerState<WorkLogAddScreen> createState() => _WorkLogAddScreenState();
 }
 
-class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
+class _WorkLogAddScreenState extends ConsumerState<WorkLogAddScreen> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _titleController;
   late final TextEditingController _iconController;
@@ -91,12 +98,12 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
   @override
   void initState() {
     super.initState();
-    // 既存のタスクがある場合は、そのデータを初期値として設定
-    if (widget.existingTask != null) {
+    // 既存のワークログがある場合は、そのデータを初期値として設定
+    if (widget.existingWorkLog != null) {
       _titleController = TextEditingController(
-        text: widget.existingTask!.title,
+        text: widget.existingWorkLog!.title,
       );
-      _iconController = TextEditingController(text: widget.existingTask!.icon);
+      _iconController = TextEditingController(text: widget.existingWorkLog!.icon);
       _completedAt = DateTime.now(); // 現在時刻を設定
     } else {
       _titleController = TextEditingController();
@@ -120,7 +127,7 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.existingTask != null ? '家事ログを記録' : '家事ログ追加'),
+        title: Text(widget.existingWorkLog != null ? '家事ログを記録' : '家事ログ追加'),
       ),
       body: Form(
         key: _formKey,
@@ -232,8 +239,9 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
-      final taskRepository = ref.read(taskRepositoryProvider);
+      final workLogRepository = ref.read(workLogRepositoryProvider);
       final currentUser = ref.read(authServiceProvider).currentUser;
+      final houseId = ref.read(currentHouseIdProvider); // ハウスIDを取得
 
       if (currentUser == null) {
         ScaffoldMessenger.of(
@@ -242,9 +250,9 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
         return;
       }
 
-      // 既存のタスクを元にした場合でも、常に新規タスクとして登録するためIDは空文字列を指定
-      final task = Task(
-        id: '', // 常に新規タスクとして登録するため空文字列を指定
+      // 既存のワークログを元にした場合でも、常に新規ワークログとして登録するためIDは空文字列を指定
+      final workLog = WorkLog(
+        id: '', // 常に新規ワークログとして登録するため空文字列を指定
         title: _titleController.text,
         icon: _iconController.text, // アイコンを設定
         createdAt: DateTime.now(),
@@ -257,8 +265,8 @@ class _TaskLogAddScreenState extends ConsumerState<TaskLogAddScreen> {
       );
 
       try {
-        // タスクを保存
-        taskRepository.save(task);
+        // ワークログを保存（houseIdを指定）
+        workLogRepository.save(houseId, workLog);
 
         // 保存成功メッセージを表示
         if (mounted) {

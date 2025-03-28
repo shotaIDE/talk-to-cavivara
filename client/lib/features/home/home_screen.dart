@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:house_worker/features/home/task_dashboard_screen.dart';
-import 'package:house_worker/features/home/task_log_add_screen.dart';
-import 'package:house_worker/features/home/task_log_item.dart';
-import 'package:house_worker/features/home/task_log_provider.dart';
+import 'package:house_worker/features/home/work_log_add_screen.dart';
+import 'package:house_worker/features/home/work_log_dashboard_screen.dart';
+import 'package:house_worker/features/home/work_log_item.dart';
+import 'package:house_worker/features/home/work_log_provider.dart';
 import 'package:house_worker/features/settings/settings_screen.dart';
 import 'package:house_worker/services/auth_service.dart';
 
@@ -12,8 +12,8 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // 完了済みタスクを取得
-    final completedTasksAsync = ref.watch(completedTasksProvider);
+    // 完了済みワークログを取得
+    final completedWorkLogsAsync = ref.watch(completedWorkLogsProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -38,9 +38,9 @@ class HomeScreen extends ConsumerWidget {
       body: Column(
         children: [
           Expanded(
-            child: completedTasksAsync.when(
-              data: (tasks) {
-                if (tasks.isEmpty) {
+            child: completedWorkLogsAsync.when(
+              data: (workLogs) {
+                if (workLogs.isEmpty) {
                   return const Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -64,20 +64,21 @@ class HomeScreen extends ConsumerWidget {
                 return RefreshIndicator(
                   onRefresh: () async {
                     // プロバイダーを更新して最新のデータを取得
-                    ref.invalidate(completedTasksProvider);
+                    ref.invalidate(completedWorkLogsProvider);
                   },
                   child: ListView.builder(
-                    itemCount: tasks.length,
+                    itemCount: workLogs.length,
                     itemBuilder: (context, index) {
-                      final task = tasks[index];
-                      return TaskLogItem(
-                        task: task,
+                      final workLog = workLogs[index];
+                      return WorkLogItem(
+                        workLog: workLog,
                         onTap: () {
                           // 家事ダッシュボード画面に遷移
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder:
-                                  (context) => TaskDashboardScreen(task: task),
+                                  (context) =>
+                                      WorkLogDashboardScreen(workLog: workLog),
                             ),
                           );
                         },
@@ -96,17 +97,17 @@ class HomeScreen extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // タスク追加画面に遷移
+          // ワークログ追加画面に遷移
           Navigator.of(context)
               .push(
                 MaterialPageRoute(
-                  builder: (context) => const TaskLogAddScreen(),
+                  builder: (context) => const WorkLogAddScreen(),
                 ),
               )
               .then((updated) {
                 // 家事ログが追加された場合（updatedがtrue）、データを更新
                 if (updated == true) {
-                  ref.invalidate(completedTasksProvider);
+                  ref.invalidate(completedWorkLogsProvider);
                 }
               });
         },

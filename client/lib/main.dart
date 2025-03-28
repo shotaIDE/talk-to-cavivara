@@ -140,6 +140,10 @@ void main() async {
       setupFirebaseEmulators(emulatorHost);
       _logger.info('Firebase Emulator設定を適用しました');
     }
+
+    // 既存ユーザーのログイン状態を確認してUIDをログ出力
+    final container = ProviderContainer();
+    container.read(authServiceProvider).checkCurrentUser();
   } catch (e) {
     _logger.severe('Failed to initialize Firebase', e);
     // Firebase が初期化できなくても、アプリを続行する
