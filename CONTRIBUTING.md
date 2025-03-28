@@ -54,9 +54,15 @@ APPLICATION_ID_BASE="ide.shota.colomney.HouseWorker"
 ### アイコンの設定
 
 iOS は flutter_launcher_icons ライブラリを利用して生成します。
-設定ファイルは `flutter_launcher_icons-emulator.yaml` などのファイルを用います。
+ライブラリが参照する設定ファイルは、以下の通りです。
 
-https://pub.dev/packages/flutter_launcher_icons
+- [flutter_launcher_icons-emulator.yaml](client/flutter_launcher_icons-emulator.yaml)
+- [flutter_launcher_icons-dev.yaml](client/flutter_launcher_icons-dev.yaml)
+- [flutter_launcher_icons-prod.yaml](client/flutter_launcher_icons-prod.yaml)
+
+以下を参考に設定してください。
+
+https://pub.dev/packages/flutter_launcher_icons#2-run-the-package
 
 ##### Emulator 環境の設定
 
