@@ -31,6 +31,27 @@ Flutterの依存関係をインストールします。
 
 ----
 
+
+## iOS
+
+### ios build_dev
+
+```sh
+[bundle exec] fastlane ios build_dev
+```
+
+Dev環境向けアプリをビルドします。
+
+### ios build_dev_with_no_code_sign
+
+```sh
+[bundle exec] fastlane ios build_dev_with_no_code_sign
+```
+
+Dev環境向けアプリを電子署名なしにビルドします。
+
+----
+
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.
 
 More information about _fastlane_ can be found on [fastlane.tools](https://fastlane.tools).
