@@ -18,7 +18,7 @@ defaults:
     working-directory: ./client
 
 jobs:
-  check-spell:
+  check-code-spell:
     name: Check code spell
     permissions:
       contents: read
