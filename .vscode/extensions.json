@@ -1,3 +1,7 @@
 {
-  "recommendations": ["esbenp.prettier-vscode", "vscjava.vscode-gradle"]
+  "recommendations": [
+    "esbenp.prettier-vscode",
+    "vscjava.vscode-gradle",
+    "streetsidesoftware.code-spell-checker"
+  ]
 }

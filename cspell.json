@@ -1,0 +1,16 @@
+{
+  "dictionaryDefinitions": [
+    { "name": "domain", "path": "./dictionary/domain.txt" },
+    { "name": "dependency", "path": "./dictionary/dependency.txt" }
+  ],
+  "dictionaries": ["isekai", "dependency"],
+  "ignorePaths": [
+    "*.freezed.dart",
+    "*.g.dart",
+    "client/ios/Pods",
+    "client/lib/firebase_options_*.dart",
+    "generated_plugin_registrant.dart",
+    "GeneratedPluginRegistrant.swift"
+  ],
+  "enabledLanguageIds": ["dart", "swift", "kotlin"]
+}
