@@ -2,10 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'work_log.freezed.dart';
-part 'work_log.g.dart';
 
 @freezed
-class WorkLog with _$WorkLog {
+abstract class WorkLog with _$WorkLog {
   const WorkLog._();
 
   const factory WorkLog({
@@ -70,8 +69,4 @@ class WorkLog with _$WorkLog {
       'priority': priority, // 優先度フィールド
     };
   }
-
-  // JSONからの変換（オプション）
-  factory WorkLog.fromJson(Map<String, dynamic> json) =>
-      _$WorkLogFromJson(json);
 }
