@@ -159,12 +159,14 @@ jobs:
           working-parent-directory: ./client
           working-child-directory: ios
       # 以下から修正開始
-      - name: Generate uncommited iOS files for dev
-        uses: ./.github/actions/generate-uncommited-ios-files-dev
+      - name: Generate uncommitted iOS files for dev
+        uses: ./.github/actions/generate-uncommitted-ios-files-dev
         with:
           google-service-plist-base64-dev: ${{ secrets.GOOGLE_SERVICE_PLIST_BASE64_DEV }}
+          working-directory: ./client
       - name: iOS build
         run: bundle exec fastlane ios build_dev_with_no_code_sign
+        working-directory: ./client/ios
 
   check-impact-android:
     name: Check impact for building Android

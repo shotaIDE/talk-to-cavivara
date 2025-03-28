@@ -1,0 +1,14 @@
+inputs:
+  google-service-plist-base64-dev:
+    required: true
+  working-directory:
+    required: false
+    default: ./
+
+runs:
+  using: "composite"
+  steps:
+    - name: Generate Google service plist file
+      run: echo "${{ inputs.google-service-plist-base64-dev }}" | base64 -d > ios/Runner/Firebase/Dev/GoogleService-Info.plist
+      working-directory: ${{ inputs.working-directory }}
+      shell: bash
