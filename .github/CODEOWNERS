@@ -1,11 +1,13 @@
 .ruby-version @shotaIDE
 .tool-versions @shotaIDE
 .windsurfrules @shotaIDE
+cspell.json @shotaIDE
 fastlane/ @shotaIDE
 Gemfile @shotaIDE
 pubspec.yaml @shotaIDE
 
 /.github/ @shotaIDE
+/.vscode/ @shotaIDE
 /client/libs/models/ @shotaIDE
 /docs/ @shotaIDE
 /infra/ @shotaIDE
