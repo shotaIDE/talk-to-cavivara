@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:json_annotation/json_annotation.dart';
 
 part 'work_log.freezed.dart';
 part 'work_log.g.dart';
@@ -73,5 +72,6 @@ class WorkLog with _$WorkLog {
   }
 
   // JSONからの変換（オプション）
-  factory WorkLog.fromJson(Map<String, dynamic> json) => _$WorkLogFromJson(json);
+  factory WorkLog.fromJson(Map<String, dynamic> json) =>
+      _$WorkLogFromJson(json);
 }
