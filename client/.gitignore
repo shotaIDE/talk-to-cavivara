@@ -1,10 +1,12 @@
 *.freezed.dart
 *.g.dart
+*.mocks.dart
 google-services.json
 GoogleService-Info.plist
 
 /android/fastlane/report.xml
 /emulator-config.json
+/flutter-test-results.log
 /ios/fastlane/report.xml
 /lib/firebase_options*.dart
 
