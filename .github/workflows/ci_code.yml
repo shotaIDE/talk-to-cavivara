@@ -127,6 +127,7 @@ jobs:
         id: check-related-files
         uses: tj-actions/changed-files@dcc7a0cba800f454d79fff4b993e8c3555bcc0a8 # v45
         with:
+          dir_names: ./client
           files: |
             ios/**
             .tool-versions
@@ -181,11 +182,11 @@ jobs:
         id: check-related-files
         uses: tj-actions/changed-files@dcc7a0cba800f454d79fff4b993e8c3555bcc0a8 # v45
         with:
+          dir_names: ./client
           files: |
             android/**
             .tool-versions
             pubspec.lock
-          dir_names: ./client
   build-android:
     name: Build Android app
     needs: check-impact-android
