@@ -1,6 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:house_worker/models/work_log.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
+
+@GenerateMocks([DocumentSnapshot])
+import 'work_log_test.mocks.dart';
 
 void main() {
   group('WorkLog Model Tests', () {
@@ -149,7 +154,9 @@ void main() {
         'priority': testPriority,
       };
 
-      final mockDocSnapshot = MockDocumentSnapshot(testId, mockData);
+      final mockDocSnapshot = MockDocumentSnapshot();
+      when(mockDocSnapshot.id).thenReturn(testId);
+      when(mockDocSnapshot.data()).thenReturn(mockData);
 
       final workLog = WorkLog.fromFirestore(mockDocSnapshot);
 
@@ -176,7 +183,9 @@ void main() {
         'createdBy': testCreatedBy,
       };
 
-      final mockDocSnapshot = MockDocumentSnapshot(testId, mockIncompleteData);
+      final mockDocSnapshot = MockDocumentSnapshot();
+      when(mockDocSnapshot.id).thenReturn(testId);
+      when(mockDocSnapshot.data()).thenReturn(mockIncompleteData);
 
       final workLog = WorkLog.fromFirestore(mockDocSnapshot);
 
@@ -195,22 +204,4 @@ void main() {
       expect(workLog.priority, equals(0));
     });
   });
-}
-
-// FirestoreのDocumentSnapshotをモックするためのクラス
-class MockDocumentSnapshot implements DocumentSnapshot {
-  final String _id;
-  final Map<String, dynamic> _data;
-
-  MockDocumentSnapshot(this._id, this._data);
-
-  @override
-  String get id => _id;
-
-  @override
-  Map<String, dynamic> data() => _data;
-
-  // 他のDocumentSnapshotメソッドは実装しない（テストに必要ないため）
-  @override
-  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }

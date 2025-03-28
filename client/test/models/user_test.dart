@@ -1,6 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:house_worker/models/user.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
+
+@GenerateMocks([DocumentSnapshot])
+import 'user_test.mocks.dart';
 
 void main() {
   group('User Model Tests', () {
@@ -58,7 +63,7 @@ void main() {
       );
 
       final firestoreMap = user.toFirestore();
-      
+
       expect(firestoreMap['uid'], equals(testUid));
       expect(firestoreMap['name'], equals(testName));
       expect(firestoreMap['email'], equals(testEmail));
@@ -78,10 +83,12 @@ void main() {
         'isPremium': testIsPremium,
       };
 
-      final mockDocSnapshot = MockDocumentSnapshot(testId, mockData);
-      
+      final mockDocSnapshot = MockDocumentSnapshot();
+      when(mockDocSnapshot.id).thenReturn(testId);
+      when(mockDocSnapshot.data()).thenReturn(mockData);
+
       final user = User.fromFirestore(mockDocSnapshot);
-      
+
       expect(user.id, equals(testId));
       expect(user.uid, equals(testUid));
       expect(user.name, equals(testName));
@@ -98,10 +105,12 @@ void main() {
         'createdAt': Timestamp.fromDate(testCreatedAt),
       };
 
-      final mockDocSnapshot = MockDocumentSnapshot(testId, mockIncompleteData);
-      
+      final mockDocSnapshot = MockDocumentSnapshot();
+      when(mockDocSnapshot.id).thenReturn(testId);
+      when(mockDocSnapshot.data()).thenReturn(mockIncompleteData);
+
       final user = User.fromFirestore(mockDocSnapshot);
-      
+
       expect(user.id, equals(testId));
       expect(user.uid, equals(testUid));
       expect(user.name, equals(''));
@@ -111,22 +120,4 @@ void main() {
       expect(user.isPremium, equals(false));
     });
   });
-}
-
-// FirestoreのDocumentSnapshotをモックするためのクラス
-class MockDocumentSnapshot implements DocumentSnapshot {
-  final String _id;
-  final Map<String, dynamic> _data;
-
-  MockDocumentSnapshot(this._id, this._data);
-
-  @override
-  String get id => _id;
-
-  @override
-  Map<String, dynamic> data() => _data;
-
-  // 他のDocumentSnapshotメソッドは実装しない（テストに必要ないため）
-  @override
-  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
