@@ -10,32 +10,32 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  riverpod: ^2.5.1
-  flutter_riverpod: ^2.5.1
-  path_provider: ^2.1.2
-  flutter_slidable: ^3.0.1
-  google_fonts: ^6.1.0
-  intl: ^0.19.0
-  firebase_core: ^2.24.2
-  firebase_auth: ^4.16.0
-  cloud_firestore: ^4.14.0
-  logging: ^1.2.0
-  package_info_plus: ^5.0.1
-  share_plus: ^7.2.1
-  url_launcher: ^6.2.5
-  freezed_annotation: ^2.4.1
-  json_annotation: ^4.8.1
-  cupertino_icons: ^1.0.8
+  riverpod:
+  flutter_riverpod:
+  path_provider:
+  flutter_slidable:
+  google_fonts:
+  intl:
+  firebase_core:
+  firebase_auth:
+  cloud_firestore:
+  logging:
+  package_info_plus:
+  share_plus:
+  url_launcher:
+  freezed_annotation:
+  json_annotation:
+  cupertino_icons:
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  build_runner: ^2.4.8
-  freezed: ^2.4.5
-  json_serializable: ^6.7.1
-  mockito: ^5.4.4
-  flutter_lints: ^5.0.0
+  build_runner:
+  freezed:
+  json_serializable:
+  mockito:
+  flutter_lints:
 
 flutter:
   uses-material-design: true
