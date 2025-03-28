@@ -34,7 +34,7 @@ android {
     defaultConfig {
         // applicationId は flavorDimensions で上書きされます
         applicationId = "ide.shota.colomney.HouseWorker"
-        minSdk = flutter.minSdkVersion
+        minSdk = 23
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
