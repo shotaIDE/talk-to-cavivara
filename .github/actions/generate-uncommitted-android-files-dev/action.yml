@@ -9,6 +9,6 @@ runs:
   using: "composite"
   steps:
     - name: Generate Google service json file
-      shell: bash
       run: echo "${{ inputs.google-service-json-base64-dev }}" | base64 -d > android/app/src/dev/google-services.json
       working-directory: ${{ inputs.working-directory }}
+      shell: bash
