@@ -116,6 +116,12 @@ flutterfire config \
 
 https://docs.flutter.dev/deployment/cd#fastlane
 
+## Android のリリースビルドの設定
+
+以下を参考に設定します。
+
+https://docs.flutter.dev/deployment/android#sign-the-app
+
 ## Emulator の設定
 
 プロジェクトでは Emulator のホスト IP を`dart-define-from-file`から読み込む方法を採用しています。
