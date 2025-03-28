@@ -24,7 +24,6 @@ dependencies:
   share_plus:
   url_launcher:
   freezed_annotation:
-  json_annotation:
   cupertino_icons:
 
 dev_dependencies:
@@ -33,7 +32,6 @@ dev_dependencies:
 
   build_runner:
   freezed:
-  json_serializable:
   mockito:
   flutter_lints:
 
