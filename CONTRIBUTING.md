@@ -51,6 +51,13 @@ APPLICATION_ID_BASE="ide.shota.colomney.HouseWorker"
 
 各環境ごとに以下の変数を設定し、共通のコマンドを実行します：
 
+### アイコンの設定
+
+iOS は flutter_launcher_icons ライブラリを利用して生成します。
+設定ファイルは `flutter_launcher_icons-emulator.yaml` などのファイルを用います。
+
+https://pub.dev/packages/flutter_launcher_icons
+
 ##### Emulator 環境の設定
 
 ```shell
