@@ -106,9 +106,11 @@ jobs:
           working-child-directory: ios
       - name: Run Flutter test
         run: flutter test --file-reporter json:flutter-test-results.log
+        working-directory: ./client
       - uses: dorny/test-reporter@6e6a65b7a0bd2c9197df7d0ae36ac5cee784230c # v2
         if: success() || failure()
         with:
           name: "Test Flutter results"
           path: "flutter-test-results.log"
           reporter: "flutter-json"
+          working-directory: ./client
