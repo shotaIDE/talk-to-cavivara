@@ -9,6 +9,7 @@ runs:
     - name: Get Xcode version
       id: get-xcode-version
       run: |
+        cd ios
         xcode_version="$(cat .xcode-version)"
         echo "xcode-version=$xcode_version" >> $GITHUB_OUTPUT
       working-directory: ${{ inputs.working-directory }}
