@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -158,6 +158,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 97C147051CF9000F007C117D /* Build configuration list for PBXNativeTarget "Runner" */;
 			buildPhases = (
+				786AB1A12D96687000DC1456 /* Check Xcode version */,
 				9740EEB61CF901F6004384FC /* Run Script */,
 				97C146EA1CF9000F007C117D /* Sources */,
 				97C146EB1CF9000F007C117D /* Frameworks */,
@@ -258,6 +259,25 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" embed_and_thin";
+		};
+		786AB1A12D96687000DC1456 /* Check Xcode version */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/.xcode-version",
+			);
+			name = "Check Xcode version";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "REQUIRED_XCODE_VERSION_ACTUAL=\"$(cat $SCRIPT_INPUT_FILE_0 | tr -d . | xargs printf '%-4d' | tr ' ' 0)\"\nif [ $REQUIRED_XCODE_VERSION_ACTUAL != $XCODE_VERSION_ACTUAL ]; then\n    echo \\\"error: Detected wrong Xcode version. Expected=$REQUIRED_XCODE_VERSION_ACTUAL, actual=$XCODE_VERSION_ACTUAL.\\\"\n    exit 1\nfi\n";
 		};
 		9740EEB61CF901F6004384FC /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
