@@ -3,3 +3,27 @@
 import '../../fastlane/Fastfile'
 
 default_platform(:ios)
+
+platform :ios do
+  desc 'Dev環境向けアプリを電子署名なしにビルドします。'
+  lane :build_dev_with_no_code_sign do
+    build_flutter_with_no_code_sign
+
+    Dir.chdir('../../') do
+      sh(
+        'set -o pipefail && '\
+        'xcodebuild archive CODE_SIGNING_ALLOWED=NO '\
+        '-workspace ./ios/Runner.xcworkspace '\
+        "-scheme 'dev' "\
+        "-configuration 'Release-dev' "\
+        '-archivePath ./build/ios/Runner.xcarchive'
+      )
+    end
+  end
+
+  private_lane :build_flutter_with_no_code_sign do
+    Dir.chdir('../../') do
+      sh('flutter build ios --flavor dev --no-codesign')
+    end
+  end
+end

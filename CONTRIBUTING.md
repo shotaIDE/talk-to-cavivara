@@ -26,6 +26,12 @@ Flavor を追加する場合は、以下の公式ドキュメントに従って�
 
 https://docs.flutter.dev/deployment/flavors-ios
 
+### ツールのバージョン固定
+
+Xcode のバージョンを強制するには、以下の手順を実行してください。
+
+https://qiita.com/manicmaniac/items/5294dd16cd6f835ab2d9
+
 ### Firebase プロジェクト情報の追加
 
 #### 事前準備
@@ -115,6 +121,12 @@ flutterfire config \
 以下を参考に、fastlane を設定します。
 
 https://docs.flutter.dev/deployment/cd#fastlane
+
+## Android のリリースビルドの設定
+
+以下を参考に設定します。
+
+https://docs.flutter.dev/deployment/android#sign-the-app
 
 ## Emulator の設定
 
