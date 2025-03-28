@@ -146,6 +146,8 @@ jobs:
         uses: ./.github/actions/setup-xcode
         with:
           working-directory: ./client/ios
+      - name: Setup Swift Package Manager
+        uses: ./.github/actions/setup-spm
       - name: Setup Ruby
         uses: ./.github/actions/setup-ruby
         with:
