@@ -9,6 +9,16 @@ resource "google_identity_platform_config" "auth" {
     anonymous {
       enabled = true
     }
+
+    email {
+      enabled           = false
+      password_required = false
+    }
+
+    phone_number {
+      enabled            = false
+      test_phone_numbers = {}
+    }
   }
 
   depends_on = [
