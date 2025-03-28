@@ -22,7 +22,9 @@ class WorkLogRepository {
 
     if (workLog.id.isEmpty) {
       // 新規ワークログの場合
-      DocumentReference docRef = await workLogsCollection.add(workLog.toFirestore());
+      DocumentReference docRef = await workLogsCollection.add(
+        workLog.toFirestore(),
+      );
       return docRef.id;
     } else {
       // 既存ワークログの更新
@@ -86,10 +88,9 @@ class WorkLogRepository {
 
   Future<List<WorkLog>> getCompletedWorkLogs(String houseId) async {
     QuerySnapshot querySnapshot =
-        await _getWorkLogsCollection(houseId)
-            .where('isCompleted', isEqualTo: true)
-            .orderBy('completedAt', descending: true)
-            .get();
+        await _getWorkLogsCollection(
+          houseId,
+        ).orderBy('createdAt', descending: true).get();
 
     return querySnapshot.docs.map((doc) => WorkLog.fromFirestore(doc)).toList();
   }
@@ -147,19 +148,25 @@ class WorkLogRepository {
     return querySnapshot.docs.map((doc) => WorkLog.fromFirestore(doc)).toList();
   }
 
-  Future<void> completeWorkLog(String houseId, WorkLog workLog, String userId) async {
+  Future<void> completeWorkLog(
+    String houseId,
+    WorkLog workLog,
+    String userId,
+  ) async {
     workLog.isCompleted = true;
     workLog.completedAt = DateTime.now();
     workLog.completedBy = userId;
 
-    await _getWorkLogsCollection(houseId).doc(workLog.id).update(workLog.toFirestore());
+    await _getWorkLogsCollection(
+      houseId,
+    ).doc(workLog.id).update(workLog.toFirestore());
   }
 
   Future<List<WorkLog>> getWorkLogsByTitle(String houseId, String title) async {
     QuerySnapshot querySnapshot =
         await _getWorkLogsCollection(houseId)
             .where('title', isEqualTo: title)
-            .orderBy('completedAt', descending: true)
+            .orderBy('createdAt', descending: true)
             .get();
 
     return querySnapshot.docs.map((doc) => WorkLog.fromFirestore(doc)).toList();
