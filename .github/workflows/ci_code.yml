@@ -114,6 +114,58 @@ jobs:
           reporter: "flutter-json"
           working-directory: ./client
 
+  check-impact-ios:
+    name: Check impact for building iOS
+    runs-on: ubuntu-latest
+    outputs:
+      has-changed-related-files: ${{ steps.check-related-files.outputs.any_changed == 'true' }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          fetch-depth: 0
+      - name: Check related files
+        id: check-related-files
+        uses: tj-actions/changed-files@dcc7a0cba800f454d79fff4b993e8c3555bcc0a8 # v45
+        with:
+          files: |
+            ios/**
+            .tool-versions
+            pubspec.lock
+  build-ios:
+    name: Build iOS app
+    needs: check-impact-ios
+    if: needs.check-impact-ios.outputs.has-changed-related-files == 'true'
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - name: Setup Flutter
+        uses: ./.github/actions/setup-flutter
+        with:
+          working-directory: ./client
+      - name: Setup Xcode
+        uses: ./.github/actions/setup-xcode
+        with:
+          working-directory: ./client/ios
+      - name: Setup Ruby
+        uses: ./.github/actions/setup-ruby
+        with:
+          working-directory: ./client/ios
+      - name: Generate uncommitted Flutter files
+        uses: ./.github/actions/generate-uncommitted-flutter-files
+        with:
+          firebase-options-dart-base64-emulator: ${{ secrets.FIREBASE_OPTIONS_DART_BASE64_EMULATOR }}
+          firebase-options-dart-base64-dev: ${{ secrets.FIREBASE_OPTIONS_DART_BASE64_DEV }}
+          firebase-options-dart-base64-prod: ${{ secrets.FIREBASE_OPTIONS_DART_BASE64_PROD }}
+          working-parent-directory: ./client
+          working-child-directory: ios
+      # 以下から修正開始
+      - name: Generate uncommited iOS files for dev
+        uses: ./.github/actions/generate-uncommited-ios-files-dev
+        with:
+          google-service-plist-base64-dev: ${{ secrets.GOOGLE_SERVICE_PLIST_BASE64_DEV }}
+      - name: iOS build
+        run: bundle exec fastlane ios build_dev_with_no_code_sign
+
   check-impact-android:
     name: Check impact for building Android
     runs-on: ubuntu-latest
@@ -132,7 +184,7 @@ jobs:
             .tool-versions
             pubspec.lock
           dir_names: ./client
-  build:
+  build-android:
     name: Build Android app
     needs: check-impact-android
     if: needs.check-impact-android.outputs.has-changed-related-files == 'true'
