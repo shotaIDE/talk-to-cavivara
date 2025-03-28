@@ -29,6 +29,7 @@ class AuthService {
       final user = credential.user;
 
       if (user != null) {
+        _logger.info('ユーザーがログインしました。UID: ${user.uid}');
         // ユーザーがデータベースに存在するか確認
         final existingUser = await _userRepository.getUserByUid(user.uid);
 
@@ -57,4 +58,12 @@ class AuthService {
   }
 
   firebase_auth.User? get currentUser => _firebaseAuth.currentUser;
+
+  /// 現在のユーザー情報をチェックし、ログインしている場合はUIDをログ出力します
+  void checkCurrentUser() {
+    final user = _firebaseAuth.currentUser;
+    if (user != null) {
+      _logger.info('既存ユーザーがログイン中です。UID: ${user.uid}');
+    }
+  }
 }
