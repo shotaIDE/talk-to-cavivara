@@ -4,4 +4,5 @@ flutter_launcher_icons:
   android: true
   adaptive_icon_background: "#ffffff"
   adaptive_icon_foreground: "assets/launcher-icon/adaptive-launcher-icon_dev.png"
+  adaptive_icon_foreground_inset: 0
   min_sdk_android: 26
