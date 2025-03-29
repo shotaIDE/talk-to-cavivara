@@ -23,6 +23,7 @@
 ### Flavor の設定
 
 Flavor を追加する場合は、以下の公式ドキュメントに従ってセットアップしてください。
+Xcode 上でスキームの設定を行ってください。
 
 https://docs.flutter.dev/deployment/flavors-ios
 
@@ -61,6 +62,7 @@ iOS、Android ともに、flutter_launcher_icons ライブラリを利用して�
 - [flutter_launcher_icons-prod.yaml](client/flutter_launcher_icons-prod.yaml)
 
 以下を参考に設定してください。
+コマンド実行後 iOS に適用するには、Xcode の"User-Defined Setting"により、構成ごとのアイコン名を定義し、設定する必要があります。
 
 https://pub.dev/packages/flutter_launcher_icons#2-run-the-package
 
