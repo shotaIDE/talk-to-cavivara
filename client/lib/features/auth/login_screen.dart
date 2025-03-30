@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/services/auth_service.dart';
@@ -23,7 +24,7 @@ class LoginScreen extends ConsumerWidget {
               onPressed: () async {
                 try {
                   await ref.read(authServiceProvider).signInAnonymously();
-                } catch (e) {
+                } on FirebaseAuthException catch (e) {
                   if (context.mounted) {
                     ScaffoldMessenger.of(
                       context,
