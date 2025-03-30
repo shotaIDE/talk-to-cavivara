@@ -57,7 +57,7 @@ class WorkLogRepository {
     try {
       await _getWorkLogsCollection(houseId).doc(id).delete();
       return true;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       _logger.warning('ワークログ削除エラー', e);
       return false;
     }
