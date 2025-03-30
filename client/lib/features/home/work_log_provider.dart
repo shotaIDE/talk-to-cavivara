@@ -7,18 +7,16 @@ import 'package:house_worker/repositories/work_log_repository.dart';
 final completedWorkLogsProvider = FutureProvider<List<WorkLog>>((ref) async {
   final workLogRepository = ref.watch(workLogRepositoryProvider);
   final houseId = ref.watch(currentHouseIdProvider);
-  return await workLogRepository.getCompletedWorkLogs(houseId);
+  return workLogRepository.getCompletedWorkLogs(houseId);
 });
 
 // タイトルでワークログを検索するプロバイダー
-final workLogsByTitleProvider = FutureProvider.family<List<WorkLog>, String>((
-  ref,
-  title,
-) async {
-  final workLogRepository = ref.watch(workLogRepositoryProvider);
-  final houseId = ref.watch(currentHouseIdProvider);
-  return await workLogRepository.getWorkLogsByTitle(houseId, title);
-});
+final FutureProviderFamily<List<WorkLog>, String> workLogsByTitleProvider =
+    FutureProvider.family<List<WorkLog>, String>((ref, title) async {
+      final workLogRepository = ref.watch(workLogRepositoryProvider);
+      final houseId = ref.watch(currentHouseIdProvider);
+      return workLogRepository.getWorkLogsByTitle(houseId, title);
+    });
 
 // 削除されたワークログを一時的に保持するプロバイダー
 final deletedWorkLogProvider = StateProvider<WorkLog?>((ref) => null);
@@ -27,17 +25,21 @@ final deletedWorkLogProvider = StateProvider<WorkLog?>((ref) => null);
 final undoDeleteTimerProvider = StateProvider<int?>((ref) => null);
 
 // ワークログ削除処理を行うプロバイダー
-final workLogDeletionProvider = Provider((ref) {
+final Provider<WorkLogDeletionNotifier> workLogDeletionProvider = Provider((
+  ref,
+) {
   final workLogRepository = ref.watch(workLogRepositoryProvider);
 
-  return WorkLogDeletionNotifier(workLogRepository: workLogRepository, ref: ref);
+  return WorkLogDeletionNotifier(
+    workLogRepository: workLogRepository,
+    ref: ref,
+  );
 });
 
 class WorkLogDeletionNotifier {
+  WorkLogDeletionNotifier({required this.workLogRepository, required this.ref});
   final WorkLogRepository workLogRepository;
   final Ref ref;
-
-  WorkLogDeletionNotifier({required this.workLogRepository, required this.ref});
 
   // ワークログを削除する
   Future<void> deleteWorkLog(WorkLog workLog) async {
