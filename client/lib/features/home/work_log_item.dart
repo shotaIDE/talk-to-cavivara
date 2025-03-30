@@ -6,10 +6,10 @@ import 'package:house_worker/models/work_log.dart';
 import 'package:intl/intl.dart';
 
 class WorkLogItem extends ConsumerWidget {
+  const WorkLogItem({super.key, required this.workLog, required this.onTap});
+
   final WorkLog workLog;
   final VoidCallback onTap;
-
-  const WorkLogItem({super.key, required this.workLog, required this.onTap});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -21,7 +21,7 @@ class WorkLogItem extends ConsumerWidget {
       background: Container(
         color: Colors.red,
         alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 20.0),
+        padding: const EdgeInsets.only(right: 20),
         child: const Icon(Icons.delete, color: Colors.white),
       ),
       direction: DismissDirection.endToStart,
@@ -32,11 +32,11 @@ class WorkLogItem extends ConsumerWidget {
         // スナックバーを表示
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Row(
+            content: const Row(
               children: [
-                const Icon(Icons.delete, color: Colors.white),
-                const SizedBox(width: 12),
-                const Expanded(child: Text('家事ログを削除しました')),
+                Icon(Icons.delete, color: Colors.white),
+                SizedBox(width: 12),
+                Expanded(child: Text('家事ログを削除しました')),
               ],
             ),
             action: SnackBarAction(
@@ -60,7 +60,7 @@ class WorkLogItem extends ConsumerWidget {
         child: InkWell(
           onTap: onTap,
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -71,9 +71,7 @@ class WorkLogItem extends ConsumerWidget {
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: Theme.of(
-                          context,
-                        ).primaryColor.withAlpha((0.1 * 255).round()),
+                        color: Theme.of(context).primaryColor.withAlpha(25),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       alignment: Alignment.center,
@@ -99,10 +97,12 @@ class WorkLogItem extends ConsumerWidget {
                       onPressed: () {
                         // 家事ログ追加画面に遷移し、ワークログ情報を渡す
                         Navigator.of(context).push(
-                          MaterialPageRoute(
+                          MaterialPageRoute<void>(
                             builder:
                                 (context) =>
-                                    WorkLogAddScreen.fromExistingWorkLog(workLog),
+                                    WorkLogAddScreen.fromExistingWorkLog(
+                                      workLog,
+                                    ),
                           ),
                         );
                       },
@@ -114,7 +114,6 @@ class WorkLogItem extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Flexible(
-                      flex: 1,
                       child: Text(
                         '完了: ${dateFormat.format(workLog.completedAt ?? DateTime.now())}',
                         style: const TextStyle(
@@ -126,7 +125,6 @@ class WorkLogItem extends ConsumerWidget {
                     ),
                     const SizedBox(width: 8),
                     Flexible(
-                      flex: 1,
                       child: Text(
                         '実行者: ${workLog.completedBy ?? "不明"}',
                         style: const TextStyle(
@@ -134,7 +132,6 @@ class WorkLogItem extends ConsumerWidget {
                           color: Colors.grey,
                         ),
                         overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.end,
                       ),
                     ),
                   ],
