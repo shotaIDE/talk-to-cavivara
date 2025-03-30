@@ -4,7 +4,7 @@ import 'package:house_worker/models/work_log.dart';
 import 'package:house_worker/repositories/work_log_repository.dart';
 
 // 完了済みワークログの一覧を提供するプロバイダー
-final completedWorkLogsProvider = FutureProvider<List<WorkLog>>((ref) async {
+final completedWorkLogsProvider = FutureProvider<List<WorkLog>>((ref) {
   final workLogRepository = ref.watch(workLogRepositoryProvider);
   final houseId = ref.watch(currentHouseIdProvider);
   return workLogRepository.getCompletedWorkLogs(houseId);
@@ -12,7 +12,7 @@ final completedWorkLogsProvider = FutureProvider<List<WorkLog>>((ref) async {
 
 // タイトルでワークログを検索するプロバイダー
 final FutureProviderFamily<List<WorkLog>, String> workLogsByTitleProvider =
-    FutureProvider.family<List<WorkLog>, String>((ref, title) async {
+    FutureProvider.family<List<WorkLog>, String>((ref, title) {
       final workLogRepository = ref.watch(workLogRepositoryProvider);
       final houseId = ref.watch(currentHouseIdProvider);
       return workLogRepository.getWorkLogsByTitle(houseId, title);

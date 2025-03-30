@@ -45,7 +45,7 @@ class UserRepository {
     try {
       await _usersCollection.doc(id).delete();
       return true;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       _logger.warning('ユーザー削除エラー: $e');
       return false;
     }
@@ -59,24 +59,24 @@ class UserRepository {
         return app_user.User.fromFirestore(doc);
       }
       return null;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       _logger.warning('UIDによるユーザー取得エラー: $e');
       return null;
     }
   }
 
   // ユーザーを作成
-  Future<String> createUser(app_user.User user) async {
+  Future<String> createUser(app_user.User user) {
     return save(user);
   }
 
   // ユーザーを更新
-  Future<void> updateUser(app_user.User user) async {
-    await save(user);
+  Future<void> updateUser(app_user.User user) {
+    return save(user);
   }
 
   // 全ユーザーを取得
-  Future<List<app_user.User>> getAllUsers() async {
+  Future<List<app_user.User>> getAllUsers() {
     return getAll();
   }
 }
