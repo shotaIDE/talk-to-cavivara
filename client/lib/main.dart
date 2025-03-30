@@ -37,11 +37,6 @@ void _setupLogging() {
   _logger.info('ロギングシステムを初期化しました');
 }
 
-// Firebase Emulatorの設定を読み込むためのプロバイダー
-final emulatorConfigProvider = Provider<Map<String, dynamic>>(
-  (ref) => throw UnimplementedError(),
-);
-
 // Firebase Emulatorのホスト情報を取得する関数
 String getEmulatorHost() {
   try {
@@ -51,7 +46,7 @@ String getEmulatorHost() {
       defaultValue: '127.0.0.1',
     );
     return emulatorHost;
-  } catch (e) {
+  } on Exception catch (e) {
     _logger.warning('エミュレーター設定の読み込みに失敗しました', e);
     // デフォルト値を返す
     return '127.0.0.1';
@@ -139,7 +134,7 @@ void main() async {
     // 既存ユーザーのログイン状態を確認してUIDをログ出力
     final container = ProviderContainer();
     container.read(authServiceProvider).checkCurrentUser();
-  } catch (e) {
+  } on Exception catch (e) {
     _logger.severe('Failed to initialize Firebase', e);
     // Firebase が初期化できなくても、アプリを続行する
   }
@@ -154,8 +149,8 @@ class HouseWorkerApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'House Worker ${FlavorConfig.instance.name}',
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
+      theme: getLightTheme(),
+      darkTheme: getDarkTheme(),
       home: const AuthWrapper(),
       debugShowCheckedModeBanner: !FlavorConfig.isProd,
       builder: (context, child) {
