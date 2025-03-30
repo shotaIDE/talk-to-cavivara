@@ -13,9 +13,6 @@ class WorkLogItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // 日付フォーマッター
-    final dateFormat = DateFormat('yyyy/MM/dd HH:mm');
-
     return Dismissible(
       key: Key('workLog-${workLog.id}'),
       background: Container(
@@ -114,13 +111,8 @@ class WorkLogItem extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Flexible(
-                      child: Text(
-                        '完了: ${dateFormat.format(workLog.completedAt ?? DateTime.now())}',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey,
-                        ),
-                        overflow: TextOverflow.ellipsis,
+                      child: _CompletedDateText(
+                        completedAt: workLog.completedAt,
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -141,6 +133,22 @@ class WorkLogItem extends ConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _CompletedDateText extends StatelessWidget {
+  const _CompletedDateText({required this.completedAt});
+
+  final DateTime? completedAt;
+
+  @override
+  Widget build(BuildContext context) {
+    final dateFormat = DateFormat('yyyy/MM/dd HH:mm');
+    return Text(
+      '完了: ${dateFormat.format(completedAt ?? DateTime.now())}',
+      style: const TextStyle(fontSize: 14, color: Colors.grey),
+      overflow: TextOverflow.ellipsis,
     );
   }
 }
