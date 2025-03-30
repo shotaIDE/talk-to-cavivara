@@ -35,6 +35,7 @@ dev_dependencies:
   mockito:
   flutter_lints:
   flutter_launcher_icons:
+  pedantic_mono: ^1.30.0
 
 flutter:
   uses-material-design: true
