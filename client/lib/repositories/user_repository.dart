@@ -8,7 +8,7 @@ final userRepositoryProvider = Provider<UserRepository>((ref) {
 });
 
 class UserRepository {
-  final Logger _logger = Logger('UserRepository');
+  final _logger = Logger('UserRepository');
   final CollectionReference _usersCollection = FirebaseFirestore.instance
       .collection('users');
 
@@ -16,7 +16,7 @@ class UserRepository {
   Future<String> save(app_user.User user) async {
     if (user.id.isEmpty) {
       // 新規ユーザーの場合
-      DocumentReference docRef = await _usersCollection.add(user.toFirestore());
+      final docRef = await _usersCollection.add(user.toFirestore());
       return docRef.id;
     } else {
       // 既存ユーザーの更新
@@ -27,15 +27,13 @@ class UserRepository {
 
   // 全ユーザーを取得
   Future<List<app_user.User>> getAll() async {
-    QuerySnapshot querySnapshot = await _usersCollection.get();
-    return querySnapshot.docs
-        .map((doc) => app_user.User.fromFirestore(doc))
-        .toList();
+    final querySnapshot = await _usersCollection.get();
+    return querySnapshot.docs.map(app_user.User.fromFirestore).toList();
   }
 
   // IDでユーザーを取得
   Future<app_user.User?> getById(String id) async {
-    DocumentSnapshot doc = await _usersCollection.doc(id).get();
+    final doc = await _usersCollection.doc(id).get();
     if (doc.exists) {
       return app_user.User.fromFirestore(doc);
     }
@@ -56,7 +54,7 @@ class UserRepository {
   // Firebase UIDでユーザーを取得
   Future<app_user.User?> getUserByUid(String uid) async {
     try {
-      DocumentSnapshot doc = await _usersCollection.doc(uid).get();
+      final doc = await _usersCollection.doc(uid).get();
       if (doc.exists) {
         return app_user.User.fromFirestore(doc);
       }
@@ -69,7 +67,7 @@ class UserRepository {
 
   // ユーザーを作成
   Future<String> createUser(app_user.User user) async {
-    return await save(user);
+    return save(user);
   }
 
   // ユーザーを更新
@@ -79,6 +77,6 @@ class UserRepository {
 
   // 全ユーザーを取得
   Future<List<app_user.User>> getAllUsers() async {
-    return await getAll();
+    return getAll();
   }
 }

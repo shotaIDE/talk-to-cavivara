@@ -5,9 +5,8 @@ import 'package:house_worker/models/work_log.dart';
 import 'package:intl/intl.dart';
 
 class WorkLogDashboardScreen extends ConsumerWidget {
-  final WorkLog workLog;
-
   const WorkLogDashboardScreen({super.key, required this.workLog});
+  final WorkLog workLog;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -15,12 +14,14 @@ class WorkLogDashboardScreen extends ConsumerWidget {
     final dateFormat = DateFormat('yyyy/MM/dd HH:mm');
 
     // この家事に関連するログを取得
-    final workLogsAsyncValue = ref.watch(workLogsByTitleProvider(workLog.title));
+    final workLogsAsyncValue = ref.watch(
+      workLogsByTitleProvider(workLog.title),
+    );
 
     return Scaffold(
       appBar: AppBar(title: Text('${workLog.title}のダッシュボード')),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -28,7 +29,7 @@ class WorkLogDashboardScreen extends ConsumerWidget {
             Card(
               elevation: 4,
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -90,7 +91,7 @@ class WorkLogDashboardScreen extends ConsumerWidget {
                       logs.isEmpty
                           ? const Center(
                             child: Padding(
-                              padding: EdgeInsets.all(16.0),
+                              padding: EdgeInsets.all(16),
                               child: Text('完了ログはありません'),
                             ),
                           )
