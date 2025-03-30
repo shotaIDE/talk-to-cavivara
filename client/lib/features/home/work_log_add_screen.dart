@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/models/work_log.dart';
@@ -278,7 +279,7 @@ class _WorkLogAddScreenState extends ConsumerState<WorkLogAddScreen> {
           // 一覧画面に戻る（更新フラグをtrueにして渡す）
           Navigator.of(context).pop(true);
         }
-      } catch (e) {
+      } on FirebaseException catch (e) {
         // エラー時の処理
         if (mounted) {
           ScaffoldMessenger.of(
