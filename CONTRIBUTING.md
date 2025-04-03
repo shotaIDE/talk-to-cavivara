@@ -131,13 +131,13 @@ flutterfire config \
   --android-out="android/app/src/${DIRECTORY_NAME_FOR_ANDROID}/google-services.json"
 ```
 
-## fastlane の設定
+### fastlane の設定
 
 以下を参考に、fastlane を設定します。
 
 https://docs.flutter.dev/deployment/cd#fastlane
 
-## Android のリリースビルドの設定
+### Android のリリースビルドの設定
 
 以下を参考に設定します。
 
@@ -173,3 +173,36 @@ cp client/emulator-config.sample.json client/emulator-config.json
 VSCode の起動設定を利用してください。プロジェクトには適切な起動構成が含まれており、自動的に `--dart-define-from-file=client/emulator-config.json` 引数を使用して設定ファイルを読み込みます。
 
 VSCode の「実行とデバッグ」パネルから適切な構成を選択して実行することをお勧めします。
+
+## デプロイ
+
+### App Store へのデプロイ
+
+App Store Connect でアプリを作成します。
+
+また、Apple Developer Console で Bundle Identifier とプロビジョニングプロファイルを登録しておきます。
+Xcode で一旦 Automatically Signing により App Store ビルドを Export することで、各種 Capability が付与された Bundle Identifier が自動で登録されるので、それを利用すると少し楽です。
+プロビジョニングプロファイルは手動で登録します。
+
+:::message
+配布するアプリを Automatically Signing でビルドすると機能が有効化されていないなどのトラブルに見舞われることが多いので、Manual Signing を採用します。
+:::
+
+Manual Signing で Export した際に出力された plist を [client/ios/ExportOptions.plist](client/ios/ExportOptions.plist) に配置してください。
+
+最後に App Store Connect API キーを発行し、[client/ios/fastlane/app-store-connect-api-key.p8](client/ios/fastlane/app-store-connect-api-key.p8) に配置してください。
+以下を参考にしてください。
+
+https://docs.fastlane.tools/app-store-connect-api/
+
+fastlane からアップロードして外部テスト公開まで行うには、1 度外部テストに審査を実施して公開しておく必要があります。
+
+### Google Play へのデプロイ
+
+以下を参考にして、デプロイ用のサービスアカウントキー(JSON)を用意し、[client/android/fastlane/google-play-service-account-key.json](client/android/fastlane/google-play-service-account-key.json) に配置してください。
+
+https://docs.fastlane.tools/actions/upload_to_play_store/
+
+fastlane からアップロードするには、1 度手動で Google Play に aab ファイルをアップロードし、内部テスターに公開しておく必要があります。
+
+また、fastlane からアップロードして公開まで行うには、1 度クローズドテストに審査を実施して公開しておく必要があります。
