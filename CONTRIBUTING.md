@@ -61,20 +61,6 @@ APPLICATION_ID_BASE="ide.shota.colomney.HouseWorker"
 
 各環境ごとに以下の変数を設定し、共通のコマンドを実行します：
 
-### アイコンの設定
-
-iOS、Android ともに、flutter_launcher_icons ライブラリを利用して生成します。
-ライブラリが参照する設定ファイルは、以下の通りです。
-
-- [flutter_launcher_icons-emulator.yaml](client/flutter_launcher_icons-emulator.yaml)
-- [flutter_launcher_icons-dev.yaml](client/flutter_launcher_icons-dev.yaml)
-- [flutter_launcher_icons-prod.yaml](client/flutter_launcher_icons-prod.yaml)
-
-以下を参考に設定してください。
-コマンド実行後 iOS に適用するには、Xcode の"User-Defined Setting"により、構成ごとのアイコン名を定義し、設定する必要があります。
-
-https://pub.dev/packages/flutter_launcher_icons#2-run-the-package
-
 ##### Emulator 環境の設定
 
 ```shell
@@ -139,6 +125,20 @@ flutterfire config \
   --android-package-name="${APPLICATION_ID}" \
   --android-out="android/app/src/${DIRECTORY_NAME_FOR_ANDROID}/google-services.json"
 ```
+
+### アイコンの設定
+
+iOS、Android ともに、flutter_launcher_icons ライブラリを利用して生成します。
+ライブラリが参照する設定ファイルは、以下の通りです。
+
+- [flutter_launcher_icons-emulator.yaml](client/flutter_launcher_icons-emulator.yaml)
+- [flutter_launcher_icons-dev.yaml](client/flutter_launcher_icons-dev.yaml)
+- [flutter_launcher_icons-prod.yaml](client/flutter_launcher_icons-prod.yaml)
+
+以下を参考に設定してください。
+コマンド実行後 iOS に適用するには、Xcode の"User-Defined Setting"により、構成ごとのアイコン名を定義し、設定する必要があります。
+
+https://pub.dev/packages/flutter_launcher_icons#2-run-the-package
 
 ### fastlane の設定
 
