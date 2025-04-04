@@ -152,16 +152,29 @@ https://docs.flutter.dev/deployment/cd#fastlane
 
 https://docs.flutter.dev/deployment/android#sign-the-app
 
-## Emulator の設定
+## Firebase emulator の設定
 
-プロジェクトでは Emulator のホスト IP を`dart-define-from-file`から読み込む方法を採用しています。
+### Firebase emulator のサーバーをローカルマシンで実行する
 
-### 設定ファイル
+[「Firebase CLI をインストールする」](https://firebase.google.com/docs/cli#install_the_firebase_cli)を参考に、Firebase CLI をインストールします。
 
-プロジェクトには`client/emulator-config.sample.json`というサンプルファイルが含まれています。このファイルをコピーして`client/emulator-config.json`を作成してください。
+以下コマンドを実行します。
 
 ```shell
-# サンプルファイルから設定ファイルを作成
+cd infra
+firebase emulators:start --import=emulator-data --export-on-exit=emulator-data
+```
+
+上記により、`infra/emulator-data/` フォルダーに Firebase Emulator のデータが保持されます。
+リセットしたい場合は、フォルダーごと削除してください。
+
+### Firebase emulator に向けたクライアントアプリを実行する
+
+プロジェクトには`client/emulator-config.sample.json`というサンプルファイルが含まれています。
+このファイルをコピーして`client/emulator-config.json`を作成してください。
+この手順はマシンごとに 1 回だけ必要です。
+
+```shell
 cp client/emulator-config.sample.json client/emulator-config.json
 ```
 
@@ -177,11 +190,8 @@ cp client/emulator-config.sample.json client/emulator-config.json
 
 > **注意**: `emulator-config.json`は gitignore に設定されており、リポジトリにはコミットされません。各開発者が自分の環境に合わせて設定する必要があります。
 
-### 実行方法
-
-VSCode の起動設定を利用してください。プロジェクトには適切な起動構成が含まれており、自動的に `--dart-define-from-file=client/emulator-config.json` 引数を使用して設定ファイルを読み込みます。
-
-VSCode の「実行とデバッグ」パネルから適切な構成を選択して実行することをお勧めします。
+次に、VSCode の「実行とデバッグ」パネルから"Emulator-Debug"などの構成を選択して実行してください。
+プロジェクトには適切な起動構成が含まれており、自動的に `--dart-define-from-file=client/emulator-config.json` 引数を使用して設定ファイルを読み込みます。
 
 ## デプロイ
 
