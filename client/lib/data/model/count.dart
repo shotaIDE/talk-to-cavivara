@@ -27,7 +27,7 @@ abstract class Count with _$Count {
 
   Map<String, dynamic> toFirestore() {
     return {
-      'count': count,
+      'count': this.count,
       // `DateTime` インスタンスはそのままFirestoreに渡すことで、Firestore側でタイムスタンプ型として保持させる
       'createdAt': updatedAt,
     };
