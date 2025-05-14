@@ -13,8 +13,10 @@ Stream<Count> currentCount(Ref ref) {
 }
 
 @riverpod
-Future<void> countUpResult(Ref ref, {required Count currentCount}) async {
+Future<void> countUpResult(Ref ref) async {
   final databaseService = ref.watch(databaseServiceProvider);
+
+  final currentCount = await ref.read(currentCountProvider.future);
 
   final newCount = currentCount.copyWith(
     count: currentCount.count + 1,
@@ -26,8 +28,10 @@ Future<void> countUpResult(Ref ref, {required Count currentCount}) async {
 }
 
 @riverpod
-Future<void> clearCountResult(Ref ref, {required Count currentCount}) async {
+Future<void> clearCountResult(Ref ref) async {
   final databaseService = ref.watch(databaseServiceProvider);
+
+  final currentCount = await ref.read(currentCountProvider.future);
 
   final newCount = currentCount.copyWith(count: 0, updatedAt: DateTime.now());
 

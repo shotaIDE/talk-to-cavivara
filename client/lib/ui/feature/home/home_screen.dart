@@ -4,11 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/data/model/clear_count_exception.dart';
 import 'package:house_worker/data/model/count.dart';
 import 'package:house_worker/data/model/count_up_exception.dart';
-import 'package:house_worker/data/service/work_log_service.dart';
 import 'package:house_worker/ui/feature/home/home_presenter.dart';
-import 'package:house_worker/ui/feature/home/house_works_tab.dart';
-import 'package:house_worker/ui/feature/home/work_log_included_house_work.dart';
-import 'package:house_worker/ui/feature/home/work_logs_tab.dart';
 import 'package:house_worker/ui/feature/settings/settings_screen.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
