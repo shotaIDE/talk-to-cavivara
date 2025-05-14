@@ -1,13 +1,18 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:house_worker/common/theme/app_theme.dart';
-import 'package:house_worker/features/auth/login_screen.dart';
-import 'package:house_worker/features/home/home_screen.dart';
-import 'package:house_worker/flavor_config.dart';
-import 'package:house_worker/services/auth_service.dart';
+import 'package:house_worker/data/definition/app_feature.dart';
+import 'package:house_worker/data/definition/flavor_config.dart';
+import 'package:house_worker/data/service/auth_service.dart';
+import 'package:house_worker/ui/root_app.dart';
 import 'package:logging/logging.dart';
 
 import 'firebase_options_dev.dart' as dev;
@@ -57,8 +62,7 @@ String getEmulatorHost() {
 void setupFirebaseEmulators(String host) {
   FirebaseAuth.instance.useAuthEmulator(host, 9099);
   FirebaseFirestore.instance.useFirestoreEmulator(host, 8080);
-  // Functionsも使用する場合は以下を追加
-  // FirebaseFunctions.instance.useFunctionsEmulator(host, 5001);
+  FirebaseFunctions.instance.useFunctionsEmulator(host, 5001);
 }
 
 // 環境設定を行う関数
@@ -100,7 +104,7 @@ void setupFlavorConfig() {
   _logger.info('アプリケーション環境: ${FlavorConfig.instance.name}');
 }
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // ロギングシステムの初期化
@@ -139,74 +143,18 @@ void main() async {
     // Firebase が初期化できなくても、アプリを続行する
   }
 
-  runApp(const ProviderScope(child: HouseWorkerApp()));
-}
+  await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(
+    isAnalyticsEnabled,
+  );
 
-class HouseWorkerApp extends StatelessWidget {
-  const HouseWorkerApp({super.key});
+  if (isCrashlyticsEnabled) {
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'House Worker ${FlavorConfig.instance.name}',
-      theme: getLightTheme(),
-      darkTheme: getDarkTheme(),
-      home: const AuthWrapper(),
-      debugShowCheckedModeBanner: !FlavorConfig.isProd,
-      builder: (context, child) {
-        // Flavorに応じたバナーを表示（本番環境以外）
-        if (!FlavorConfig.isProd) {
-          return Banner(
-            message: FlavorConfig.instance.name,
-            location: BannerLocation.topEnd,
-            color: FlavorConfig.instance.color,
-            child: child,
-          );
-        }
-        return child!;
-      },
-    );
+    PlatformDispatcher.instance.onError = (error, stack) {
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      return true;
+    };
   }
-}
 
-class AuthWrapper extends ConsumerWidget {
-  const AuthWrapper({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(authStateProvider);
-
-    return authState.when(
-      data: (user) {
-        if (user != null) {
-          return const HomeScreen();
-        } else {
-          return const LoginScreen();
-        }
-      },
-      loading:
-          () =>
-              const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error:
-          (error, stackTrace) => Scaffold(
-            body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text('エラーが発生しました'),
-                  const SizedBox(height: 10),
-                  Text(error.toString()),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      ref.invalidate(authStateProvider);
-                    },
-                    child: const Text('再試行'),
-                  ),
-                ],
-              ),
-            ),
-          ),
-    );
-  }
+  runApp(const ProviderScope(child: RootApp()));
 }
