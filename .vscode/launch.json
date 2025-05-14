@@ -16,6 +16,38 @@
       ]
     },
     {
+      "name": "Emulator-Debug (Analytics enabled)",
+      "request": "launch",
+      "type": "dart",
+      "cwd": "${workspaceFolder}/client",
+      "program": "lib/main.dart",
+      "flutterMode": "debug",
+      "args": [
+        "--flavor",
+        "emulator",
+        "--dart-define-from-file",
+        "emulator-config.json",
+        "--dart-define",
+        "ENABLE_ANALYTICS=true"
+      ]
+    },
+    {
+      "name": "Emulator-Debug (Crashlytics enabled)",
+      "request": "launch",
+      "type": "dart",
+      "cwd": "${workspaceFolder}/client",
+      "program": "lib/main.dart",
+      "flutterMode": "debug",
+      "args": [
+        "--flavor",
+        "emulator",
+        "--dart-define-from-file",
+        "emulator-config.json",
+        "--dart-define",
+        "ENABLE_CRASHLYTICS=true"
+      ]
+    },
+    {
       "name": "Emulator-Profile",
       "request": "launch",
       "type": "dart",
