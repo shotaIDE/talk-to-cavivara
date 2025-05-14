@@ -19,7 +19,7 @@ Future<void> countUpResult(Ref ref) async {
   final currentCount = await ref.read(currentCountProvider.future);
 
   final newCount = currentCount.copyWith(
-    count: currentCount.count + 1,
+    value: currentCount.value + 1,
     updatedAt: DateTime.now(),
   );
 
@@ -33,7 +33,7 @@ Future<void> clearCountResult(Ref ref) async {
 
   final currentCount = await ref.read(currentCountProvider.future);
 
-  final newCount = currentCount.copyWith(count: 0, updatedAt: DateTime.now());
+  final newCount = currentCount.copyWith(value: 0, updatedAt: DateTime.now());
 
   // TODO(ide): エラー処理
   await databaseService.save(newCount);

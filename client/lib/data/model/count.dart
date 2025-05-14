@@ -10,7 +10,7 @@ part 'count.freezed.dart';
 abstract class Count with _$Count {
   const factory Count({
     required String id,
-    required int count,
+    required int value,
     required DateTime updatedAt,
   }) = _Count;
 
@@ -20,14 +20,14 @@ abstract class Count with _$Count {
     final data = doc.data()! as Map<String, dynamic>;
     return Count(
       id: doc.id,
-      count: data['count'] as int,
+      value: data['count'] as int,
       updatedAt: (data['updatedAt'] as Timestamp).toDate(),
     );
   }
 
   Map<String, dynamic> toFirestore() {
     return {
-      'count': this.count,
+      'count': value,
       // `DateTime` インスタンスはそのままFirestoreに渡すことで、Firestore側でタイムスタンプ型として保持させる
       'createdAt': updatedAt,
     };

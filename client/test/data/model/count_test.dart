@@ -6,7 +6,7 @@ void main() {
     final now = DateTime.now();
     const id = 'test-id';
     const countValue = 15;
-    final count = Count(id: id, count: countValue, updatedAt: now);
+    final count = Count(id: id, value: countValue, updatedAt: now);
 
     final result = count.toFirestore();
 

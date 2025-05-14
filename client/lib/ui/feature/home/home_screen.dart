@@ -143,7 +143,7 @@ class _CounterPanel extends ConsumerWidget {
         if (count == null) {
           return Skeletonizer(
             child: _CounterTextList(
-              count: Count(id: '', count: 0, updatedAt: DateTime.now()),
+              count: Count(id: '', value: 0, updatedAt: DateTime.now()),
             ),
           );
         }
@@ -165,7 +165,7 @@ class _CounterTextList extends StatelessWidget {
       spacing: 16,
       children: [
         Text(
-          count.count.toString(),
+          count.value.toString(),
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         Text(
