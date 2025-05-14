@@ -1,0 +1,1 @@
+class CountUpException implements Exception {}

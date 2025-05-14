@@ -1,0 +1,1 @@
+class ClearCountException implements Exception {}
