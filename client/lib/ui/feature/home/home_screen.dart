@@ -79,14 +79,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       tabs: [homeWorksTabItem, workLogsTabItem],
     );
 
-    final addHouseWorkButton = FloatingActionButton(
-      tooltip: '家事を追加する',
-      onPressed: () {
-        Navigator.of(context).push(AddHouseWorkScreen.route());
-      },
-      child: const Icon(Icons.add),
-    );
-
     return DefaultTabController(
       length: 2,
       initialIndex: selectedTab,
@@ -102,7 +94,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             WorkLogsTab(onDuplicateButtonTap: _onDuplicateWorkLogButtonTap),
           ],
         ),
-        floatingActionButton: addHouseWorkButton,
         bottomNavigationBar: _QuickRegisterBottomBar(
           onTap: _onQuickRegisterButtonPressed,
         ),
