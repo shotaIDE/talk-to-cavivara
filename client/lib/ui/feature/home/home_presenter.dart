@@ -1,10 +1,6 @@
-import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/data/model/count.dart';
-import 'package:house_worker/data/model/work_log.dart';
-import 'package:house_worker/data/repository/work_log_repository.dart';
 import 'package:house_worker/data/service/database_service.dart';
-import 'package:house_worker/ui/feature/home/work_log_included_house_work.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'home_presenter.g.dart';
@@ -17,65 +13,24 @@ Stream<Count> currentCount(Ref ref) {
 }
 
 @riverpod
-Future<List<HouseWork>> houseWorksSortedByMostFrequentlyUsed(Ref ref) async {
-  final houseWorks = await ref.watch(_houseWorksFilePrivateProvider.future);
-  final completedWorkLogs = await ref.watch(
-    _completedWorkLogsFilePrivateProvider.future,
+Future<void> countUpResult(Ref ref, {required Count currentCount}) async {
+  final databaseService = ref.watch(databaseServiceProvider);
+
+  final newCount = currentCount.copyWith(
+    count: currentCount.count + 1,
+    updatedAt: DateTime.now(),
   );
 
-  final completionCountOfHouseWorks = <HouseWork, int>{};
-
-  for (final houseWork in houseWorks) {
-    final completionCount =
-        completedWorkLogs
-            .where((workLog) => workLog.houseWorkId == houseWork.id)
-            .length;
-
-    completionCountOfHouseWorks[houseWork] = completionCount;
-  }
-
-  final sortedHouseWorksByCompletionCount =
-      completionCountOfHouseWorks.entries
-          .sortedBy((entry) => entry.value)
-          .reversed
-          .map((entry) => entry.key)
-          .toList();
-
-  return sortedHouseWorksByCompletionCount;
+  // TODO(ide): エラー処理
+  await databaseService.save(newCount);
 }
 
 @riverpod
-Future<bool> onCompleteHouseWorkButtonTappedResult(
-  Ref ref,
-  HouseWork houseWork,
-) {
-  final workLogService = ref.read(workLogServiceProvider);
+Future<void> clearCountResult(Ref ref, {required Count currentCount}) async {
+  final databaseService = ref.watch(databaseServiceProvider);
 
-  return workLogService.recordWorkLog(houseWorkId: houseWork.id);
-}
+  final newCount = currentCount.copyWith(count: 0, updatedAt: DateTime.now());
 
-@riverpod
-Future<bool> onDuplicateWorkLogButtonTappedResult(
-  Ref ref,
-  WorkLogIncludedHouseWork workLogIncludedHouseWork,
-) {
-  final workLogService = ref.read(workLogServiceProvider);
-
-  return workLogService.recordWorkLog(
-    houseWorkId: workLogIncludedHouseWork.houseWork.id,
-  );
-}
-
-@riverpod
-Stream<List<HouseWork>> _houseWorksFilePrivate(Ref ref) {
-  final houseWorkRepository = ref.watch(houseWorkRepositoryProvider);
-
-  return houseWorkRepository.getAll();
-}
-
-@riverpod
-Stream<List<WorkLog>> _completedWorkLogsFilePrivate(Ref ref) {
-  final workLogRepository = ref.watch(workLogRepositoryProvider);
-
-  return workLogRepository.getCompletedWorkLogs();
+  // TODO(ide): エラー処理
+  await databaseService.save(newCount);
 }
