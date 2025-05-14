@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/data/model/clear_count_exception.dart';
+import 'package:house_worker/data/model/count.dart';
 import 'package:house_worker/data/model/count_up_exception.dart';
-import 'package:house_worker/data/model/house_work.dart';
 import 'package:house_worker/data/service/work_log_service.dart';
 import 'package:house_worker/ui/feature/home/home_presenter.dart';
 import 'package:house_worker/ui/feature/home/house_works_tab.dart';
@@ -51,8 +51,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       child: const Icon(Icons.clear),
     );
 
-    final body = Center(
-      child: Text('カウンター', style: Theme.of(context).textTheme.headlineLarge),
+    const body = Center(
+      child: Padding(padding: EdgeInsets.all(16), child: _CounterPanel()),
     );
 
     return Scaffold(
@@ -126,5 +126,59 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text('カウントをリセットしました。')));
+  }
+}
+
+class _CounterPanel extends ConsumerWidget {
+  const _CounterPanel();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final countFuture = ref.watch(currentCountProvider.future);
+
+    return FutureBuilder(
+      future: countFuture,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return const Text('カウンターの値の取得に失敗しました。しばらくしてから再度アプリを起動してください。');
+        }
+
+        final count = snapshot.data;
+        if (count == null) {
+          return Skeletonizer(
+            child: _CounterTextList(
+              count: Count(id: '', count: 0, updatedAt: DateTime.now()),
+            ),
+          );
+        }
+
+        return _CounterTextList(count: count);
+      },
+    );
+  }
+}
+
+class _CounterTextList extends StatelessWidget {
+  const _CounterTextList({required this.count});
+
+  final Count count;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      spacing: 16,
+      children: [
+        Text(
+          count.count.toString(),
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+        Text(
+          '最終更新日時: ${count.updatedAt}',
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: Theme.of(context).dividerColor,
+          ),
+        ),
+      ],
+    );
   }
 }

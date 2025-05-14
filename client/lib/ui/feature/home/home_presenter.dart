@@ -1,14 +1,20 @@
 import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:house_worker/data/model/house_work.dart';
+import 'package:house_worker/data/model/count.dart';
 import 'package:house_worker/data/model/work_log.dart';
-import 'package:house_worker/data/repository/house_work_repository.dart';
 import 'package:house_worker/data/repository/work_log_repository.dart';
-import 'package:house_worker/data/service/work_log_service.dart';
+import 'package:house_worker/data/service/database_service.dart';
 import 'package:house_worker/ui/feature/home/work_log_included_house_work.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'home_presenter.g.dart';
+
+@riverpod
+Stream<Count> currentCount(Ref ref) {
+  final databaseService = ref.watch(databaseServiceProvider);
+
+  return databaseService.getAll();
+}
 
 @riverpod
 Future<List<HouseWork>> houseWorksSortedByMostFrequentlyUsed(Ref ref) async {

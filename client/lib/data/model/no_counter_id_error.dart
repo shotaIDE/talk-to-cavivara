@@ -1,0 +1,1 @@
+class NoCounterIdError extends Error {}
