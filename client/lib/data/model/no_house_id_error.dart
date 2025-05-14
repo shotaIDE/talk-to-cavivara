@@ -1,1 +1,0 @@
-class NoHouseIdError extends Error {}
