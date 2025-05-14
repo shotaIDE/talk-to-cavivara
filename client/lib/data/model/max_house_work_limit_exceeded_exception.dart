@@ -1,1 +1,0 @@
-class MaxHouseWorkLimitExceededException implements Exception {}
