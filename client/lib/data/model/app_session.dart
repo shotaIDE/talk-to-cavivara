@@ -7,7 +7,7 @@ sealed class AppSession with _$AppSession {
   const AppSession._();
 
   factory AppSession.signedIn({
-    required String currentHouseId,
+    required String counterId,
     required bool isPro,
   }) = AppSessionSignedIn;
 

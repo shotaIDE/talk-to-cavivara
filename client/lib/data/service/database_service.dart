@@ -13,8 +13,8 @@ DatabaseService databaseService(Ref ref) {
   final appSession = ref.watch(unwrappedCurrentAppSessionProvider);
 
   switch (appSession) {
-    case AppSessionSignedIn(currentHouseId: final currentHouseId):
-      return DatabaseService(counterId: currentHouseId);
+    case AppSessionSignedIn(counterId: final counterId):
+      return DatabaseService(counterId: counterId);
     case AppSessionNotSignedIn():
       throw NoCounterIdError();
   }

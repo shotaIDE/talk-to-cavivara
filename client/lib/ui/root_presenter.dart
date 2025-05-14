@@ -57,7 +57,7 @@ class CurrentAppSession extends _$CurrentAppSession {
     // TODO(ide): RevenueCatから取得する開発用。本番リリース時には削除する
     const isPro = false;
 
-    return AppSession.signedIn(currentHouseId: houseId, isPro: isPro);
+    return AppSession.signedIn(counterId: houseId, isPro: isPro);
   }
 
   Future<void> signIn({required String userId, required String houseId}) async {
@@ -65,7 +65,7 @@ class CurrentAppSession extends _$CurrentAppSession {
     const isPro = false;
 
     state = AsyncValue.data(
-      AppSession.signedIn(currentHouseId: houseId, isPro: isPro),
+      AppSession.signedIn(counterId: houseId, isPro: isPro),
     );
   }
 
