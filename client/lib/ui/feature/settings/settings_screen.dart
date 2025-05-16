@@ -129,8 +129,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       title: const Text('友達に教える'),
       onTap: () {
         // シェア機能
-        Share.share(
-          '家事管理アプリ「House Worker」を使ってみませんか？ https://example.com/houseworker',
+        SharePlus.instance.share(
+          ShareParams(
+            text:
+                'Flutter x Firebaseのテンプレート「Flutter Firebase Base」を使ってみませんか？ https://example.com/houseworker',
+            title: 'Flutter Firebase Base',
+          ),
         );
       },
     );
