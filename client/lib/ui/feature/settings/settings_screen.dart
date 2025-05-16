@@ -132,7 +132,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         SharePlus.instance.share(
           ShareParams(
             text:
-                'Flutter x Firebaseのテンプレート「Flutter Firebase Base」を使ってみませんか？ https://example.com/houseworker',
+                'Flutter x Firebaseのテンプレート「Flutter Firebase Base」を使ってみませんか？ https://example.com/',
             title: 'Flutter Firebase Base',
           ),
         );
