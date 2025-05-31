@@ -4,9 +4,8 @@
   "automerge": true,
   "packageRules": [
     {
-      "matchManagers": ["pub"],
-      "matchPackageNames": ["dart"],
-      "enabled": false
+      "matchPackageNames": ["flutter", "dart"],
+      "groupName": "flutter"
     }
   ],
   "rangeStrategy": "widen"
