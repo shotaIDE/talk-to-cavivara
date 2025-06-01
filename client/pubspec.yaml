@@ -39,7 +39,6 @@ dev_dependencies:
   cider: ^0.2.8
   custom_lint: ^0.7.5
   flutter_launcher_icons: ^0.14.3
-  flutter_lints: ^5.0.0
   flutter_test:
     sdk: flutter
   freezed: ^3.0.4
