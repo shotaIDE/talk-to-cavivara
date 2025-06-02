@@ -46,13 +46,13 @@ android {
     productFlavors {
         create("emulator") {
             dimension = "environment"
-            applicationIdSuffix = ".UnnamedApp.emulator"
+            applicationIdSuffix = ".HouseWorker.emulator"
             manifestPlaceholders["usesCleartextTraffic"] = "true"
             resValue("string", "app_name", "House Worker [Emulator]")
         }
         create("dev") {
             dimension = "environment"
-            applicationIdSuffix = ".UnnamedApp.dev"
+            applicationIdSuffix = ".HouseWorker.dev"
             manifestPlaceholders["usesCleartextTraffic"] = "true"
             resValue("string", "app_name", "House Worker [Dev]")
         }
