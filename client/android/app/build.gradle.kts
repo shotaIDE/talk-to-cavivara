@@ -19,7 +19,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace = "com.example.house_worker"
+    namespace = "ide.shota.colomney.flutter_firebase_base"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -33,8 +33,9 @@ android {
     }
 
     defaultConfig {
-        // applicationId は flavorDimensions で上書きされます
-        applicationId = "ide.shota.colomney.HouseWorker"
+        // 開発アプリでは初期に設定した一時アプリ名を使用し、本番アプリでは正式なアプリ名を使用できるよう、
+        // アプリ名部分を `applicationIdSuffix` で設定する。
+        applicationId = "ide.shota.colomney"
         minSdk = 26
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
@@ -45,19 +46,19 @@ android {
     productFlavors {
         create("emulator") {
             dimension = "environment"
-            applicationIdSuffix = ".emulator"
+            applicationIdSuffix = ".UnnamedApp.emulator"
             manifestPlaceholders["usesCleartextTraffic"] = "true"
             resValue("string", "app_name", "House Worker [Emulator]")
         }
         create("dev") {
             dimension = "environment"
-            applicationIdSuffix = ".dev"
+            applicationIdSuffix = ".UnnamedApp.dev"
             manifestPlaceholders["usesCleartextTraffic"] = "true"
             resValue("string", "app_name", "House Worker [Dev]")
         }
         create("prod") {
             dimension = "environment"
-            // 本番環境はサフィックスなし
+            applicationIdSuffix = ".FlutterFirebaseBase"
             manifestPlaceholders["usesCleartextTraffic"] = "false"
             resValue("string", "app_name", "House Worker")
         }

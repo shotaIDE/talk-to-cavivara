@@ -1,4 +1,4 @@
-package com.example.house_worker
+package ide.shota.colomney.flutter_firebase_base
 
 import io.flutter.embedding.android.FlutterActivity
 
