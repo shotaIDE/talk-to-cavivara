@@ -2,23 +2,6 @@
 
 このドキュメントでは、House Worker プロジェクトの開発に貢献するための手順を説明します。
 
-## 目次
-
-- [開発環境のセットアップ](#開発環境のセットアップ)
-- [初期プロジェクト設定](#初期プロジェクト設定)
-  - [Flavor の設定](#flavor-の設定)
-  - [ツールのバージョン固定](#ツールのバージョン固定)
-  - [Firebase プロジェクト情報の追加](#firebase-プロジェクト情報の追加)
-  - [アイコンの設定](#アイコンの設定)
-  - [fastlane の設定](#fastlane-の設定)
-  - [Android のリリースビルドの設定](#android-のリリースビルドの設定)
-- [Firebase emulator の設定](#firebase-emulator-の設定)
-  - [Firebase emulator のサーバーをローカルマシンで実行する](#firebase-emulator-のサーバーをローカルマシンで実行する)
-  - [Firebase emulator に向けたクライアントアプリを実行する](#firebase-emulator-に向けたクライアントアプリを実行する)
-- [デプロイ](#デプロイ)
-  - [App Store へのデプロイ](#app-store-へのデプロイ)
-  - [Google Play へのデプロイ](#google-play-へのデプロイ)
-
 ## 開発環境のセットアップ
 
 ### 必要条件
@@ -34,7 +17,7 @@
 ### Flavor の設定
 
 Flavor を追加する場合は、以下の公式ドキュメントに従ってセットアップしてください。
-Xcode 上でスキームの設定を行ってください。
+Xcode 上でスキームの設定を行ってください。また、独自のビルド設定を追加する手順も必要です。
 
 https://docs.flutter.dev/deployment/flavors-ios
 
@@ -44,7 +27,7 @@ Xcode のバージョンを強制するには、以下の手順を実行して�
 
 https://qiita.com/manicmaniac/items/5294dd16cd6f835ab2d9
 
-### Firebase プロジェクト情報の追加
+### Flutter アプリへの Firebase プロジェクト構成の追加
 
 #### 事前準備
 
@@ -57,8 +40,8 @@ https://firebase.google.com/docs/flutter/setup?hl=ja&platform=ios#install-cli-to
 以下の共通変数を設定します：
 
 ```shell
-PROJECT_ID_BASE="colomney-house-worker"
-APPLICATION_ID_BASE="ide.shota.colomney.HouseWorker"
+PROJECT_ID_BASE="colomney"
+APPLICATION_ID_BASE="ide.shota.colomney"
 ```
 
 各環境ごとに以下の変数を設定し、共通のコマンドを実行します：
@@ -67,8 +50,8 @@ APPLICATION_ID_BASE="ide.shota.colomney.HouseWorker"
 
 ```shell
 # 環境固有の変数設定
-PROJECT_ID_SUFFIX="-emulator"
-APPLICATION_ID_SUFFIX=".emulator"
+PROJECT_ID_SUFFIX="-house-worker-dev-tf1"
+APPLICATION_ID_SUFFIX=".HouseWorker.emulator"
 DART_FILE_NAME_SUFFIX="_emulator"
 DIRECTORY_NAME_FOR_IOS="Emulator"
 DIRECTORY_NAME_FOR_ANDROID="emulator"
@@ -85,8 +68,8 @@ APPLICATION_ID="${APPLICATION_ID_BASE}${APPLICATION_ID_SUFFIX}"
 
 ```shell
 # 環境固有の変数設定
-PROJECT_ID_SUFFIX="-dev"
-APPLICATION_ID_SUFFIX=".dev"
+PROJECT_ID_SUFFIX="-house-worker-dev-tf1"
+APPLICATION_ID_SUFFIX=".HouseWorker.dev"
 DART_FILE_NAME_SUFFIX="_dev"
 DIRECTORY_NAME_FOR_IOS="Dev"
 DIRECTORY_NAME_FOR_ANDROID="dev"
@@ -103,8 +86,8 @@ APPLICATION_ID="${APPLICATION_ID_BASE}${APPLICATION_ID_SUFFIX}"
 
 ```shell
 # 環境固有の変数設定
-PROJECT_ID_SUFFIX=""
-APPLICATION_ID_SUFFIX=""
+PROJECT_ID_SUFFIX="-pochi-trim"
+APPLICATION_ID_SUFFIX=".PochiTrim"
 DART_FILE_NAME_SUFFIX="_prod"
 DIRECTORY_NAME_FOR_IOS="Prod"
 DIRECTORY_NAME_FOR_ANDROID="prod"
@@ -127,6 +110,18 @@ flutterfire config \
   --android-package-name="${APPLICATION_ID}" \
   --android-out="android/app/src/${DIRECTORY_NAME_FOR_ANDROID}/google-services.json"
 ```
+
+### Firebase プロジェクトの手動設定
+
+Terraform で作成した Firebase プロジェクトに、Firebase Console から手動で以下の設定を行います。
+
+- Google アナリティクスの有効化
+- Remote Config でパラメータを設定
+- Authentication におけるログインプロバイダを設定し、FlutterFire CLI による Firebase プロジェクト構成の再構成を行う
+  - 再構成が必要なタイミングは公式ドキュメントを参照
+    - https://firebase.google.com/docs/flutter/setup?platform=ios&hl=ja#configure-firebase
+  - Google アカウントのログインプロバイダを設定する場合、SHA-1 フィンガープリントを登録する必要がある。Firebase Emulator 環境においても同様に登録が必要。
+    - https://developers.google.com/android/guides/client-auth?hl=ja#using_keytool_on_the_certificate
 
 ### アイコンの設定
 
@@ -209,7 +204,10 @@ Xcode で一旦 Automatically Signing により App Store ビルドを Export �
 配布するアプリを Automatically Signing でビルドすると機能が有効化されていないなどのトラブルに見舞われることが多いので、Manual Signing を採用します。
 :::
 
-Manual Signing で Export した際に出力された plist を [client/ios/ExportOptions.plist](client/ios/ExportOptions.plist) に配置してください。
+Manual Signing で Export した際に出力された plist を環境ごとに以下のファイルに配置してください：
+
+- Dev 環境: [client/ios/ExportOptions_dev.plist](client/ios/ExportOptions_dev.plist)
+- Prod 環境: [client/ios/ExportOptions_prod.plist](client/ios/ExportOptions_prod.plist)
 
 最後に App Store Connect API キーを発行し、[client/ios/fastlane/app-store-connect-api-key.p8](client/ios/fastlane/app-store-connect-api-key.p8) に配置してください。
 以下を参考にしてください。
@@ -227,3 +225,7 @@ https://docs.fastlane.tools/actions/upload_to_play_store/
 fastlane からアップロードするには、1 度手動で Google Play に aab ファイルをアップロードし、内部テスターに公開しておく必要があります。
 
 また、fastlane からアップロードして公開まで行うには、1 度クローズドテストに審査を実施して公開しておく必要があります。
+
+クローズドテストへの審査では、以下のような設定を行います。
+
+- 広告 ID を分析で利用していると申告
