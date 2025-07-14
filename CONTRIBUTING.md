@@ -4,7 +4,21 @@
 
 ## リポジトリを有効化するための手順
 
+### Google Cloud と Firebase のプロジェクト新規作成
+
 [infra/README.md](infra/README.md) を参照して、Firebase と Google Cloud のプロジェクトやリソースを構築します。
+
+### Firebase プロジェクトの手動設定
+
+Terraform で作成した Firebase プロジェクトに、Firebase Console から手動で以下の設定を行います。
+
+- Google アナリティクスの有効化
+- Remote Config でパラメータを設定
+- Authentication におけるログインプロバイダを設定し、FlutterFire CLI による Firebase プロジェクト構成の再構成を行う
+  - 再構成が必要なタイミングは公式ドキュメントを参照
+    - https://firebase.google.com/docs/flutter/setup?platform=ios&hl=ja#configure-firebase
+  - Google アカウントのログインプロバイダを設定する場合、SHA-1 フィンガープリントを登録する必要がある。Firebase Emulator 環境においても同様に登録が必要。
+    - https://developers.google.com/android/guides/client-auth?hl=ja#using_keytool_on_the_certificate
 
 ## 開発環境のセットアップ
 
@@ -114,18 +128,6 @@ flutterfire config \
   --android-package-name="${APPLICATION_ID}" \
   --android-out="android/app/src/${DIRECTORY_NAME_FOR_ANDROID}/google-services.json"
 ```
-
-### Firebase プロジェクトの手動設定
-
-Terraform で作成した Firebase プロジェクトに、Firebase Console から手動で以下の設定を行います。
-
-- Google アナリティクスの有効化
-- Remote Config でパラメータを設定
-- Authentication におけるログインプロバイダを設定し、FlutterFire CLI による Firebase プロジェクト構成の再構成を行う
-  - 再構成が必要なタイミングは公式ドキュメントを参照
-    - https://firebase.google.com/docs/flutter/setup?platform=ios&hl=ja#configure-firebase
-  - Google アカウントのログインプロバイダを設定する場合、SHA-1 フィンガープリントを登録する必要がある。Firebase Emulator 環境においても同様に登録が必要。
-    - https://developers.google.com/android/guides/client-auth?hl=ja#using_keytool_on_the_certificate
 
 ### アイコンの設定
 
