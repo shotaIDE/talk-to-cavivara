@@ -1,5 +1,5 @@
 terraform {
   # backend "gcs" {
-  #   bucket = "colomney-pochi-trim-deploy"
+  #   bucket = "colomney-flu-fire-base-deploy"
   # }
 }
