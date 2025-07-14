@@ -21,38 +21,6 @@ Google アカウントのログインプロバイダを設定する場合、SHA-
 https://developers.google.com/android/guides/client-auth?hl=ja#using_keytool_on_the_certificate
 :::
 
-## 開発環境の追加セットアップ
-
-### Firebase プロジェクトの手動設定
-
-- Google アナリティクスの有効化
-- Remote Config でパラメータを設定
-
-## 開発環境のセットアップ
-
-### 必要条件
-
-- Flutter SDK
-- Firebase CLI
-- Android Studio / Xcode（モバイル開発用）
-
-## 初期プロジェクト設定
-
-以下の設定は、プロジェクトの初期構築時に実施した手順です。通常の開発作業では参照する必要はありません。
-
-### Flavor の設定
-
-Flavor を追加する場合は、以下の公式ドキュメントに従ってセットアップしてください。
-Xcode 上でスキームの設定を行ってください。また、独自のビルド設定を追加する手順も必要です。
-
-https://docs.flutter.dev/deployment/flavors-ios
-
-### ツールのバージョン固定
-
-Xcode のバージョンを強制するには、以下の手順を実行してください。
-
-https://qiita.com/manicmaniac/items/5294dd16cd6f835ab2d9
-
 ### Flutter アプリへの Firebase プロジェクト構成の追加
 
 #### 事前準備
@@ -136,6 +104,38 @@ flutterfire config \
   --android-package-name="${APPLICATION_ID}" \
   --android-out="android/app/src/${DIRECTORY_NAME_FOR_ANDROID}/google-services.json"
 ```
+
+## 開発環境の追加セットアップ
+
+### Firebase プロジェクトの手動設定
+
+- Google アナリティクスの有効化
+- Remote Config でパラメータを設定
+
+## 開発環境のセットアップ
+
+### 必要条件
+
+- Flutter SDK
+- Firebase CLI
+- Android Studio / Xcode（モバイル開発用）
+
+## 初期プロジェクト設定
+
+以下の設定は、プロジェクトの初期構築時に実施した手順です。通常の開発作業では参照する必要はありません。
+
+### Flavor の設定
+
+Flavor を追加する場合は、以下の公式ドキュメントに従ってセットアップしてください。
+Xcode 上でスキームの設定を行ってください。また、独自のビルド設定を追加する手順も必要です。
+
+https://docs.flutter.dev/deployment/flavors-ios
+
+### ツールのバージョン固定
+
+Xcode のバージョンを強制するには、以下の手順を実行してください。
+
+https://qiita.com/manicmaniac/items/5294dd16cd6f835ab2d9
 
 ### アイコンの設定
 
