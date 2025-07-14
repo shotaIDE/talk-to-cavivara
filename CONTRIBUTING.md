@@ -107,6 +107,10 @@ flutterfire config \
   --android-out="android/app/src/${DIRECTORY_NAME_FOR_ANDROID}/google-services.json"
 ```
 
+### GitHub Actions の Secrets の設定
+
+GitHub Actions で必要な Secrets を設定します。
+
 ## 開発環境の追加セットアップ
 
 ### Firebase プロジェクトの手動設定
