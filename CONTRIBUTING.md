@@ -54,8 +54,8 @@ APPLICATION_ID_BASE="ide.shota.colomney"
 
 ```shell
 # 環境固有の変数設定
-PROJECT_ID_SUFFIX="-house-worker-dev-tf1"
-APPLICATION_ID_SUFFIX=".HouseWorker.emulator"
+PROJECT_ID_SUFFIX="-flutter-firebase-base-tf1"
+APPLICATION_ID_SUFFIX=".FlutterFirebaseBase.emulator"
 DART_FILE_NAME_SUFFIX="_emulator"
 DIRECTORY_NAME_FOR_IOS="Emulator"
 DIRECTORY_NAME_FOR_ANDROID="emulator"
@@ -72,8 +72,8 @@ APPLICATION_ID="${APPLICATION_ID_BASE}${APPLICATION_ID_SUFFIX}"
 
 ```shell
 # 環境固有の変数設定
-PROJECT_ID_SUFFIX="-house-worker-dev-tf1"
-APPLICATION_ID_SUFFIX=".HouseWorker.dev"
+PROJECT_ID_SUFFIX="-flutter-firebase-base-dev-tf1"
+APPLICATION_ID_SUFFIX=".FlutterFirebaseBase.dev"
 DART_FILE_NAME_SUFFIX="_dev"
 DIRECTORY_NAME_FOR_IOS="Dev"
 DIRECTORY_NAME_FOR_ANDROID="dev"

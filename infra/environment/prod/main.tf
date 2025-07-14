@@ -1,7 +1,7 @@
 locals {
   google_project_id_suffix           = "-pochi-trim"
   google_project_display_name_suffix = ""
-  application_id_suffix              = ".PochiTrim"
+  application_id_suffix              = ".FlutterFirebaseBase"
 }
 
 terraform {
