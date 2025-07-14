@@ -15,7 +15,7 @@
   - https://developer.hashicorp.com/terraform/install
 - Google Cloud CLI のインストール
   - https://cloud.google.com/sdk/docs/install-sdk?hl=ja
-- Google Cloud の認証
+- Google Cloud CLI の認証
   - https://developer.hashicorp.com/terraform/tutorials/gcp-get-started/google-cloud-platform-build#authenticate-to-google-cloud
 
 ### 開発環境のデプロイ
