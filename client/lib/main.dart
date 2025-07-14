@@ -15,8 +15,9 @@ import 'package:house_worker/data/service/auth_service.dart';
 import 'package:house_worker/ui/root_app.dart';
 import 'package:logging/logging.dart';
 
-// TODO(ide): 本番環境を構築した場合は、_prod ファイルをインポートする
+// TODO(ide): 本番環境を構築した後、_prod ファイルをインポートするように修正する
 import 'firebase_options_dev.dart' as prod;
+// import 'firebase_options_prod.dart' as prod;
 import 'firebase_options_dev.dart' as dev;
 
 // アプリケーションのロガー
