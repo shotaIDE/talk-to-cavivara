@@ -1,3 +1,57 @@
+# Coding guide
+
+## Rules that must be followed
+
+### Applying the formatter
+
+After modifying code, always apply the formatter.
+
+The execution command is as follows.
+
+```bash
+dart format path/to/your/file.dart
+```
+
+### Applying Linter automatic fixes
+
+After modifying code, always apply Linter automatic fixes.
+
+The execution command is as follows.
+
+```bash
+dart fix --apply
+```
+
+### Resolving Linter warnings
+
+After modifying code, always check for Linter and compiler warnings.
+If warnings occur, resolve them.
+
+### Check that tests are passing and make corrections
+
+When modifying code, always run unit tests and make sure all tests pass.
+
+### Adding unit tests
+
+When you make code modifications, consider whether there is room to add unit tests.
+If you can add unit tests, be sure to add them.
+
+### Refactoring
+
+When you make code modifications, consider whether there is room to refactor.
+If you can refactor, be sure to refactor.
+
+### Delete unnecessary code
+
+If you have modified the code, check to see if any unnecessary code remains.
+If any unnecessary code remains, delete it immediately.
+
+### Appropriate use of SDK functions, etc.
+
+When using new SDK functions that have not been used in the code base until now, check the following.
+
+- Check the official documentation to make sure the usage is simple. If the usage is complicated, revise it to a simpler usage.
+
 # Architecture
 
 This project is an iOS and Android application, including front-end and back-end code.
@@ -41,11 +95,35 @@ In that case, troubleshoot by investigating any reported issues in Flutter or co
 
 ### Style
 
-Resolve linter and compiler warnings immediately.
-
 Always use early returns to reduce nesting.
 
 Use `try`-`catch` statements to enclose only processes that may throw, and in the smallest possible scope.
+
+Example:
+
+```dart
+// Define the return value of a process that may throw an exception even outside the scope of try-catch, so that it is used first.
+final CustomerInfo customerInfo;
+try {
+// Process that may throw an exception
+  customerInfo = await Purchases.purchasePackage(product.package);
+} catch (e) {
+  throw PurchaseException();
+}
+
+// Subsequent process
+return customerInfo.entitlements;
+```
+
+If you do not use a function argument, explicitly indicate that it is unused by naming it `_`.
+
+Example:
+
+```dart
+onTap: (_) { // If you do not use an argument, explicitly state that it is unused as "_"
+// ...
+},
+```
 
 Immediately delete unused code.
 
@@ -57,11 +135,11 @@ Implement processes with similar functions in the same flow. Check whether a sim
 
 ### Maintain sufficient comments
 
-Add comments only when necessary to clarify the intent or purpose of the code. Avoid comments if the content of the code is clear.
+If you add code comments, finally check their sufficiency from the following perspective. If they are excessive or insufficient, delete or add them.
 
-Describe in detail, including the reasons, particularly for important points and pitfalls.
-
-Write comments in Japanese.
+- Add comments only when necessary to clarify the intent or purpose of the code. Avoid comments if the content of the code is clear.
+- Describe in detail any particularly important points to note or pitfalls, including the reasons for them.
+- Comments should be written in Japanese.
 
 ### Maintain readability of naming
 
@@ -72,6 +150,10 @@ Use meaningful names even for temporary variables.
 Use consistent naming patterns for variables that handle the same type of data.
 
 ## Rules for Flutter
+
+### Defining a Class
+
+When implementing a class, use the `const` constructor whenever you can make the class immutable.
 
 ### Defining the domain model
 
@@ -117,6 +199,20 @@ Future<String> currentUser(Ref ref) async {
 ### Handle errors properly
 
 Catch asynchronous processing errors properly and notify the user.
+
+Instead of returning a Boolean value or a generic exception, use a custom exception class to represent a specific error condition. If you don't need detailed error information, define a simple exception class that has no member variables.
+
+Example:
+
+```dart
+// Definition
+class DeleteWorkLogException implements Exception {
+  const DeleteWorkLogException();
+}
+
+// Usage
+throw const DeleteWorkLogException();
+```
 
 ### Build UI properly
 
@@ -228,6 +324,15 @@ class SomeScreen extends StatelessWidget {
 // When transitioning
 Navigator.of(context).push(SomeScreen.route);
 ```
+
+### Unit testing
+
+- Use `mocktail` for mocks.
+- If you want to use the same dummy constants between test cases, define them at the beginning of the `group` function, the beginning of the `main` function, or in the `setUp` function to make them common.
+
+### Operation
+
+- Implement a process to send a report via Crashlytics if an exception or error that was not anticipated during implementation occurs at runtime.
 
 ## Troubleshooting
 
