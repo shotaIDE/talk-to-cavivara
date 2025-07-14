@@ -46,12 +46,12 @@ android {
     productFlavors {
         create("emulator") {
             dimension = "environment"
-            applicationIdSuffix = ".HouseWorker.emulator"
+            applicationIdSuffix = ".FlutterFirebaseBase.emulator"
             manifestPlaceholders["usesCleartextTraffic"] = "true"
         }
         create("dev") {
             dimension = "environment"
-            applicationIdSuffix = ".HouseWorker.dev"
+            applicationIdSuffix = ".FlutterFirebaseBase.dev"
             manifestPlaceholders["usesCleartextTraffic"] = "true"
         }
         create("prod") {
