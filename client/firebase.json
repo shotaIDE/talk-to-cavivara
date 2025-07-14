@@ -34,6 +34,12 @@
             "appId": "1:510251990521:ios:e35f34ca4785a542cb1128",
             "uploadDebugSymbols": true,
             "fileOutput": "ios/Runner/Firebase/Emulator/GoogleService-Info.plist"
+          },
+          "Release-emulator": {
+            "projectId": "colomney-flu-fire-base-dev-1",
+            "appId": "1:510251990521:ios:e35f34ca4785a542cb1128",
+            "uploadDebugSymbols": true,
+            "fileOutput": "ios/Runner/Firebase/Emulator/GoogleService-Info.plist"
           }
         }
       },
