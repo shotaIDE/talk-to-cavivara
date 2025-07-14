@@ -1,6 +1,6 @@
 locals {
-  google_project_id_suffix           = "-flutter-firebase-base-dev-tf1"
-  google_project_display_name_suffix = "-Dev-Tf1"
+  google_project_id_suffix           = "-flu-fire-base-dev-1"
+  google_project_display_name_suffix = "-Dev-1"
   application_id_suffix              = ".FlutterFirebaseBase.dev"
 }
 
