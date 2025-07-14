@@ -23,6 +23,8 @@ https://developers.google.com/android/guides/client-auth?hl=ja#using_keytool_on_
 
 ### Flutter アプリへの Firebase プロジェクト構成の追加
 
+Flutter アプリに Firebase プロジェクトの構成を追加するために、以下の手順を実行します。
+
 #### 事前準備
 
 Firebase CLI のインストールとログイン、FlutterFire CLI のインストールが必要です。以下を参照してください。
