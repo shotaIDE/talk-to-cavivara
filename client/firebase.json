@@ -9,8 +9,8 @@
             "fileOutput": "android/app/src/dev/google-services.json"
           },
           "src/emulator": {
-            "projectId": "colomney-house-worker-dev-tf1",
-            "appId": "1:916996426069:android:6813917a841891e9ebc7dc",
+            "projectId": "colomney-flu-fire-base-dev-1",
+            "appId": "1:510251990521:android:39e1d595d3a810c7cb1128",
             "fileOutput": "android/app/src/emulator/google-services.json"
           },
           "src/prod": {
@@ -24,9 +24,9 @@
         "buildConfigurations": {
           "Debug-emulator": {
             "projectId": "colomney-flu-fire-base-dev-1",
-            "appId": "1:510251990521:ios:5e5eb08c7832c19ccb1128",
+            "appId": "1:510251990521:ios:e35f34ca4785a542cb1128",
             "uploadDebugSymbols": true,
-            "fileOutput": "ios/Runner/Firebase/Dev/GoogleService-Info.plist"
+            "fileOutput": "ios/Runner/Firebase/Emulator/GoogleService-Info.plist"
           },
           "Debug-dev": {
             "projectId": "colomney-house-worker-dev-tf1",
@@ -80,10 +80,10 @@
       },
       "dart": {
         "lib/firebase_options_emulator.dart": {
-          "projectId": "colomney-house-worker-dev-tf1",
+          "projectId": "colomney-flu-fire-base-dev-1",
           "configurations": {
-            "android": "1:916996426069:android:6813917a841891e9ebc7dc",
-            "ios": "1:916996426069:ios:97f6b03907d54197ebc7dc"
+            "android": "1:510251990521:android:39e1d595d3a810c7cb1128",
+            "ios": "1:510251990521:ios:e35f34ca4785a542cb1128"
           }
         },
         "lib/firebase_options_dev.dart": {
