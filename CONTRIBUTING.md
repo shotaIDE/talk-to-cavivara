@@ -25,6 +25,11 @@ https://developers.google.com/android/guides/client-auth?hl=ja#using_keytool_on_
 
 Flutter アプリに Firebase プロジェクトの構成を追加するために、以下の手順を実行します。
 
+[client/firebase.json](client/firebase.json) ファイルにおける `buildConfigurations` の設定項目を充足するため、以下のパターン数実行する必要があります。
+
+- Emulator/Dev x Debug/Profile/Release の 6 パターン
+  - Prod 環境は後から実施する想定
+
 #### 事前準備
 
 Firebase CLI のインストールとログイン、FlutterFire CLI のインストールが必要です。以下を参照してください。
