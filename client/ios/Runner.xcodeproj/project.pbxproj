@@ -693,7 +693,7 @@
 		};
 		7823915B2D86A33C0009B3F8 /* Release-dev */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 78AA107F2DEDCBDA008332AA /* Release-prod.xcconfig */;
+			baseConfigurationReference = 78AA107D2DEDCBDA008332AA /* Release-dev.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(APP_ICON_NAME_SUFFIX)";
 				CLANG_ENABLE_MODULES = YES;
