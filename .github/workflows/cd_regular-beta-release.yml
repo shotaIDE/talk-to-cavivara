@@ -1,8 +1,8 @@
 name: CD / Regular beta release
 
 on:
-  # schedule:
-  #   - cron: "0 19 * * *" # 毎日04:00(JST)
+  schedule:
+    - cron: "0 19 * * *" # 毎日04:00(JST)
   workflow_dispatch:
 
 concurrency:
