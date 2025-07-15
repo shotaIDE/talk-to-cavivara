@@ -125,6 +125,11 @@ Dev 環境のプロビジョニングプロファイルを手動で登録しま�
 
 Xcode で「Download Manual Profiles」を実行し、マシンに作成したプロビジョニングプロファイルをダウンロードします。
 
+[client/ios/ExportOptions_dev.plist](client/ios/ExportOptions_dev.plist) における以下の項目を手動で修正します。
+
+- Bundle Identifier
+- プロビジョニングプロファイルの名前
+
 ## 開発環境の追加セットアップ
 
 ### Firebase プロジェクトの手動設定
