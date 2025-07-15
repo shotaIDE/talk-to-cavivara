@@ -136,6 +136,12 @@ Xcode の TARGET で「Signing & Capabilities」タブを開き、以下の項�
 
 App Store Connect にアプリを登録します。
 
+内部テスターと外部テスターのグループを作成します。
+
+Test Flight で外部テストを利用するために、外部テスト用の情報を登録します。
+
+[client/ios/fastlane/.env.example](client/ios/fastlane/.env.example) を参考に、`client/ios/fastlane/.env` ファイルを作成し、中身を設定します。
+
 Dev 環境のデプロイレーンで動作確認します。
 
 ## 開発環境の追加セットアップ
