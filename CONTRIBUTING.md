@@ -116,6 +116,15 @@ flutterfire config \
 
 GitHub Actions で必要な Secrets を設定します。
 
+### App Store Connect の設定
+
+Apple Developer Console で Bundle Identifier とプロビジョニングプロファイルを登録しておきます。
+一旦 fastlane で Dev アプリのビルドを行うことで、各種 Capability が付与された Bundle Identifier が自動で登録されるので、それを利用すると少し楽です。
+
+Dev 環境のプロビジョニングプロファイルを手動で登録します。
+
+Xcode で「Download Manual Profiles」を実行し、マシンに作成したプロビジョニングプロファイルをダウンロードします。
+
 ## 開発環境の追加セットアップ
 
 ### Firebase プロジェクトの手動設定
