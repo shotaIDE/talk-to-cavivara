@@ -130,6 +130,10 @@ Xcode で「Download Manual Profiles」を実行し、マシンに作成した�
 - Bundle Identifier
 - プロビジョニングプロファイルの名前
 
+App Store Connect にアプリを登録します。
+
+Dev 環境のデプロイレーンで動作確認します。
+
 ## 開発環境の追加セットアップ
 
 ### Firebase プロジェクトの手動設定
