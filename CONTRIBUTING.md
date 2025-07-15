@@ -125,6 +125,10 @@ Dev 環境のプロビジョニングプロファイルを手動で登録しま�
 
 Xcode で「Download Manual Profiles」を実行し、マシンに作成したプロビジョニングプロファイルをダウンロードします。
 
+Xcode の TARGET で「Signing & Capabilities」タブを開き、以下の項目を設定します。
+
+- Provisioning Profile: 手動で登録したプロビジョニングプロファイルを選択
+
 [client/ios/ExportOptions_dev.plist](client/ios/ExportOptions_dev.plist) における以下の項目を手動で修正します。
 
 - Bundle Identifier
