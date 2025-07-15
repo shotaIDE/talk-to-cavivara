@@ -114,7 +114,7 @@ flutterfire config \
 
 ### GitHub Actions の Secrets の設定
 
-GitHub Actions で必要な Secrets を設定します。
+GitHub Actions CI のワークフローを元に、GitHub Actions の Secrets を設定します。
 
 ### App Store Connect の設定
 
@@ -143,6 +143,8 @@ Test Flight で外部テストを利用するために、外部テスト用の�
 [client/ios/fastlane/.env.example](client/ios/fastlane/.env.example) を参考に、`client/ios/fastlane/.env` ファイルを作成し、中身を設定します。
 
 Dev 環境のデプロイレーンで動作確認します。
+
+GitHub Actions CD のワークフローを元に、GitHub Actions の Secrets を設定します。
 
 ## 開発環境の追加セットアップ
 
