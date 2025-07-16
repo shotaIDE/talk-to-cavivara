@@ -47,7 +47,7 @@ Future<void> main() async {
   await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(
     isAnalyticsEnabled,
   );
-  _logger.info('Load Firebase Analytics: $isAnalyticsEnabled');
+  _logger.info('Firebase Analytics: $isAnalyticsEnabled');
 
   if (isCrashlyticsEnabled) {
     FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
@@ -57,14 +57,15 @@ Future<void> main() async {
       return true;
     };
 
-    _logger.info('Load Firebase Crashlytics');
+    _logger.info('Firebase Crashlytics: true');
+  } else {
+    _logger.info('Firebase Crashlytics: false');
   }
 
   runApp(const ProviderScope(child: RootApp()));
 }
 
 void _setupLogging() {
-  // ルートロガーの設定
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((record) {
     // 開発環境では詳細なログを出力
