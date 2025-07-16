@@ -72,7 +72,9 @@ class _RootAppState extends ConsumerState<RootApp> {
       builder: (_, child) => _wrapByAppBanner(child),
       theme: getLightTheme(),
       darkTheme: getDarkTheme(),
-      debugShowCheckedModeBanner: showAppDebugBanner,
+      // `_wrapByAppBanner` でオリジナルのバナーを表示するため、
+      // デフォルトのデバッグバナーは無効化する
+      debugShowCheckedModeBanner: false,
     );
   }
 
