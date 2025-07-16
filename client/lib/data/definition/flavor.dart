@@ -16,7 +16,8 @@ Flavor _getFlavor() {
           .join(', ');
       throw UnimplementedError(
         'Flavor "$flavorString" is not implemented. '
-        'Please specify a valid flavor, such as $validFlavorNamesDescription.',
+        'Please specify one of the valid flavors: '
+        '$validFlavorNamesDescription.',
       );
     },
   );
