@@ -10,7 +10,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/data/definition/app_feature.dart';
-import 'package:house_worker/data/definition/flavor_config.dart';
+import 'package:house_worker/data/definition/flavor.dart';
 import 'package:house_worker/data/service/auth_service.dart';
 import 'package:house_worker/ui/root_app.dart';
 import 'package:logging/logging.dart';
@@ -19,6 +19,7 @@ import 'package:logging/logging.dart';
 import 'firebase_options_dev.dart' as prod;
 // import 'firebase_options_prod.dart' as prod;
 import 'firebase_options_dev.dart' as dev;
+import 'firebase_options_emulator.dart' as emulator;
 
 // アプリケーションのロガー
 final _logger = Logger('FlutterFirebaseBase');
@@ -67,72 +68,21 @@ Future<void> _setupFirebaseEmulators(String host) async {
   FirebaseFunctions.instance.useFunctionsEmulator(host, 5001);
 }
 
-// 環境設定を行う関数
-void setupFlavorConfig() {
-  // Flutterのビルド設定から自動的にflavorを取得
-  // Flutterのビルドシステムで設定されたFLAVOR環境変数を使用
-  const flavorName = String.fromEnvironment(
-    'FLUTTER_APP_FLAVOR',
-    defaultValue: 'emulator',
-  );
-
-  _logger.info('検出されたflavor: $flavorName');
-
-  switch (flavorName.toLowerCase()) {
-    case 'prod':
-      FlavorConfig(
-        flavor: Flavor.prod,
-        name: 'PROD',
-        color: Colors.blue,
-        firebaseOptions: prod.DefaultFirebaseOptions.currentPlatform,
-      );
-    case 'emulator':
-      FlavorConfig(
-        flavor: Flavor.emulator,
-        name: 'EMULATOR',
-        color: Colors.purple,
-        useFirebaseEmulator: true,
-      );
-    case 'dev':
-    default:
-      FlavorConfig(
-        flavor: Flavor.dev,
-        name: 'DEV',
-        color: Colors.green,
-        firebaseOptions: dev.DefaultFirebaseOptions.currentPlatform,
-      );
-  }
-
-  _logger.info('アプリケーション環境: ${FlavorConfig.instance.name}');
-}
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // ロギングシステムの初期化
   _setupLogging();
 
-  // 環境設定の初期化
-  setupFlavorConfig();
-
   try {
-    // Firebase初期化
-    if (FlavorConfig.instance.firebaseOptions != null) {
-      await Firebase.initializeApp(
-        options: FlavorConfig.instance.firebaseOptions,
-      );
-    } else {
-      await Firebase.initializeApp();
-    }
+    await Firebase.initializeApp(options: _getFirebaseOptions());
+
     _logger.info('Firebase initialized successfully');
 
-    // エミュレーターの設定が有効な場合のみ適用
-    if (FlavorConfig.instance.useFirebaseEmulator) {
-      // エミュレーターのホスト情報を取得
+    if (useFirebaseEmulator) {
       final emulatorHost = _getEmulatorHost();
       _logger.info('エミュレーターホスト: $emulatorHost');
 
-      // エミュレーターの設定を適用
       await _setupFirebaseEmulators(emulatorHost);
       _logger.info('Firebase Emulator設定を適用しました');
     }
@@ -159,4 +109,15 @@ Future<void> main() async {
   }
 
   runApp(const ProviderScope(child: RootApp()));
+}
+
+FirebaseOptions? _getFirebaseOptions() {
+  switch (flavor) {
+    case Flavor.emulator:
+      return emulator.DefaultFirebaseOptions.currentPlatform;
+    case Flavor.dev:
+      return dev.DefaultFirebaseOptions.currentPlatform;
+    case Flavor.prod:
+      return prod.DefaultFirebaseOptions.currentPlatform;
+  }
 }
