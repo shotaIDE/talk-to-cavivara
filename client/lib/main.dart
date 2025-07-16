@@ -33,7 +33,9 @@ Future<void> main() async {
 
     if (useFirebaseEmulator) {
       await _setupFirebaseEmulators();
-      _logger.info('Enabled Firebase Emulator');
+      _logger.info('Firebase Emulator: true');
+    } else {
+      _logger.info('Firebase Emulator: false');
     }
   } on Exception catch (e) {
     _logger.severe('Failed to initialize Firebase', e);
