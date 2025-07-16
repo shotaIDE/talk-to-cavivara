@@ -35,14 +35,14 @@ Future<void> main() async {
       await _setupFirebaseEmulators();
       _logger.info('Enabled Firebase Emulator');
     }
-
-    // 既存ユーザーのログイン状態を確認してUIDをログ出力
-    final container = ProviderContainer();
-    container.read(authServiceProvider).checkCurrentUser();
   } on Exception catch (e) {
     _logger.severe('Failed to initialize Firebase', e);
     // Firebase が初期化できなくても、アプリを続行する
   }
+
+  // 既存ユーザーのログイン状態を確認してUIDをログ出力
+  final container = ProviderContainer();
+  container.read(authServiceProvider).checkCurrentUser();
 
   await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(
     isAnalyticsEnabled,
