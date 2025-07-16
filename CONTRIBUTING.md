@@ -1,6 +1,175 @@
 # 開発貢献ガイド
 
-このドキュメントでは、House Worker プロジェクトの開発に貢献するための手順を説明します。
+このドキュメントでは、プロジェクトの開発に貢献するための手順を説明します。
+
+## 開発環境を有効化するためのクイックスタートガイド
+
+### Google Cloud と Firebase のプロジェクト新規作成
+
+[infra/README.md](infra/README.md) を参照して、Firebase と Google Cloud のプロジェクトやリソースを構築します。
+
+### Firebase プロジェクトの手動設定
+
+Terraform で作成した Firebase プロジェクトに、Firebase Console から手動で以下の設定を行います。
+
+- Authentication におけるログインプロバイダを設定し、FlutterFire CLI による Firebase プロジェクト構成の再構成を行う
+  - 再構成が必要なタイミングは公式ドキュメントを参照
+    - https://firebase.google.com/docs/flutter/setup?platform=ios&hl=ja#configure-firebase
+
+:::message
+Google アカウントのログインプロバイダを設定する場合、SHA-1 フィンガープリントを登録する必要がある。Firebase Emulator 環境においても同様に登録が必要。
+https://developers.google.com/android/guides/client-auth?hl=ja#using_keytool_on_the_certificate
+:::
+
+### Flutter アプリへの Firebase プロジェクト構成の追加
+
+Flutter アプリに Firebase プロジェクトの構成を追加するために、以下の手順を実行します。
+
+[client/firebase.json](client/firebase.json) ファイルにおける `buildConfigurations` の設定項目を充足するため、以下のパターン数実行する必要があります。
+
+- Emulator/Dev x Debug/Profile/Release の 6 パターン
+  - Prod 環境は後から実施する想定
+
+#### 事前準備
+
+Firebase CLI のインストールとログイン、FlutterFire CLI のインストールが必要です。以下を参照してください。
+
+https://firebase.google.com/docs/flutter/setup?hl=ja&platform=ios#install-cli-tools
+
+#### 環境別の設定更新手順
+
+以下の共通変数を設定します：
+
+```shell
+PROJECT_ID_BASE="colomney"
+APPLICATION_ID_BASE="ide.shota.colomney"
+```
+
+各環境ごとに以下の変数を設定し、共通のコマンドを実行します：
+
+##### Emulator 環境の設定
+
+```shell
+# 環境固有の変数設定
+PROJECT_ID_SUFFIX="-flu-fire-base-dev-1"
+APPLICATION_ID_SUFFIX=".FlutterFirebaseBase.emulator"
+DART_FILE_NAME_SUFFIX="_emulator"
+DIRECTORY_NAME_FOR_IOS="Emulator"
+DIRECTORY_NAME_FOR_ANDROID="emulator"
+PROJECT_ID="${PROJECT_ID_BASE}${PROJECT_ID_SUFFIX}"
+APPLICATION_ID="${APPLICATION_ID_BASE}${APPLICATION_ID_SUFFIX}"
+```
+
+実行時、プロンプトの選択肢では以下を選んでください：
+
+- "Build configuration"
+- "Debug-emulator"
+
+##### Dev 環境の設定
+
+```shell
+# 環境固有の変数設定
+PROJECT_ID_SUFFIX="-flu-fire-base-dev-1"
+APPLICATION_ID_SUFFIX=".FlutterFirebaseBase.dev"
+DART_FILE_NAME_SUFFIX="_dev"
+DIRECTORY_NAME_FOR_IOS="Dev"
+DIRECTORY_NAME_FOR_ANDROID="dev"
+PROJECT_ID="${PROJECT_ID_BASE}${PROJECT_ID_SUFFIX}"
+APPLICATION_ID="${APPLICATION_ID_BASE}${APPLICATION_ID_SUFFIX}"
+```
+
+実行時、プロンプトの選択肢では以下を選んでください：
+
+- "Build configuration"
+- "Debug-dev"
+
+##### Prod 環境の設定
+
+```shell
+# 環境固有の変数設定
+PROJECT_ID_SUFFIX="-flu-fire-base"
+APPLICATION_ID_SUFFIX=".FlutterFirebaseBase"
+DART_FILE_NAME_SUFFIX="_prod"
+DIRECTORY_NAME_FOR_IOS="Prod"
+DIRECTORY_NAME_FOR_ANDROID="prod"
+PROJECT_ID="${PROJECT_ID_BASE}${PROJECT_ID_SUFFIX}"
+APPLICATION_ID="${APPLICATION_ID_BASE}${APPLICATION_ID_SUFFIX}"
+```
+
+##### 共通のコマンド実行
+
+環境ごとの変数を設定した後、以下の共通コマンドを実行します：
+
+```shell
+# Firebaseの設定ファイル生成
+cd client/
+flutterfire config \
+  --project="${PROJECT_ID}" \
+  --out="lib/firebase_options${DART_FILE_NAME_SUFFIX}.dart" \
+  --ios-bundle-id="${APPLICATION_ID}" \
+  --ios-out="ios/Runner/Firebase/${DIRECTORY_NAME_FOR_IOS}/GoogleService-Info.plist" \
+  --android-package-name="${APPLICATION_ID}" \
+  --android-out="android/app/src/${DIRECTORY_NAME_FOR_ANDROID}/google-services.json"
+```
+
+### GitHub Actions の Secrets の設定
+
+GitHub Actions CI のワークフローを元に、GitHub Actions の Secrets を設定します。
+
+### App Store Connect の設定
+
+Apple Developer Console で Bundle Identifier とプロビジョニングプロファイルを登録しておきます。
+一旦 fastlane で Dev アプリのビルドを行うことで、各種 Capability が付与された Bundle Identifier が自動で登録されるので、それを利用すると少し楽です。
+
+Dev 環境のプロビジョニングプロファイルを手動で登録します。
+
+Xcode で「Download Manual Profiles」を実行し、マシンに作成したプロビジョニングプロファイルをダウンロードします。
+
+Xcode の TARGET で「Signing & Capabilities」タブを開き、以下の項目を設定します。
+
+- Provisioning Profile: 手動で登録したプロビジョニングプロファイルを選択
+
+[client/ios/ExportOptions_dev.plist](client/ios/ExportOptions_dev.plist) における以下の項目を手動で修正します。
+
+- Bundle Identifier
+- プロビジョニングプロファイルの名前
+
+App Store Connect にアプリを登録します。
+
+内部テスターと外部テスターのグループを作成します。
+
+Test Flight で外部テストを利用するために、外部テスト用の情報を登録します。
+
+[client/ios/fastlane/.env.example](client/ios/fastlane/.env.example) を参考に、`client/ios/fastlane/.env` ファイルを作成し、中身を設定します。
+
+Dev 環境のデプロイレーンで動作確認します。
+
+GitHub Actions CD のワークフローを元に、GitHub Actions の Secrets を設定します。
+
+### Google Play Console の設定
+
+Google Play Console でアプリを登録します。
+
+アプリ情報を登録することで、クローズドテストが可能な状態にします。
+
+参照者のロールを持つサービスアカウントを作成し、JSON キーファイルを [client/android/fastlane/google-play-service-account-key.json](client/android/fastlane/google-play-service-account-key.json) ダウンロードします。
+
+サービスアカウントを Google Play Console でアプリに対して必要な権限を与えます。
+
+1 回アプリをクローズドテストトラックに手動でアップロードします。
+これにより、アプリに Application ID が紐づけられることにより、fastlane からアプリのアップロードが可能になります。
+
+クローズドテストの公開を審査に提出します。
+審査が通ることにより、内部テストに対して fastlane からアップロードし公開までを行うことが可能になります。
+
+Dev 環境のデプロイレーンで動作確認します。
+
+## 開発環境の追加セットアップ
+
+### Firebase プロジェクトの手動設定
+
+- Google アナリティクスの有効化
+- Remote Config でパラメータを設定
 
 ## 開発環境のセットアップ
 
@@ -26,102 +195,6 @@ https://docs.flutter.dev/deployment/flavors-ios
 Xcode のバージョンを強制するには、以下の手順を実行してください。
 
 https://qiita.com/manicmaniac/items/5294dd16cd6f835ab2d9
-
-### Flutter アプリへの Firebase プロジェクト構成の追加
-
-#### 事前準備
-
-Firebase CLI のインストールとログイン、FlutterFire CLI のインストールが必要です。以下を参照してください。
-
-https://firebase.google.com/docs/flutter/setup?hl=ja&platform=ios#install-cli-tools
-
-#### 環境別の設定更新手順
-
-以下の共通変数を設定します：
-
-```shell
-PROJECT_ID_BASE="colomney"
-APPLICATION_ID_BASE="ide.shota.colomney"
-```
-
-各環境ごとに以下の変数を設定し、共通のコマンドを実行します：
-
-##### Emulator 環境の設定
-
-```shell
-# 環境固有の変数設定
-PROJECT_ID_SUFFIX="-house-worker-dev-tf1"
-APPLICATION_ID_SUFFIX=".HouseWorker.emulator"
-DART_FILE_NAME_SUFFIX="_emulator"
-DIRECTORY_NAME_FOR_IOS="Emulator"
-DIRECTORY_NAME_FOR_ANDROID="emulator"
-PROJECT_ID="${PROJECT_ID_BASE}${PROJECT_ID_SUFFIX}"
-APPLICATION_ID="${APPLICATION_ID_BASE}${APPLICATION_ID_SUFFIX}"
-```
-
-実行時、プロンプトの選択肢では以下を選んでください：
-
-- "Build configuration"
-- "Debug-emulator"
-
-##### Dev 環境の設定
-
-```shell
-# 環境固有の変数設定
-PROJECT_ID_SUFFIX="-house-worker-dev-tf1"
-APPLICATION_ID_SUFFIX=".HouseWorker.dev"
-DART_FILE_NAME_SUFFIX="_dev"
-DIRECTORY_NAME_FOR_IOS="Dev"
-DIRECTORY_NAME_FOR_ANDROID="dev"
-PROJECT_ID="${PROJECT_ID_BASE}${PROJECT_ID_SUFFIX}"
-APPLICATION_ID="${APPLICATION_ID_BASE}${APPLICATION_ID_SUFFIX}"
-```
-
-実行時、プロンプトの選択肢では以下を選んでください：
-
-- "Build configuration"
-- "Debug-dev"
-
-##### Prod 環境の設定
-
-```shell
-# 環境固有の変数設定
-PROJECT_ID_SUFFIX="-pochi-trim"
-APPLICATION_ID_SUFFIX=".PochiTrim"
-DART_FILE_NAME_SUFFIX="_prod"
-DIRECTORY_NAME_FOR_IOS="Prod"
-DIRECTORY_NAME_FOR_ANDROID="prod"
-PROJECT_ID="${PROJECT_ID_BASE}${PROJECT_ID_SUFFIX}"
-APPLICATION_ID="${APPLICATION_ID_BASE}${APPLICATION_ID_SUFFIX}"
-```
-
-##### 共通のコマンド実行
-
-環境ごとの変数を設定した後、以下の共通コマンドを実行します：
-
-```shell
-# Firebaseの設定ファイル生成
-cd client/
-flutterfire config \
-  --project="${PROJECT_ID}" \
-  --out="lib/firebase_options${DART_FILE_NAME_SUFFIX}.dart" \
-  --ios-bundle-id="${APPLICATION_ID}" \
-  --ios-out="ios/Runner/Firebase/${DIRECTORY_NAME_FOR_IOS}/GoogleService-Info.plist" \
-  --android-package-name="${APPLICATION_ID}" \
-  --android-out="android/app/src/${DIRECTORY_NAME_FOR_ANDROID}/google-services.json"
-```
-
-### Firebase プロジェクトの手動設定
-
-Terraform で作成した Firebase プロジェクトに、Firebase Console から手動で以下の設定を行います。
-
-- Google アナリティクスの有効化
-- Remote Config でパラメータを設定
-- Authentication におけるログインプロバイダを設定し、FlutterFire CLI による Firebase プロジェクト構成の再構成を行う
-  - 再構成が必要なタイミングは公式ドキュメントを参照
-    - https://firebase.google.com/docs/flutter/setup?platform=ios&hl=ja#configure-firebase
-  - Google アカウントのログインプロバイダを設定する場合、SHA-1 フィンガープリントを登録する必要がある。Firebase Emulator 環境においても同様に登録が必要。
-    - https://developers.google.com/android/guides/client-auth?hl=ja#using_keytool_on_the_certificate
 
 ### アイコンの設定
 

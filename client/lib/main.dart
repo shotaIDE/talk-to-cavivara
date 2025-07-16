@@ -15,11 +15,13 @@ import 'package:house_worker/data/service/auth_service.dart';
 import 'package:house_worker/ui/root_app.dart';
 import 'package:logging/logging.dart';
 
+// TODO(ide): 本番環境を構築した後、_prod ファイルをインポートするように修正する
+import 'firebase_options_dev.dart' as prod;
+// import 'firebase_options_prod.dart' as prod;
 import 'firebase_options_dev.dart' as dev;
-import 'firebase_options_prod.dart' as prod;
 
 // アプリケーションのロガー
-final _logger = Logger('HouseWorker');
+final _logger = Logger('FlutterFirebaseBase');
 
 // ロギングシステムの初期化
 void _setupLogging() {
@@ -43,7 +45,7 @@ void _setupLogging() {
 }
 
 // Firebase Emulatorのホスト情報を取得する関数
-String getEmulatorHost() {
+String _getEmulatorHost() {
   try {
     // dart-define-from-fileから設定を読み込む
     const emulatorHost = String.fromEnvironment(
@@ -59,8 +61,8 @@ String getEmulatorHost() {
 }
 
 // Firebase Emulatorの設定を行う関数
-void setupFirebaseEmulators(String host) {
-  FirebaseAuth.instance.useAuthEmulator(host, 9099);
+Future<void> _setupFirebaseEmulators(String host) async {
+  await FirebaseAuth.instance.useAuthEmulator(host, 9099);
   FirebaseFirestore.instance.useFirestoreEmulator(host, 8080);
   FirebaseFunctions.instance.useFunctionsEmulator(host, 5001);
 }
@@ -127,11 +129,11 @@ Future<void> main() async {
     // エミュレーターの設定が有効な場合のみ適用
     if (FlavorConfig.instance.useFirebaseEmulator) {
       // エミュレーターのホスト情報を取得
-      final emulatorHost = getEmulatorHost();
+      final emulatorHost = _getEmulatorHost();
       _logger.info('エミュレーターホスト: $emulatorHost');
 
       // エミュレーターの設定を適用
-      setupFirebaseEmulators(emulatorHost);
+      await _setupFirebaseEmulators(emulatorHost);
       _logger.info('Firebase Emulator設定を適用しました');
     }
 
