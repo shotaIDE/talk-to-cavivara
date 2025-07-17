@@ -155,8 +155,8 @@ class AuthService {
   }
 
   Future<String> signInAnonymously() async {
-    final userCredential =
-        await firebase_auth.FirebaseAuth.instance.signInAnonymously();
+    final userCredential = await firebase_auth.FirebaseAuth.instance
+        .signInAnonymously();
 
     final user = userCredential.user!;
 
@@ -167,16 +167,6 @@ class AuthService {
 
   Future<void> signOut() async {
     await firebase_auth.FirebaseAuth.instance.signOut();
-  }
-
-  /// 現在のユーザー情報をチェックし、ログインしている場合はUIDをログ出力します
-  void checkCurrentUser() {
-    final user = firebase_auth.FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      return;
-    }
-
-    _logger.info('既存ユーザーがログイン中です。UID: ${user.uid}');
   }
 
   Future<firebase_auth.AuthCredential> _loginGoogle() async {

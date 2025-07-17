@@ -11,7 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/data/definition/app_feature.dart';
 import 'package:house_worker/data/definition/flavor.dart';
-import 'package:house_worker/data/service/auth_service.dart';
 import 'package:house_worker/ui/root_app.dart';
 import 'package:logging/logging.dart';
 
@@ -41,10 +40,6 @@ Future<void> main() async {
     _logger.severe('Failed to initialize Firebase', e);
     // Firebase が初期化できなくても、アプリを続行する
   }
-
-  // 既存ユーザーのログイン状態を確認してUIDをログ出力
-  final container = ProviderContainer();
-  container.read(authServiceProvider).checkCurrentUser();
 
   await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(
     isAnalyticsEnabled,
