@@ -9,6 +9,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:house_worker/data/definition/app_feature.dart';
 import 'package:house_worker/data/definition/flavor.dart';
 import 'package:house_worker/ui/root_app.dart';
@@ -40,6 +41,9 @@ Future<void> main() async {
     _logger.severe('Failed to initialize Firebase', e);
     // Firebase が初期化できなくても、アプリを続行する
   }
+
+  // アプリのライフサイクル全体で一度だけの初期化する
+  await GoogleSignIn.instance.initialize();
 
   await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(
     isAnalyticsEnabled,
