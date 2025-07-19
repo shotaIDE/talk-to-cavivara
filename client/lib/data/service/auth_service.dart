@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:house_worker/data/model/sign_in_result.dart';
 import 'package:house_worker/data/model/user_profile.dart';
+import 'package:house_worker/data/service/error_report_service.dart';
 import 'package:house_worker/data/service/sign_in_google_exception.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -10,8 +13,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'auth_service.g.dart';
 
 @riverpod
-AuthService authService(Ref _) {
-  return AuthService();
+AuthService authService(Ref ref) {
+  return AuthService(errorReportService: ref.watch(errorReportServiceProvider));
 }
 
 @riverpod
@@ -37,20 +40,26 @@ Stream<UserProfile?> currentUserProfile(Ref ref) {
 }
 
 class AuthService {
+  AuthService({required ErrorReportService errorReportService})
+    : _errorReportService = errorReportService;
+
+  final ErrorReportService _errorReportService;
   final _logger = Logger('AuthService');
 
   Future<SignInResult> signInWithGoogle() async {
     final firebase_auth.AuthCredential authCredential;
     try {
       authCredential = await _loginGoogle();
-    } on SignInGoogleException catch (error) {
-      switch (error) {
+    } on SignInGoogleException catch (e, stack) {
+      switch (e) {
         case SignInGoogleExceptionCancelled():
           _logger.warning('Google sign-in cancelled.');
 
           throw const SignInWithGoogleException.cancelled();
         case SignInGoogleExceptionUncategorized():
           _logger.warning('Google sign-in failed.');
+
+          unawaited(_errorReportService.recordError(e, stack));
 
           throw const SignInWithGoogleException.uncategorized();
       }
@@ -60,7 +69,9 @@ class AuthService {
     try {
       userCredential = await firebase_auth.FirebaseAuth.instance
           .signInWithCredential(authCredential);
-    } on firebase_auth.FirebaseAuthException {
+    } on firebase_auth.FirebaseAuthException catch (e, stack) {
+      unawaited(_errorReportService.recordError(e, stack));
+
       throw const SignInWithGoogleException.uncategorized();
     }
 
@@ -80,8 +91,8 @@ class AuthService {
     final firebase_auth.AuthCredential authCredential;
     try {
       authCredential = await _loginGoogle();
-    } on SignInGoogleException catch (error) {
-      switch (error) {
+    } on SignInGoogleException catch (e, stack) {
+      switch (e) {
         case SignInGoogleExceptionCancelled():
           _logger.warning('Google sign-in cancelled.');
 
@@ -89,18 +100,22 @@ class AuthService {
         case SignInGoogleExceptionUncategorized():
           _logger.warning('Google sign-in failed.');
 
+          unawaited(_errorReportService.recordError(e, stack));
+
           throw const LinkWithGoogleException.uncategorized();
       }
     }
 
     try {
       await user.linkWithCredential(authCredential);
-    } on firebase_auth.FirebaseAuthException catch (error) {
-      if (error.code == 'credential-already-in-use') {
+    } on firebase_auth.FirebaseAuthException catch (e, stack) {
+      if (e.code == 'credential-already-in-use') {
         _logger.warning('This Google account is already in use.');
 
         throw const LinkWithGoogleException.alreadyInUse();
       }
+
+      unawaited(_errorReportService.recordError(e, stack));
 
       throw const LinkWithGoogleException.uncategorized();
     }
@@ -115,17 +130,22 @@ class AuthService {
     try {
       userCredential = await firebase_auth.FirebaseAuth.instance
           .signInWithProvider(appleAuthProvider);
-    } on firebase_auth.FirebaseAuthException catch (e) {
+    } on firebase_auth.FirebaseAuthException catch (e, stack) {
       if (e.code == 'canceled') {
         throw const SignInWithAppleException.cancelled();
       }
+
+      unawaited(_errorReportService.recordError(e, stack));
 
       throw const SignInWithAppleException.uncategorized();
     }
 
     final user = userCredential.user;
     if (user == null) {
-      throw const SignInWithAppleException.uncategorized();
+      const exception = SignInWithAppleException.uncategorized();
+      unawaited(_errorReportService.recordError(exception, StackTrace.current));
+
+      throw exception;
     }
 
     return SignInResult(
@@ -141,7 +161,7 @@ class AuthService {
 
     try {
       await user.linkWithProvider(appleAuthProvider);
-    } on firebase_auth.FirebaseAuthException catch (e) {
+    } on firebase_auth.FirebaseAuthException catch (e, stack) {
       if (e.code == 'canceled') {
         throw const LinkWithAppleException.cancelled();
       }
@@ -150,15 +170,31 @@ class AuthService {
         throw const LinkWithAppleException.alreadyInUse();
       }
 
+      unawaited(_errorReportService.recordError(e, stack));
+
       throw const LinkWithAppleException.uncategorized();
     }
   }
 
   Future<String> signInAnonymously() async {
-    final userCredential = await firebase_auth.FirebaseAuth.instance
-        .signInAnonymously();
+    final firebase_auth.UserCredential userCredential;
 
-    final user = userCredential.user!;
+    try {
+      userCredential = await firebase_auth.FirebaseAuth.instance
+          .signInAnonymously();
+    } on firebase_auth.FirebaseAuthException catch (e, stack) {
+      unawaited(_errorReportService.recordError(e, stack));
+
+      throw const SignInAnonymouslyException();
+    }
+
+    final user = userCredential.user;
+    if (user == null) {
+      const exception = SignInAnonymouslyException();
+      unawaited(_errorReportService.recordError(exception, StackTrace.current));
+
+      throw exception;
+    }
 
     _logger.info('Signed in anonymously. user ID = ${user.uid}');
 
@@ -175,10 +211,12 @@ class AuthService {
       account = await GoogleSignIn.instance.authenticate(
         scopeHint: ['https://www.googleapis.com/auth/userinfo.profile'],
       );
-    } on GoogleSignInException catch (e) {
+    } on GoogleSignInException catch (e, stack) {
       if (e.code == GoogleSignInExceptionCode.canceled) {
         throw const SignInGoogleException.cancelled();
       }
+
+      unawaited(_errorReportService.recordError(e, stack));
 
       throw const SignInGoogleException.uncategorized();
     }
