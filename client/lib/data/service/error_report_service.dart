@@ -50,10 +50,8 @@ class ErrorReportService {
         fatal: fatal,
       );
       _logger.info('Recorded error in Crashlytics: $exception');
-    } on Exception catch (e, stack) {
+    } on Exception catch (e) {
       _logger.warning('Failed to record error in Crashlytics', e);
-
-      await FirebaseCrashlytics.instance.recordError(e, stack);
     }
   }
 }
