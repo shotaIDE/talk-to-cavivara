@@ -170,21 +170,25 @@ class AuthService {
   }
 
   Future<firebase_auth.AuthCredential> _loginGoogle() async {
-    final executor = GoogleSignIn(
-      scopes: [
-        'https://www.googleapis.com/auth/userinfo.email',
-        'https://www.googleapis.com/auth/userinfo.profile',
-      ],
-    );
-    final account = await executor.signIn();
-    if (account == null) {
-      throw const SignInGoogleException.cancelled();
+    final GoogleSignInAccount account;
+    try {
+      account = await GoogleSignIn.instance.authenticate(
+        scopeHint: [
+          'https://www.googleapis.com/auth/userinfo.email',
+          'https://www.googleapis.com/auth/userinfo.profile',
+        ],
+      );
+    } on GoogleSignInException catch (e) {
+      if (e.code == GoogleSignInExceptionCode.canceled) {
+        throw const SignInGoogleException.cancelled();
+      }
+
+      throw const SignInGoogleException.uncategorized();
     }
 
-    final authentication = await account.authentication;
+    final authentication = account.authentication;
     final idToken = authentication.idToken;
-    final accessToken = authentication.accessToken;
-    if (idToken == null || accessToken == null) {
+    if (idToken == null) {
       throw const SignInGoogleException.uncategorized();
     }
 
@@ -192,14 +196,10 @@ class AuthService {
       'Signed in Google account: '
       'user ID = ${account.id}, '
       'display name = ${account.displayName}, '
-      'email = ${account.email}, '
       'photo URL = ${account.photoUrl}',
     );
 
-    return firebase_auth.GoogleAuthProvider.credential(
-      idToken: idToken,
-      accessToken: accessToken,
-    );
+    return firebase_auth.GoogleAuthProvider.credential(idToken: idToken);
   }
 
   firebase_auth.AppleAuthProvider _getAppleAuthProvider() {
