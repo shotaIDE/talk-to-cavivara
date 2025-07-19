@@ -173,10 +173,7 @@ class AuthService {
     final GoogleSignInAccount account;
     try {
       account = await GoogleSignIn.instance.authenticate(
-        scopeHint: [
-          'https://www.googleapis.com/auth/userinfo.email',
-          'https://www.googleapis.com/auth/userinfo.profile',
-        ],
+        scopeHint: ['https://www.googleapis.com/auth/userinfo.profile'],
       );
     } on GoogleSignInException catch (e) {
       if (e.code == GoogleSignInExceptionCode.canceled) {
@@ -203,8 +200,6 @@ class AuthService {
   }
 
   firebase_auth.AppleAuthProvider _getAppleAuthProvider() {
-    return firebase_auth.AppleAuthProvider()
-      ..addScope('email')
-      ..addScope('name');
+    return firebase_auth.AppleAuthProvider()..addScope('name');
   }
 }
