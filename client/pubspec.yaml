@@ -43,7 +43,7 @@ dev_dependencies:
   json_serializable: ^6.9.5
   mocktail: ^1.0.4
   pedantic_mono: ^1.33.0
-  riverpod_generator: ^2.6.5
+  riverpod_generator: ^2.6.5 || ^3.0.0
   riverpod_lint: ^2.6.5
 
 flutter:
