@@ -25,8 +25,8 @@ class AiChatService {
   GenerativeModel? _model;
 
   GenerativeModel get _generativeModel {
-    return _model ??= FirebaseAI.vertexAI().generativeModel(
-      model: 'gemini-2.0-flash',
+    return _model ??= FirebaseAI.googleAI().generativeModel(
+      model: 'gemini-2.5-flash',
       generationConfig: GenerationConfig(
         temperature: 0.7,
         topP: 0.8,
