@@ -1,4 +1,4 @@
-package ide.shota.colomney.flutter_firebase_base
+package ide.shota.colomney.cavivara_talk
 
 import io.flutter.embedding.android.FlutterActivity
 

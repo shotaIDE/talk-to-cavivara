@@ -19,7 +19,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace = "ide.shota.colomney.flutter_firebase_base"
+    namespace = "ide.shota.colomney.cavivara_talk"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
