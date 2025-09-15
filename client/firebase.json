@@ -4,13 +4,13 @@
       "android": {
         "buildConfigurations": {
           "src/dev": {
-            "projectId": "colomney-flu-fire-base-dev-1",
-            "appId": "1:510251990521:android:cd73eca0cd39019bcb1128",
+            "projectId": "colomney-cavivara-talk-dev-1",
+            "appId": "1:571066834399:android:cdaa6ac90428c6a461b86a",
             "fileOutput": "android/app/src/dev/google-services.json"
           },
           "src/emulator": {
-            "projectId": "colomney-flu-fire-base-dev-1",
-            "appId": "1:510251990521:android:39e1d595d3a810c7cb1128",
+            "projectId": "colomney-cavivara-talk-dev-1",
+            "appId": "1:571066834399:android:6fef9a1ce2c9682361b86a",
             "fileOutput": "android/app/src/emulator/google-services.json"
           }
         }
@@ -18,38 +18,38 @@
       "ios": {
         "buildConfigurations": {
           "Debug-emulator": {
-            "projectId": "colomney-flu-fire-base-dev-1",
-            "appId": "1:510251990521:ios:e35f34ca4785a542cb1128",
+            "projectId": "colomney-cavivara-talk-dev-1",
+            "appId": "1:571066834399:ios:13c180611df2071f61b86a",
             "uploadDebugSymbols": true,
             "fileOutput": "ios/Runner/Firebase/Emulator/GoogleService-Info.plist"
           },
           "Debug-dev": {
-            "projectId": "colomney-flu-fire-base-dev-1",
-            "appId": "1:510251990521:ios:5e5eb08c7832c19ccb1128",
+            "projectId": "colomney-cavivara-talk-dev-1",
+            "appId": "1:571066834399:ios:b3bb0e428913c0b461b86a",
             "uploadDebugSymbols": true,
             "fileOutput": "ios/Runner/Firebase/Dev/GoogleService-Info.plist"
           },
           "Profile-emulator": {
-            "projectId": "colomney-flu-fire-base-dev-1",
-            "appId": "1:510251990521:ios:e35f34ca4785a542cb1128",
+            "projectId": "colomney-cavivara-talk-dev-1",
+            "appId": "1:571066834399:ios:13c180611df2071f61b86a",
             "uploadDebugSymbols": true,
             "fileOutput": "ios/Runner/Firebase/Emulator/GoogleService-Info.plist"
           },
           "Release-emulator": {
-            "projectId": "colomney-flu-fire-base-dev-1",
-            "appId": "1:510251990521:ios:e35f34ca4785a542cb1128",
+            "projectId": "colomney-cavivara-talk-dev-1",
+            "appId": "1:571066834399:ios:13c180611df2071f61b86a",
             "uploadDebugSymbols": true,
             "fileOutput": "ios/Runner/Firebase/Emulator/GoogleService-Info.plist"
           },
           "Profile-dev": {
-            "projectId": "colomney-flu-fire-base-dev-1",
-            "appId": "1:510251990521:ios:5e5eb08c7832c19ccb1128",
+            "projectId": "colomney-cavivara-talk-dev-1",
+            "appId": "1:571066834399:ios:b3bb0e428913c0b461b86a",
             "uploadDebugSymbols": true,
             "fileOutput": "ios/Runner/Firebase/Dev/GoogleService-Info.plist"
           },
           "Release-dev": {
-            "projectId": "colomney-flu-fire-base-dev-1",
-            "appId": "1:510251990521:ios:5e5eb08c7832c19ccb1128",
+            "projectId": "colomney-cavivara-talk-dev-1",
+            "appId": "1:571066834399:ios:b3bb0e428913c0b461b86a",
             "uploadDebugSymbols": true,
             "fileOutput": "ios/Runner/Firebase/Dev/GoogleService-Info.plist"
           }
@@ -57,17 +57,17 @@
       },
       "dart": {
         "lib/firebase_options_emulator.dart": {
-          "projectId": "colomney-flu-fire-base-dev-1",
+          "projectId": "colomney-cavivara-talk-dev-1",
           "configurations": {
-            "android": "1:510251990521:android:39e1d595d3a810c7cb1128",
-            "ios": "1:510251990521:ios:e35f34ca4785a542cb1128"
+            "android": "1:571066834399:android:6fef9a1ce2c9682361b86a",
+            "ios": "1:571066834399:ios:13c180611df2071f61b86a"
           }
         },
         "lib/firebase_options_dev.dart": {
-          "projectId": "colomney-flu-fire-base-dev-1",
+          "projectId": "colomney-cavivara-talk-dev-1",
           "configurations": {
-            "android": "1:510251990521:android:cd73eca0cd39019bcb1128",
-            "ios": "1:510251990521:ios:5e5eb08c7832c19ccb1128"
+            "android": "1:571066834399:android:cdaa6ac90428c6a461b86a",
+            "ios": "1:571066834399:ios:b3bb0e428913c0b461b86a"
           }
         }
       }
