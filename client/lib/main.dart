@@ -21,7 +21,7 @@ import 'firebase_options_dev.dart' as prod;
 import 'firebase_options_dev.dart' as dev;
 import 'firebase_options_emulator.dart' as emulator;
 
-final _logger = Logger('FlutterFirebaseBase');
+final _logger = Logger('CavivaraTalk');
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

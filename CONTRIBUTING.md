@@ -51,8 +51,8 @@ APPLICATION_ID_BASE="ide.shota.colomney"
 
 ```shell
 # 環境固有の変数設定
-PROJECT_ID_SUFFIX="-flu-fire-base-dev-1"
-APPLICATION_ID_SUFFIX=".FlutterFirebaseBase.emulator"
+PROJECT_ID_SUFFIX="-cavivara-talk-dev-1"
+APPLICATION_ID_SUFFIX=".CavivaraTalk.emulator"
 DART_FILE_NAME_SUFFIX="_emulator"
 DIRECTORY_NAME_FOR_IOS="Emulator"
 DIRECTORY_NAME_FOR_ANDROID="emulator"
@@ -69,8 +69,8 @@ APPLICATION_ID="${APPLICATION_ID_BASE}${APPLICATION_ID_SUFFIX}"
 
 ```shell
 # 環境固有の変数設定
-PROJECT_ID_SUFFIX="-flu-fire-base-dev-1"
-APPLICATION_ID_SUFFIX=".FlutterFirebaseBase.dev"
+PROJECT_ID_SUFFIX="-cavivara-talk-dev-1"
+APPLICATION_ID_SUFFIX=".CavivaraTalk.dev"
 DART_FILE_NAME_SUFFIX="_dev"
 DIRECTORY_NAME_FOR_IOS="Dev"
 DIRECTORY_NAME_FOR_ANDROID="dev"
@@ -87,8 +87,8 @@ APPLICATION_ID="${APPLICATION_ID_BASE}${APPLICATION_ID_SUFFIX}"
 
 ```shell
 # 環境固有の変数設定
-PROJECT_ID_SUFFIX="-flu-fire-base"
-APPLICATION_ID_SUFFIX=".FlutterFirebaseBase"
+PROJECT_ID_SUFFIX="-cavivara-talk"
+APPLICATION_ID_SUFFIX=".CavivaraTalk"
 DART_FILE_NAME_SUFFIX="_prod"
 DIRECTORY_NAME_FOR_IOS="Prod"
 DIRECTORY_NAME_FOR_ANDROID="prod"

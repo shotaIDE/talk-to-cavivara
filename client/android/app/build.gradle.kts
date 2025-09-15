@@ -19,7 +19,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace = "ide.shota.colomney.flutter_firebase_base"
+    namespace = "ide.shota.colomney.cavivara_talk"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -46,12 +46,12 @@ android {
     productFlavors {
         create("emulator") {
             dimension = "environment"
-            applicationIdSuffix = ".FlutterFirebaseBase.emulator"
+            applicationIdSuffix = ".CavivaraTalk.emulator"
             manifestPlaceholders["usesCleartextTraffic"] = "true"
         }
         create("dev") {
             dimension = "environment"
-            applicationIdSuffix = ".FlutterFirebaseBase.dev"
+            applicationIdSuffix = ".CavivaraTalk.dev"
             manifestPlaceholders["usesCleartextTraffic"] = "true"
         }
         create("prod") {

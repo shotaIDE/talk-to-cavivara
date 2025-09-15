@@ -1,6 +1,6 @@
 locals {
   project_id_base           = "colomney"
-  project_display_name_base = "FlutterFirebaseBase"
+  project_display_name_base = "CavivaraTalk"
 }
 
 terraform {
