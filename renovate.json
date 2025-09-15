@@ -18,7 +18,11 @@
         "firebase_remote_config"
       ],
       "groupName": "firebase"
+    },
+    {
+      "matchManagers": ["pyenv"],
+      "automerge": false
     }
   ],
-  "rangeStrategy": "widen"
+  "rangeStrategy": "pin"
 }
