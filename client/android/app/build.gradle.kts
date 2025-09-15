@@ -46,12 +46,12 @@ android {
     productFlavors {
         create("emulator") {
             dimension = "environment"
-            applicationIdSuffix = ".FlutterFirebaseBase.emulator"
+            applicationIdSuffix = ".CavivaraTalk.emulator"
             manifestPlaceholders["usesCleartextTraffic"] = "true"
         }
         create("dev") {
             dimension = "environment"
-            applicationIdSuffix = ".FlutterFirebaseBase.dev"
+            applicationIdSuffix = ".CavivaraTalk.dev"
             manifestPlaceholders["usesCleartextTraffic"] = "true"
         }
         create("prod") {

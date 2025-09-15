@@ -21,7 +21,7 @@ platform :android do
 
   desc 'Dev環境向けアプリをGoogle Playにデプロイします。'
   lane :deploy_dev do
-    package_name = 'ide.shota.colomney.FlutterFirebaseBase.dev'
+    package_name = 'ide.shota.colomney.CavivaraTalk.dev'
     # action で利用するパスなので、fastlane コマンドを実行するディレクトリからの相対パスで指定
     google_play_json_key_path = 'fastlane/google-play-service-account-key.json'
     release_notes_path = 'metadata/android/ja-JP/changelogs/default.txt'
