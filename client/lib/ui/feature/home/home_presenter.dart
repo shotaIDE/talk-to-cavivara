@@ -1,40 +1,64 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:house_worker/data/model/count.dart';
-import 'package:house_worker/data/service/database_service.dart';
+import 'package:house_worker/data/model/chat_message.dart';
+import 'package:house_worker/data/service/ai_chat_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'home_presenter.g.dart';
 
+/// チャットメッセージのリストを管理するプロバイダー
 @riverpod
-Stream<Count> currentCount(Ref ref) {
-  final databaseService = ref.watch(databaseServiceProvider);
+class ChatMessages extends _$ChatMessages {
+  @override
+  List<ChatMessage> build() => [];
 
-  return databaseService.getAll();
-}
+  /// ユーザーメッセージを追加し、AIからの返信を取得する
+  Future<void> sendMessage(String content) async {
+    if (content.trim().isEmpty) {
+      return;
+    }
 
-@riverpod
-Future<void> countUpResult(Ref ref) async {
-  final databaseService = ref.watch(databaseServiceProvider);
+    // 簡単なID生成（DateTime + hashCode）
+    final now = DateTime.now();
+    final userMessageId = '${now.millisecondsSinceEpoch}_${content.hashCode}';
 
-  final currentCount = await ref.read(currentCountProvider.future);
+    final userMessage = ChatMessage(
+      id: userMessageId,
+      content: content,
+      sender: const ChatMessageSender.user(),
+      timestamp: now,
+    );
 
-  final newCount = currentCount.copyWith(
-    value: currentCount.value + 1,
-    updatedAt: DateTime.now(),
-  );
+    // ユーザーメッセージを追加
+    state = [...state, userMessage];
 
-  // TODO(ide): エラー処理
-  await databaseService.save(newCount);
-}
+    try {
+      final aiChatService = ref.read(aiChatServiceProvider);
+      final response = await aiChatService.sendMessage(content);
 
-@riverpod
-Future<void> clearCountResult(Ref ref) async {
-  final databaseService = ref.watch(databaseServiceProvider);
+      final aiMessageId = '${DateTime.now().millisecondsSinceEpoch}_ai';
+      final aiMessage = ChatMessage(
+        id: aiMessageId,
+        content: response,
+        sender: const ChatMessageSender.ai(),
+        timestamp: DateTime.now(),
+      );
 
-  final currentCount = await ref.read(currentCountProvider.future);
+      // AIメッセージを追加
+      state = [...state, aiMessage];
+    } on Exception catch (e) {
+      final errorMessageId = '${DateTime.now().millisecondsSinceEpoch}_error';
+      final errorMessage = ChatMessage(
+        id: errorMessageId,
+        content: 'エラーが発生しました: $e',
+        sender: const ChatMessageSender.ai(),
+        timestamp: DateTime.now(),
+      );
 
-  final newCount = currentCount.copyWith(value: 0, updatedAt: DateTime.now());
+      state = [...state, errorMessage];
+    }
+  }
 
-  // TODO(ide): エラー処理
-  await databaseService.save(newCount);
+  /// チャット履歴をクリアする
+  void clearMessages() {
+    state = [];
+  }
 }
