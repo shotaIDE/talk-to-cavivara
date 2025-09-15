@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:house_worker/data/model/clear_count_exception.dart';
-import 'package:house_worker/data/model/count.dart';
-import 'package:house_worker/data/model/count_up_exception.dart';
+import 'package:house_worker/data/model/chat_message.dart';
 import 'package:house_worker/ui/feature/home/home_presenter.dart';
 import 'package:house_worker/ui/feature/settings/settings_screen.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -23,9 +19,19 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
+  final TextEditingController _messageController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _messageController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    const title = Text('カウンター');
+    const title = Text('AI チャット');
 
     final settingsButton = IconButton(
       onPressed: () {
@@ -35,146 +41,189 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       icon: const Icon(Icons.settings),
     );
 
-    final countUpButton = FloatingActionButton(
-      tooltip: 'カウントを増やす',
-      onPressed: _clearCount,
-      child: const Icon(Icons.add),
+    final clearButton = IconButton(
+      onPressed: _clearChat,
+      tooltip: 'チャット履歴をクリアする',
+      icon: const Icon(Icons.clear_all),
     );
 
-    final clearButton = FloatingActionButton(
-      tooltip: 'カウントをリセットする',
-      onPressed: _countUp,
-      child: const Icon(Icons.clear),
-    );
-
-    const body = Center(
-      child: Padding(padding: EdgeInsets.all(16), child: _CounterPanel()),
+    final body = Column(
+      children: [
+        const Expanded(child: _ChatMessageList()),
+        _messageInput(),
+      ],
     );
 
     return Scaffold(
-      appBar: AppBar(title: title, actions: [settingsButton]),
+      appBar: AppBar(
+        title: title,
+        actions: [clearButton, settingsButton],
+      ),
       body: body,
-      floatingActionButton: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [countUpButton, clearButton],
+    );
+  }
+
+  void _clearChat() {
+    ref.read(chatMessagesProvider.notifier).clearMessages();
+  }
+
+  void _sendMessage() {
+    final message = _messageController.text.trim();
+    if (message.isNotEmpty) {
+      ref.read(chatMessagesProvider.notifier).sendMessage(message);
+      _messageController.clear();
+
+      // 新しいメッセージが追加された後にスクロール
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_scrollController.hasClients) {
+          _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        }
+      });
+    }
+  }
+
+  Widget _messageInput() {
+    return Container(
+      padding: EdgeInsets.only(
+        left: 16 + MediaQuery.of(context).viewPadding.left,
+        right: 16 + MediaQuery.of(context).viewPadding.right,
+        bottom: 16 + MediaQuery.of(context).viewPadding.bottom,
+        top: 16,
+      ),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        border: Border(
+          top: BorderSide(
+            color: Theme.of(context).dividerColor,
+          ),
+        ),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: _messageController,
+              decoration: const InputDecoration(
+                hintText: 'メッセージを入力...',
+                border: OutlineInputBorder(),
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+              ),
+              maxLines: null,
+              textInputAction: TextInputAction.send,
+              onSubmitted: (_) => _sendMessage(),
+            ),
+          ),
+          const SizedBox(width: 8),
+          IconButton(
+            onPressed: _sendMessage,
+            tooltip: 'メッセージを送信',
+            icon: const Icon(Icons.send),
+          ),
+        ],
       ),
     );
   }
-
-  Future<void> _countUp() async {
-    await HapticFeedback.mediumImpact();
-
-    try {
-      await ref.read(countUpResultProvider.future);
-    } on CountUpException {
-      if (!mounted) {
-        return;
-      }
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('カウントの増加に失敗しました。しばらくしてから再度お試しください')),
-      );
-      return;
-    }
-  }
-
-  Future<void> _clearCount() async {
-    final shouldClear = await showDialog<bool>(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            content: const Text('カウンターをリセットしてもよろしいですか？'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('削除'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('キャンセル'),
-              ),
-            ],
-          ),
-    );
-
-    if (shouldClear != true) {
-      return;
-    }
-
-    try {
-      await ref.read(clearCountResultProvider.future);
-    } on ClearCountException {
-      if (!mounted) {
-        return;
-      }
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('カウントのリセットに失敗しました。しばらくしてから再度お試しください')),
-      );
-      return;
-    }
-
-    if (!mounted) {
-      return;
-    }
-
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('カウントをリセットしました。')));
-  }
 }
 
-class _CounterPanel extends ConsumerWidget {
-  const _CounterPanel();
+class _ChatMessageList extends ConsumerWidget {
+  const _ChatMessageList();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final countFuture = ref.watch(currentCountProvider.future);
+    final messages = ref.watch(chatMessagesProvider);
 
-    return FutureBuilder(
-      future: countFuture,
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return const Text('カウンターの値の取得に失敗しました。しばらくしてから再度アプリを起動してください。');
-        }
+    if (messages.isEmpty) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: Text(
+            'AIとチャットを始めましょう！\n下のテキストフィールドにメッセージを入力してください。',
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    }
 
-        final count = snapshot.data;
-        if (count == null) {
-          return Skeletonizer(
-            child: _CounterTextList(
-              count: Count(id: '', value: 0, updatedAt: DateTime.now()),
-            ),
-          );
-        }
-
-        return _CounterTextList(count: count);
+    return ListView.builder(
+      padding: EdgeInsets.only(
+        left: 16 + MediaQuery.of(context).viewPadding.left,
+        right: 16 + MediaQuery.of(context).viewPadding.right,
+        top: 16,
+        bottom: 8,
+      ),
+      itemCount: messages.length,
+      itemBuilder: (context, index) {
+        final message = messages[index];
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: _ChatBubble(message: message),
+        );
       },
     );
   }
 }
 
-class _CounterTextList extends StatelessWidget {
-  const _CounterTextList({required this.count});
+class _ChatBubble extends StatelessWidget {
+  const _ChatBubble({required this.message});
 
-  final Count count;
+  final ChatMessage message;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      spacing: 16,
-      children: [
-        Text(
-          count.value.toString(),
-          style: Theme.of(context).textTheme.bodyLarge,
-        ),
-        Text(
-          '最終更新日時: ${count.updatedAt}',
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Theme.of(context).dividerColor,
+    final isUser = message.sender == const ChatMessageSender.user();
+
+    final bubble = Container(
+      constraints: BoxConstraints(
+        maxWidth: MediaQuery.of(context).size.width * 0.8,
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: isUser
+            ? Theme.of(context).colorScheme.primary
+            : Theme.of(context).colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            message.content,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: isUser
+                  ? Theme.of(context).colorScheme.onPrimary
+                  : Theme.of(context).colorScheme.onSurface,
+            ),
           ),
-        ),
-      ],
+          const SizedBox(height: 4),
+          Text(
+            '${message.timestamp.hour.toString().padLeft(2, '0')}:'
+            '${message.timestamp.minute.toString().padLeft(2, '0')}',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: isUser
+                  ? Theme.of(
+                      context,
+                    ).colorScheme.onPrimary.withValues(alpha: 0.7)
+                  : Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.7),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    return Row(
+      mainAxisAlignment: isUser
+          ? MainAxisAlignment.end
+          : MainAxisAlignment.start,
+      children: [bubble],
     );
   }
 }
