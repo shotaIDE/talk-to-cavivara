@@ -36,7 +36,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       children: [
         _CavivaraAvatar(size: 32),
         SizedBox(width: 12),
-        Text('AI チャット'),
+        Text('カヴィヴァラさん'),
       ],
     );
 
@@ -254,13 +254,11 @@ class _CavivaraAvatar extends StatelessWidget {
     return Semantics(
       label: 'カヴィヴァラさんのアイコン',
       image: true,
-      child: ClipOval(
-        child: Image.asset(
-          _assetPath,
-          width: size,
-          height: size,
-          fit: BoxFit.cover,
-        ),
+      child: Image.asset(
+        _assetPath,
+        width: size,
+        height: size,
+        fit: BoxFit.cover,
       ),
     );
   }
