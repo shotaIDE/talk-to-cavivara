@@ -247,7 +247,7 @@ class _CavivaraAvatar extends StatelessWidget {
 
   final double size;
 
-  static const _assetPath = 'assets/launcher-icon/launcher-icon-ios_prod.png';
+  static const _assetPath = 'assets/image/cavivara.png';
 
   @override
   Widget build(BuildContext context) {
