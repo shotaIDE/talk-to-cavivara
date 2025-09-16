@@ -31,7 +31,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const title = Text('AI チャット');
+    const title = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _CavivaraAvatar(size: 32),
+        SizedBox(width: 12),
+        Text('AI チャット'),
+      ],
+    );
 
     final settingsButton = IconButton(
       onPressed: () {
@@ -220,10 +227,42 @@ class _ChatBubble extends StatelessWidget {
     );
 
     return Row(
-      mainAxisAlignment: isUser
-          ? MainAxisAlignment.end
-          : MainAxisAlignment.start,
-      children: [bubble],
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment:
+          isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+      children: [
+        if (!isUser) ...[
+          const _CavivaraAvatar(size: 40),
+          const SizedBox(width: 8),
+        ],
+        Flexible(child: bubble),
+      ],
+    );
+  }
+}
+
+class _CavivaraAvatar extends StatelessWidget {
+  const _CavivaraAvatar({this.size = 40});
+
+  final double size;
+
+  static const _assetPath =
+      'assets/launcher-icon/launcher-icon-ios_prod.png';
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      label: 'カヴィヴァラさんのアイコン',
+      image: true,
+      child: ClipOval(
+        child: Image.asset(
+          _assetPath,
+          width: size,
+          height: size,
+          fit: BoxFit.cover,
+          filterQuality: FilterQuality.medium,
+        ),
+      ),
     );
   }
 }
