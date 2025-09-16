@@ -228,11 +228,12 @@ class _ChatBubble extends StatelessWidget {
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment:
-          isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+      mainAxisAlignment: isUser
+          ? MainAxisAlignment.end
+          : MainAxisAlignment.start,
       children: [
         if (!isUser) ...[
-          const _CavivaraAvatar(size: 40),
+          const _CavivaraAvatar(),
           const SizedBox(width: 8),
         ],
         Flexible(child: bubble),
@@ -246,8 +247,7 @@ class _CavivaraAvatar extends StatelessWidget {
 
   final double size;
 
-  static const _assetPath =
-      'assets/launcher-icon/launcher-icon-ios_prod.png';
+  static const _assetPath = 'assets/launcher-icon/launcher-icon-ios_prod.png';
 
   @override
   Widget build(BuildContext context) {
@@ -260,7 +260,6 @@ class _CavivaraAvatar extends StatelessWidget {
           width: size,
           height: size,
           fit: BoxFit.cover,
-          filterQuality: FilterQuality.medium,
         ),
       ),
     );
