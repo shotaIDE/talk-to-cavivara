@@ -96,6 +96,7 @@ class AiChatService {
           return '';
         }
 
+        _logger.info('応答チャンクを受信: $text');
         return text;
       });
     } catch (e, stackTrace) {
