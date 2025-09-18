@@ -44,33 +44,28 @@ class ChatMessages extends _$ChatMessages {
 
     void updateAiMessage(ChatMessage Function(ChatMessage message) transform) {
       final currentMessages = state;
-      final hasMessage =
-          currentMessages.any((message) => message.id == aiMessageId);
+      final hasMessage = currentMessages.any(
+        (message) => message.id == aiMessageId,
+      );
       if (!hasMessage) {
         return;
       }
 
       state = [
         for (final message in currentMessages)
-          if (message.id == aiMessageId)
-            transform(message)
-          else
-            message,
+          if (message.id == aiMessageId) transform(message) else message,
       ];
     }
 
     var hasError = false;
     try {
       final responseStream = aiChatService.sendMessageStream(content);
-      var hasReceivedChunk = false;
       var buffer = '';
 
       await for (final chunk in responseStream) {
         if (chunk.isEmpty) {
           continue;
         }
-
-        hasReceivedChunk = true;
 
         if (buffer.isEmpty) {
           buffer = chunk;
@@ -80,17 +75,6 @@ class ChatMessages extends _$ChatMessages {
           buffer += chunk;
         }
 
-        updateAiMessage(
-          (message) => message.copyWith(
-            content: buffer,
-            timestamp: DateTime.now(),
-          ),
-        );
-      }
-
-      if (!hasReceivedChunk) {
-        final response = await aiChatService.sendMessage(content);
-        buffer = response;
         updateAiMessage(
           (message) => message.copyWith(
             content: buffer,
