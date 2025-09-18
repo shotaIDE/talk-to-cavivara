@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:firebase_ai/firebase_ai.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:house_worker/data/model/chat_message.dart';
 import 'package:house_worker/data/service/error_report_service.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -22,7 +21,18 @@ class AiChatService {
   final ErrorReportService errorReportService;
   final Logger _logger = Logger('AiChatService');
 
-  GenerativeModel? _model;
+  final GenerativeModel _model = FirebaseAI.googleAI().generativeModel(
+    model: 'gemini-2.5-flash',
+    generationConfig: GenerationConfig(
+      // TODO(ide): パラメーターの意味を確認
+      temperature: 0.7,
+      topP: 0.8,
+      topK: 40,
+      maxOutputTokens: 2048,
+    ),
+    systemInstruction: Content.system(_systemPrompt),
+  );
+  ChatSession? _chatSession;
 
   static const String _systemPrompt = '''
 あなたは、プレクトラム結社さざなみ工業のマスコットキャラクター、カヴィヴァラさんです。
@@ -45,51 +55,17 @@ class AiChatService {
 - 最後に必ず質問をし、次の会話が繋がるようにする。ただし、できるだけクローズドクエスチョンにし、簡単に答えられるようにする
 ''';
 
-  GenerativeModel get _generativeModel {
-    return _model ??= FirebaseAI.googleAI().generativeModel(
-      model: 'gemini-2.5-flash',
-      generationConfig: GenerationConfig(
-        // TODO(ide): パラメーターの意味を確認
-        temperature: 0.7,
-        topP: 0.8,
-        topK: 40,
-        maxOutputTokens: 2048,
-      ),
-    );
-  }
-
-  Future<String> sendMessage(String message) async {
-    try {
-      _logger.info('チャットメッセージを送信: $message');
-
-      final response = await _generativeModel.generateContent([
-        Content.text(_systemPrompt),
-        Content.text(message),
-      ]);
-
-      if (response.text == null || response.text!.isEmpty) {
-        throw const AiChatException('AIからの応答が空です');
-      }
-
-      _logger.info('AIから応答を受信: ${response.text}');
-      return response.text!;
-    } catch (e, stackTrace) {
-      _logger.severe('チャットメッセージの送信に失敗: $e');
-      await errorReportService.recordError(e, stackTrace);
-      throw AiChatException('チャットメッセージの送信に失敗しました: $e');
-    }
-  }
-
   Stream<String> sendMessageStream(String message) {
+    final chatSession = _chatSession ??= _model.startChat();
+
+    _logger.info('Send message: $message');
+
     try {
-      _logger.info('ストリーミングチャットメッセージを送信: $message');
+      final content = Content.text(message);
 
-      final response = _generativeModel.generateContentStream([
-        Content.text(_systemPrompt),
-        Content.text(message),
-      ]);
+      final responseStream = chatSession.sendMessageStream(content);
 
-      return response.map((chunk) {
+      return responseStream.map((chunk) {
         final text = chunk.text;
         if (text == null) {
           _logger.warning('AIからの応答チャンクがnullです');
@@ -103,32 +79,6 @@ class AiChatService {
       _logger.severe('ストリーミングチャットメッセージの送信に失敗: $e');
       unawaited(errorReportService.recordError(e, stackTrace));
       throw AiChatException('ストリーミングチャットメッセージの送信に失敗しました: $e');
-    }
-  }
-
-  Future<String> sendConversation(List<ChatMessage> messages) async {
-    try {
-      _logger.info('会話履歴を含むメッセージを送信: ${messages.length}件');
-
-      final history = [
-        Content.text(_systemPrompt),
-        ...messages.map((message) {
-          return Content.text(message.content);
-        }),
-      ];
-
-      final response = await _generativeModel.generateContent(history);
-
-      if (response.text == null || response.text!.isEmpty) {
-        throw const AiChatException('AIからの応答が空です');
-      }
-
-      _logger.info('AIから応答を受信: ${response.text}');
-      return response.text!;
-    } catch (e, stackTrace) {
-      _logger.severe('会話履歴を含むメッセージの送信に失敗: $e');
-      await errorReportService.recordError(e, stackTrace);
-      throw AiChatException('会話履歴を含むメッセージの送信に失敗しました: $e');
     }
   }
 }
