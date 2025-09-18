@@ -59,6 +59,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         Expanded(
           child: _ChatMessageList(
             controller: _scrollController,
+            onMessageSent: _onMessageSent,
           ),
         ),
         _messageInput(),
@@ -83,18 +84,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (message.isNotEmpty) {
       ref.read(chatMessagesProvider.notifier).sendMessage(message);
       _messageController.clear();
-
-      // 新しいメッセージが追加された後にスクロール
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (_scrollController.hasClients) {
-          _scrollController.animateTo(
-            _scrollController.position.maxScrollExtent,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOut,
-          );
-        }
-      });
     }
+  }
+
+  void _onMessageSent() {
+    // メッセージ送信後の処理をここで行う（必要に応じて）
   }
 
   Widget _messageInput() {
@@ -143,14 +137,81 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 }
 
-class _ChatMessageList extends ConsumerWidget {
-  const _ChatMessageList({required this.controller});
+class _ChatMessageList extends ConsumerStatefulWidget {
+  const _ChatMessageList({
+    required this.controller,
+    required this.onMessageSent,
+  });
 
   final ScrollController controller;
+  final VoidCallback onMessageSent;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_ChatMessageList> createState() => _ChatMessageListState();
+}
+
+class _ChatMessageListState extends ConsumerState<_ChatMessageList> {
+  bool _isAtBottom = true;
+  int _previousMessageCount = 0;
+  bool _previousHasStreamingMessages = false;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.controller.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    widget.controller
+      ..removeListener(_onScroll)
+      ..dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (!widget.controller.hasClients) {
+      return;
+    }
+
+    final maxScrollExtent = widget.controller.position.maxScrollExtent;
+    final currentPosition = widget.controller.position.pixels;
+    const threshold = 100.0; // 100px以内なら「最下部」とみなす
+
+    _isAtBottom = (maxScrollExtent - currentPosition) <= threshold;
+  }
+
+  void _scrollToBottom() {
+    if (!widget.controller.hasClients) {
+      return;
+    }
+
+    widget.controller.animateTo(
+      widget.controller.position.maxScrollExtent,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final messages = ref.watch(chatMessagesProvider);
+    final hasStreamingMessages = messages.any((message) => message.isStreaming);
+
+    // メッセージ数が増えた場合、またはストリーミングが終了した場合で、ユーザーが最下部にいる場合のみ自動スクロール
+    final shouldAutoScroll =
+        _isAtBottom &&
+        (messages.length > _previousMessageCount ||
+            (_previousHasStreamingMessages && !hasStreamingMessages));
+
+    if (shouldAutoScroll) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollToBottom();
+      });
+    }
+
+    _previousMessageCount = messages.length;
+    _previousHasStreamingMessages = hasStreamingMessages;
 
     if (messages.isEmpty) {
       return const Center(
@@ -165,13 +226,13 @@ class _ChatMessageList extends ConsumerWidget {
     }
 
     return ListView.builder(
+      controller: widget.controller,
       padding: EdgeInsets.only(
         left: 16 + MediaQuery.of(context).viewPadding.left,
         right: 16 + MediaQuery.of(context).viewPadding.right,
         top: 16,
         bottom: 8,
       ),
-      controller: controller,
       itemCount: messages.length,
       itemBuilder: (context, index) {
         final message = messages[index];
