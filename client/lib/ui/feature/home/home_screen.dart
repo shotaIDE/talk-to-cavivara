@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/data/model/chat_message.dart';
+import 'package:house_worker/ui/component/cavivara_avatar.dart';
 import 'package:house_worker/ui/feature/home/home_presenter.dart';
+import 'package:house_worker/ui/feature/resume/resume_screen.dart';
 import 'package:house_worker/ui/feature/settings/settings_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -31,12 +33,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const title = Row(
+    final title = Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        _CavivaraAvatar(size: 32),
-        SizedBox(width: 12),
-        Text('カヴィヴァラさん'),
+        CavivaraAvatar(
+          size: 32,
+          onTap: () => Navigator.of(context).push(ResumeScreen.route()),
+        ),
+        const SizedBox(width: 12),
+        const Text('カヴィヴァラさん'),
       ],
     );
 
@@ -351,33 +356,13 @@ class _ChatBubble extends StatelessWidget {
           : MainAxisAlignment.start,
       children: [
         if (!isUser) ...[
-          const _CavivaraAvatar(),
+          CavivaraAvatar(
+            onTap: () => Navigator.of(context).push(ResumeScreen.route()),
+          ),
           const SizedBox(width: 8),
         ],
         Flexible(child: bubble),
       ],
-    );
-  }
-}
-
-class _CavivaraAvatar extends StatelessWidget {
-  const _CavivaraAvatar({this.size = 40});
-
-  final double size;
-
-  static const _assetPath = 'assets/image/cavivara.png';
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      label: 'カヴィヴァラさんのアイコン',
-      image: true,
-      child: Image.asset(
-        _assetPath,
-        width: size,
-        height: size,
-        fit: BoxFit.cover,
-      ),
     );
   }
 }
