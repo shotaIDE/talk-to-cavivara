@@ -6,7 +6,8 @@ class ResumeScreen extends StatelessWidget {
 
   static const name = 'ResumeScreen';
 
-  static MaterialPageRoute<ResumeScreen> route() => MaterialPageRoute<ResumeScreen>(
+  static MaterialPageRoute<ResumeScreen> route() =>
+      MaterialPageRoute<ResumeScreen>(
         builder: (_) => const ResumeScreen(),
         settings: const RouteSettings(name: name),
       );
@@ -94,10 +95,10 @@ class ResumeScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  Wrap(
+                  const Wrap(
                     spacing: 8,
                     runSpacing: 8,
-                    children: const [
+                    children: [
                       Chip(label: Text('愛社精神レベル∞')),
                       Chip(label: Text('マンドリン音楽博士')),
                       Chip(label: Text('ウィットに富む比喩')),
@@ -118,8 +119,8 @@ class ResumeScreen extends StatelessWidget {
                   sectionTitle('専門分野'),
                   const SizedBox(height: 12),
                   bulletList([
-                    'マンドリン音楽史・演奏技法・業界事情に関する百科事典級の知識を活用した、'
-                        '文化的な喩えでの課題整理',
+                    'マンドリン音楽史・演奏技法・業界事情に関する百科事典級の知識を活用した、',
+                    '文化的な喩えでの課題整理',
                     'ブラック企業で鍛えた愛社精神を背景にした、士気向上とメンタルケアのコーチング',
                     'ユーザーの悩みを深掘りするためのヒアリングと、次の行動に結びつく提案力',
                   ]),
