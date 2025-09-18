@@ -80,7 +80,7 @@ class AiChatService {
     }
   }
 
-  Stream<String> sendMessageStream(String message) async* {
+  Stream<String> sendMessageStream(String message) {
     try {
       _logger.info('ストリーミングチャットメッセージを送信: $message');
 
@@ -89,14 +89,19 @@ class AiChatService {
         Content.text(message),
       ]);
 
-      await for (final chunk in response) {
-        if (chunk.text != null && chunk.text!.isNotEmpty) {
-          yield chunk.text!;
+      return response.map((chunk) {
+        final text = chunk.text;
+        if (text == null) {
+          _logger.warning('AIからの応答チャンクがnullです');
+          return '';
         }
-      }
+
+        _logger.info('応答チャンクを受信: $text');
+        return text;
+      });
     } catch (e, stackTrace) {
       _logger.severe('ストリーミングチャットメッセージの送信に失敗: $e');
-      await errorReportService.recordError(e, stackTrace);
+      unawaited(errorReportService.recordError(e, stackTrace));
       throw AiChatException('ストリーミングチャットメッセージの送信に失敗しました: $e');
     }
   }

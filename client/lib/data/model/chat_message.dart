@@ -9,6 +9,7 @@ sealed class ChatMessage with _$ChatMessage {
     required String content,
     required ChatMessageSender sender,
     required DateTime timestamp,
+    @Default(false) bool isStreaming,
   }) = _ChatMessage;
 }
 

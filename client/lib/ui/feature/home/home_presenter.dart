@@ -30,30 +30,92 @@ class ChatMessages extends _$ChatMessages {
     // ユーザーメッセージを追加
     state = [...state, userMessage];
 
+    final aiChatService = ref.read(aiChatServiceProvider);
+
+    final aiMessageId = '${DateTime.now().millisecondsSinceEpoch}_ai';
+    final thinkingMessage = ChatMessage(
+      id: aiMessageId,
+      content: '',
+      sender: const ChatMessageSender.ai(),
+      timestamp: DateTime.now(),
+      isStreaming: true,
+    );
+    state = [...state, thinkingMessage];
+
+    void updateAiMessage(ChatMessage Function(ChatMessage message) transform) {
+      final currentMessages = state;
+      final hasMessage =
+          currentMessages.any((message) => message.id == aiMessageId);
+      if (!hasMessage) {
+        return;
+      }
+
+      state = [
+        for (final message in currentMessages)
+          if (message.id == aiMessageId)
+            transform(message)
+          else
+            message,
+      ];
+    }
+
+    var hasError = false;
     try {
-      final aiChatService = ref.read(aiChatServiceProvider);
-      final response = await aiChatService.sendMessage(content);
+      final responseStream = aiChatService.sendMessageStream(content);
+      var hasReceivedChunk = false;
+      var buffer = '';
 
-      final aiMessageId = '${DateTime.now().millisecondsSinceEpoch}_ai';
-      final aiMessage = ChatMessage(
-        id: aiMessageId,
-        content: response,
-        sender: const ChatMessageSender.ai(),
-        timestamp: DateTime.now(),
-      );
+      await for (final chunk in responseStream) {
+        if (chunk.isEmpty) {
+          continue;
+        }
 
-      // AIメッセージを追加
-      state = [...state, aiMessage];
+        hasReceivedChunk = true;
+
+        if (buffer.isEmpty) {
+          buffer = chunk;
+        } else if (chunk.length >= buffer.length && chunk.startsWith(buffer)) {
+          buffer = chunk;
+        } else {
+          buffer += chunk;
+        }
+
+        updateAiMessage(
+          (message) => message.copyWith(
+            content: buffer,
+            timestamp: DateTime.now(),
+          ),
+        );
+      }
+
+      if (!hasReceivedChunk) {
+        final response = await aiChatService.sendMessage(content);
+        buffer = response;
+        updateAiMessage(
+          (message) => message.copyWith(
+            content: buffer,
+            timestamp: DateTime.now(),
+          ),
+        );
+      }
     } on Exception catch (e) {
-      final errorMessageId = '${DateTime.now().millisecondsSinceEpoch}_error';
-      final errorMessage = ChatMessage(
-        id: errorMessageId,
-        content: 'エラーが発生しました: $e',
-        sender: const ChatMessageSender.ai(),
-        timestamp: DateTime.now(),
+      hasError = true;
+      updateAiMessage(
+        (message) => message.copyWith(
+          content: 'エラーが発生しました: $e',
+          timestamp: DateTime.now(),
+          isStreaming: false,
+        ),
       );
+    }
 
-      state = [...state, errorMessage];
+    if (!hasError) {
+      updateAiMessage(
+        (message) => message.copyWith(
+          isStreaming: false,
+          timestamp: DateTime.now(),
+        ),
+      );
     }
   }
 
