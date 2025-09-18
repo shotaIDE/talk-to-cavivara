@@ -153,6 +153,7 @@ class _ChatMessageList extends ConsumerStatefulWidget {
 class _ChatMessageListState extends ConsumerState<_ChatMessageList> {
   bool _isAtBottom = true;
   int _previousMessageCount = 0;
+  bool _previousHasStreamingMessages = false;
 
   @override
   void initState() {
@@ -195,14 +196,22 @@ class _ChatMessageListState extends ConsumerState<_ChatMessageList> {
   @override
   Widget build(BuildContext context) {
     final messages = ref.watch(chatMessagesProvider);
+    final hasStreamingMessages = messages.any((message) => message.isStreaming);
 
-    // メッセージ数が増えた場合で、ユーザーが最下部にいる場合のみ自動スクロール
-    if (messages.length > _previousMessageCount && _isAtBottom) {
+    // メッセージ数が増えた場合、またはストリーミングが終了した場合で、ユーザーが最下部にいる場合のみ自動スクロール
+    final shouldAutoScroll =
+        _isAtBottom &&
+        (messages.length > _previousMessageCount ||
+            (_previousHasStreamingMessages && !hasStreamingMessages));
+
+    if (shouldAutoScroll) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _scrollToBottom();
       });
     }
+
     _previousMessageCount = messages.length;
+    _previousHasStreamingMessages = hasStreamingMessages;
 
     if (messages.isEmpty) {
       return const Center(
