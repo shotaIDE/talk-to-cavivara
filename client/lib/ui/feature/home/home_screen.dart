@@ -56,7 +56,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     final body = Column(
       children: [
-        const Expanded(child: _ChatMessageList()),
+        Expanded(
+          child: _ChatMessageList(
+            controller: _scrollController,
+          ),
+        ),
         _messageInput(),
       ],
     );
@@ -140,7 +144,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 }
 
 class _ChatMessageList extends ConsumerWidget {
-  const _ChatMessageList();
+  const _ChatMessageList({required this.controller});
+
+  final ScrollController controller;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -165,6 +171,7 @@ class _ChatMessageList extends ConsumerWidget {
         top: 16,
         bottom: 8,
       ),
+      controller: controller,
       itemCount: messages.length,
       itemBuilder: (context, index) {
         final message = messages[index];
@@ -185,6 +192,65 @@ class _ChatBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isUser = message.sender == const ChatMessageSender.user();
+    final isStreaming = message.isStreaming;
+    final theme = Theme.of(context);
+    final textColor = isUser
+        ? theme.colorScheme.onPrimary
+        : theme.colorScheme.onSurface;
+    final indicatorColor = isUser
+        ? theme.colorScheme.onPrimary
+        : theme.colorScheme.primary;
+
+    Widget messageContent;
+    if (isStreaming && message.content.isEmpty) {
+      messageContent = Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            width: 16,
+            height: 16,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              valueColor: AlwaysStoppedAnimation<Color>(indicatorColor),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            'カヴィヴァラさんが考え中…',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: textColor,
+            ),
+          ),
+        ],
+      );
+    } else {
+      final textWidget = Text(
+        message.content,
+        style: theme.textTheme.bodyMedium?.copyWith(
+          color: textColor,
+        ),
+      );
+
+      if (isStreaming) {
+        messageContent = Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(child: textWidget),
+            const SizedBox(width: 8),
+            SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(indicatorColor),
+              ),
+            ),
+          ],
+        );
+      } else {
+        messageContent = textWidget;
+      }
+    }
 
     final bubble = Container(
       constraints: BoxConstraints(
@@ -193,35 +259,26 @@ class _ChatBubble extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: isUser
-            ? Theme.of(context).colorScheme.primary
-            : Theme.of(context).colorScheme.surfaceContainerHighest,
+            ? theme.colorScheme.primary
+            : theme.colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            message.content,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: isUser
-                  ? Theme.of(context).colorScheme.onPrimary
-                  : Theme.of(context).colorScheme.onSurface,
+          messageContent,
+          if (!isStreaming || message.content.isNotEmpty) ...[
+            const SizedBox(height: 4),
+            Text(
+              '${message.timestamp.hour.toString().padLeft(2, '0')}:'
+              '${message.timestamp.minute.toString().padLeft(2, '0')}',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: isUser
+                    ? theme.colorScheme.onPrimary.withValues(alpha: 0.7)
+                    : theme.colorScheme.onSurface.withValues(alpha: 0.7),
+              ),
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            '${message.timestamp.hour.toString().padLeft(2, '0')}:'
-            '${message.timestamp.minute.toString().padLeft(2, '0')}',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: isUser
-                  ? Theme.of(
-                      context,
-                    ).colorScheme.onPrimary.withValues(alpha: 0.7)
-                  : Theme.of(
-                      context,
-                    ).colorScheme.onSurface.withValues(alpha: 0.7),
-            ),
-          ),
+          ],
         ],
       ),
     );
