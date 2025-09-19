@@ -43,12 +43,14 @@
 - **完了日**: 2025-09-19
 - **実装内容**: sendMessageStreamメソッドにsystemPromptとconversationHistoryの任意パラメーターを追加。チャットセッションをsystemPromptごとにキャッシュする仕組みを実装。既存のAPIとの後方互換性を維持。
 
-## 6. チャットメッセージプロバイダーの多キャラクター対応
+## ✅ 6. チャットメッセージプロバイダーの多キャラクター対応（完了）
 
-- `client/lib/ui/feature/home/home_presenter.dart` の `ChatMessages` を Provider family 化し、`chatMessagesProvider(cavivaraId)` の形で個別の履歴を保持するよう変更する。
-- タスク 5 で拡張した AI サービスを利用してメッセージを送信し、ストリーミング更新やエラー処理のロジックを ID ごとに動作させる。
-- チャット履歴クリア処理を ID 単位で行えるようにし、必要なら全消去のユーティリティも用意する。
+- ✅ `client/lib/ui/feature/home/home_presenter.dart` の `ChatMessages` を Provider family 化し、`chatMessagesProvider(cavivaraId)` の形で個別の履歴を保持するよう変更する。
+- ✅ タスク 5 で拡張した AI サービスを利用してメッセージを送信し、ストリーミング更新やエラー処理のロジックを ID ごとに動作させる。
+- ✅ チャット履歴クリア処理を ID 単位で行えるようにし、必要なら全消去のユーティリティも用意する。
 - 依存関係: タスク 3, タスク 5
+- **完了日**: 2025-09-19
+- **実装内容**: ChatMessages を Provider family に変更、cavivaraId をパラメーターとして受け取るように実装。各キャラクター固有の AI プロンプトと会話履歴を使用してメッセージを送信。ID 単位でのクリア機能と全体クリア機能を追加。
 
 ## 7. チャット画面のカヴィヴァラ切り替え対応
 
