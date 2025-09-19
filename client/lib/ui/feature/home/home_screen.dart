@@ -81,13 +81,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   void _clearChat() {
-    ref.read(chatMessagesProvider.notifier).clearMessages();
+    ref.read(chatMessagesProvider('default').notifier).clearMessages();
   }
 
   void _sendMessage() {
     final message = _messageController.text.trim();
     if (message.isNotEmpty) {
-      ref.read(chatMessagesProvider.notifier).sendMessage(message);
+      ref.read(chatMessagesProvider('default').notifier).sendMessage(message);
       _messageController.clear();
     }
   }
@@ -200,8 +200,10 @@ class _ChatMessageListState extends ConsumerState<_ChatMessageList> {
 
   @override
   Widget build(BuildContext context) {
-    final messages = ref.watch(chatMessagesProvider);
-    final hasStreamingMessages = messages.any((message) => message.isStreaming);
+    final messages = ref.watch(chatMessagesProvider('default'));
+    final hasStreamingMessages = messages.any(
+      (ChatMessage message) => message.isStreaming,
+    );
 
     // メッセージ数が増えた場合、またはストリーミングが終了した場合で、ユーザーが最下部にいる場合のみ自動スクロール
     final shouldAutoScroll =

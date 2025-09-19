@@ -1,16 +1,20 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/data/model/chat_message.dart';
 import 'package:house_worker/data/service/ai_chat_service.dart';
+import 'package:house_worker/data/service/cavivara_directory_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'home_presenter.g.dart';
 
-/// チャットメッセージのリストを管理するプロバイダー
+/// 指定されたカヴィヴァラIDのチャットメッセージのリストを管理するプロバイダー
 @riverpod
 class ChatMessages extends _$ChatMessages {
   @override
-  List<ChatMessage> build() => [];
+  List<ChatMessage> build(String cavivaraId) => [];
 
   /// ユーザーメッセージを追加し、AIからの返信を取得する
+  /// [content] - 送信するメッセージ内容
+  /// [cavivaraId] - 対象のカヴィヴァラID（このプロバイダーのパラメーターから自動取得）
   Future<void> sendMessage(String content) async {
     if (content.trim().isEmpty) {
       return;
@@ -31,6 +35,13 @@ class ChatMessages extends _$ChatMessages {
     state = [...state, userMessage];
 
     final aiChatService = ref.read(aiChatServiceProvider);
+
+    // カヴィヴァラのプロフィールを取得してAI用プロンプトを使用
+    final cavivaraProfile = ref.read(cavivaraByIdProvider(cavivaraId));
+    final systemPrompt = cavivaraProfile.aiPrompt;
+
+    // 現在のチャット履歴を取得（AIサービスに会話履歴として渡すため）
+    final conversationHistory = state.where((msg) => !msg.isStreaming).toList();
 
     final aiMessageId = '${DateTime.now().millisecondsSinceEpoch}_ai';
     final thinkingMessage = ChatMessage(
@@ -59,7 +70,11 @@ class ChatMessages extends _$ChatMessages {
 
     var hasError = false;
     try {
-      final responseStream = aiChatService.sendMessageStream(content);
+      final responseStream = aiChatService.sendMessageStream(
+        content,
+        systemPrompt: systemPrompt,
+        conversationHistory: conversationHistory,
+      );
       var buffer = '';
 
       await for (final chunk in responseStream) {
@@ -106,5 +121,30 @@ class ChatMessages extends _$ChatMessages {
   /// チャット履歴をクリアする
   void clearMessages() {
     state = [];
+
+    // AIサービスのセッションキャッシュもクリア
+    final cavivaraProfile = ref.read(cavivaraByIdProvider(cavivaraId));
+    ref.read(aiChatServiceProvider).clearChatSession(cavivaraProfile.aiPrompt);
   }
+}
+
+/// 指定されたカヴィヴァラIDのチャット履歴をクリアするヘルパー関数
+@riverpod
+void clearChatMessages(Ref ref, String cavivaraId) {
+  ref.read(chatMessagesProvider(cavivaraId).notifier).clearMessages();
+}
+
+/// 全てのチャット履歴をクリアするヘルパー関数
+@riverpod
+void clearAllChatMessages(Ref ref) {
+  final directory = ref.read(cavivaraDirectoryProvider);
+  final aiChatService = ref.read(aiChatServiceProvider);
+
+  // 各カヴィヴァラのチャットをクリア
+  for (final profile in directory) {
+    ref.read(chatMessagesProvider(profile.id).notifier).clearMessages();
+  }
+
+  // AIサービスの全セッションをクリア
+  aiChatService.clearAllChatSessions();
 }

@@ -106,10 +106,9 @@ class _FeatureItem extends StatelessWidget {
         Icon(
           icon,
           size: 24,
-          color:
-              isComingSoon
-                  ? Theme.of(context).colorScheme.onSurface.withAlpha(100)
-                  : Colors.green,
+          color: isComingSoon
+              ? Theme.of(context).colorScheme.onSurface.withAlpha(100)
+              : Colors.green,
         ),
         const SizedBox(width: 16),
         Expanded(
@@ -124,12 +123,11 @@ class _FeatureItem extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color:
-                            isComingSoon
-                                ? Theme.of(
-                                  context,
-                                ).colorScheme.onSurface.withAlpha(100)
-                                : Theme.of(context).colorScheme.onSurface,
+                        color: isComingSoon
+                            ? Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withAlpha(100)
+                            : Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ),
@@ -162,12 +160,11 @@ class _FeatureItem extends StatelessWidget {
                 description,
                 style: TextStyle(
                   fontSize: 14,
-                  color:
-                      isComingSoon
-                          ? Theme.of(
-                            context,
-                          ).colorScheme.onSurface.withAlpha(100)
-                          : Theme.of(context).colorScheme.onSurface,
+                  color: isComingSoon
+                      ? Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withAlpha(100)
+                      : Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             ],
@@ -199,17 +196,16 @@ class _PurchaseButtonState extends ConsumerState<_PurchaseButton> {
           backgroundColor: Theme.of(context).colorScheme.primary,
           foregroundColor: Theme.of(context).colorScheme.onPrimary,
         ),
-        child:
-            isLoading
-                ? const SizedBox(
-                  height: 24,
-                  width: 24,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: Colors.white,
-                  ),
-                )
-                : const Text('Pro版を購入する', style: TextStyle(fontSize: 16)),
+        child: isLoading
+            ? const SizedBox(
+                height: 24,
+                width: 24,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              )
+            : const Text('Pro版を購入する', style: TextStyle(fontSize: 16)),
       ),
     );
   }
@@ -217,8 +213,9 @@ class _PurchaseButtonState extends ConsumerState<_PurchaseButton> {
   Future<void> _purchasePro() async {
     final bool isSucceeded;
     try {
-      isSucceeded =
-          await ref.read(purchaseProResultProvider.notifier).purchasePro();
+      isSucceeded = await ref
+          .read(purchaseProResultProvider.notifier)
+          .purchasePro();
     } on PurchaseException catch (_) {
       if (!mounted) {
         return;
