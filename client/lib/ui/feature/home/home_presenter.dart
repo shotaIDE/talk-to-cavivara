@@ -124,8 +124,7 @@ class ChatMessages extends _$ChatMessages {
 
     // AIサービスのセッションキャッシュもクリア
     final cavivaraProfile = ref.read(cavivaraByIdProvider(cavivaraId));
-    final aiChatService = ref.read(aiChatServiceProvider);
-    aiChatService.clearChatSession(cavivaraProfile.aiPrompt);
+    ref.read(aiChatServiceProvider).clearChatSession(cavivaraProfile.aiPrompt);
   }
 }
 
