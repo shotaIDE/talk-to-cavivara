@@ -6,6 +6,8 @@ import 'package:house_worker/ui/component/cavivara_avatar.dart';
 ///
 /// 複数のカヴィヴァラキャラクターのプロフィールデータを提供する
 class CavivaraProfilesData {
+  const CavivaraProfilesData._();
+
   /// デフォルトのカヴィヴァラプロフィール
   static CavivaraProfile get defaultCavivara => const CavivaraProfile(
     id: 'cavivara_default',
