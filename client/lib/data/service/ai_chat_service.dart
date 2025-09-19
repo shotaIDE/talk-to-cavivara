@@ -24,10 +24,13 @@ class AiChatService {
   final GenerativeModel _model = FirebaseAI.googleAI().generativeModel(
     model: 'gemini-2.5-flash',
     generationConfig: GenerationConfig(
-      // TODO(ide): パラメーターの意味を確認
+      // ランダム性を制御（0.0-1.0、低い値ほど決定的、高い値ほど創造的）
       temperature: 0.7,
+      // 上位P%の確率質量から選択（nucleus sampling）
       topP: 0.8,
+      // 上位K個の候補から選択（long tail除去）
       topK: 40,
+      // 生成する最大トークン数
       maxOutputTokens: 2048,
     ),
     systemInstruction: Content.system(_systemPrompt),
