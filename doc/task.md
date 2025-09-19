@@ -9,11 +9,13 @@
 - **完了日**: 2025-09-19
 - **実装ファイル**: `cavivara_profile.dart`, `resume_section.dart`, `cavivara_profiles_data.dart`
 
-## 2. カヴィヴァラアイコンコンポーネントの拡張
+## ✅ 2. カヴィヴァラアイコンコンポーネントの拡張（完了）
 
-- `client/lib/ui/component/cavivara_avatar.dart` を改修し、呼び出し側からアセットパスや背景色を指定できるようにする（後方互換のためデフォルト値は既存の `cavivara.png` を使用）。
-- 今後複数キャラクターの表示に対応できるよう、Hero タグや Semantics 情報を ID ベースで付与できる仕組みが必要であれば追加検討する。
+- ✅ `client/lib/ui/component/cavivara_avatar.dart` を改修し、呼び出し側からアセットパスや背景色を指定できるようにする（後方互換のためデフォルト値は既存の `cavivara.png` を使用）。
+- ✅ 今後複数キャラクターの表示に対応できるよう、Hero タグや Semantics 情報を ID ベースで付与できる仕組みが必要であれば追加検討する。
 - 依存関係: タスク 1
+- **完了日**: 2025-09-19
+- **実装内容**: assetPath, backgroundColor, cavivaraId, semanticsLabel パラメーターを追加。Hero タグによるアニメーション対応、ID ベースの Semantics 対応を実装。
 
 ## 3. カヴィヴァラ一覧プロバイダーの実装
 
