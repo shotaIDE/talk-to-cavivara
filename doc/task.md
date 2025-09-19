@@ -26,12 +26,14 @@
 - **完了日**: 2025-09-19
 - **実装ファイル**: `cavivara_directory_service.dart`, `cavivara_directory_service_test.dart`
 
-## 4. 雇用状態管理ロジックの追加
+## ✅ 4. 雇用状態管理ロジックの追加（完了）
 
-- カヴィヴァラごとの雇用状態を保持する `StateNotifier`（または `@riverpod` の `Notifier`）を `client/lib/data/service/` に実装し、`hire`/`fire`/`isEmployed` を提供する。
-- 初期状態（全員未雇用 or 特定メンバー雇用済み）を定義し、永続化が不要であることを明示するコメントを追加する。
-- 雇用状態変更のテストを作成し、通知が正しく行われることを検証する。
+- ✅ カヴィヴァラごとの雇用状態を保持する `StateNotifier`（または `@riverpod` の `Notifier`）を `client/lib/data/service/` に実装し、`hire`/`fire`/`isEmployed` を提供する。
+- ✅ 初期状態（全員未雇用 or 特定メンバー雇用済み）を定義し、永続化が不要であることを明示するコメントを追加する。
+- ✅ 雇用状態変更のテストを作成し、通知が正しく行われることを検証する。
 - 依存関係: タスク 3
+- **完了日**: 2025-09-19
+- **実装ファイル**: `employment_state_service.dart`, `employment_state_service_test.dart`
 
 ## 5. AI チャットサービスのプロンプト対応改修
 
