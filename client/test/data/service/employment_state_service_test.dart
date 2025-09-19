@@ -35,40 +35,36 @@ void main() {
     group('雇用処理', () {
       test('カヴィヴァラを雇用できること', () {
         const cavivaraId = 'cavivara_default';
-        final notifier = container.read(employmentStateProvider.notifier);
-
-        notifier.hire(cavivaraId);
+        container.read(employmentStateProvider.notifier).hire(cavivaraId);
 
         final state = container.read(employmentStateProvider);
-        expect(state, contains(cavivaraId));
-
         final isEmployed = container.read(isEmployedProvider(cavivaraId));
+
+        expect(state, contains(cavivaraId));
         expect(isEmployed, isTrue);
       });
 
       test('複数のカヴィヴァラを同時に雇用できること', () {
         const cavivaraId1 = 'cavivara_default';
         const cavivaraId2 = 'cavivara_technical';
-        final notifier = container.read(employmentStateProvider.notifier);
-
-        notifier.hire(cavivaraId1);
-        notifier.hire(cavivaraId2);
+        container.read(employmentStateProvider.notifier)
+          ..hire(cavivaraId1)
+          ..hire(cavivaraId2);
 
         final state = container.read(employmentStateProvider);
-        expect(state, containsAll([cavivaraId1, cavivaraId2]));
-
         final isEmployed1 = container.read(isEmployedProvider(cavivaraId1));
         final isEmployed2 = container.read(isEmployedProvider(cavivaraId2));
+
+        expect(state, containsAll([cavivaraId1, cavivaraId2]));
         expect(isEmployed1, isTrue);
         expect(isEmployed2, isTrue);
       });
 
       test('同じカヴィヴァラを重複して雇用しても状態が変わらないこと', () {
         const cavivaraId = 'cavivara_default';
-        final notifier = container.read(employmentStateProvider.notifier);
-
-        notifier.hire(cavivaraId);
-        notifier.hire(cavivaraId); // 重複雇用
+        container.read(employmentStateProvider.notifier)
+          ..hire(cavivaraId)
+          ..hire(cavivaraId); // 重複雇用
 
         final state = container.read(employmentStateProvider);
         expect(state, hasLength(1));
@@ -79,28 +75,23 @@ void main() {
     group('解雇処理', () {
       test('雇用中のカヴィヴァラを解雇できること', () {
         const cavivaraId = 'cavivara_default';
-        final notifier = container.read(employmentStateProvider.notifier);
-
-        // まず雇用
-        notifier.hire(cavivaraId);
+        final notifier = container.read(employmentStateProvider.notifier)
+          ..hire(cavivaraId);
         expect(container.read(isEmployedProvider(cavivaraId)), isTrue);
 
         // 解雇
         notifier.fire(cavivaraId);
 
         final state = container.read(employmentStateProvider);
-        expect(state, isNot(contains(cavivaraId)));
-
         final isEmployed = container.read(isEmployedProvider(cavivaraId));
+
+        expect(state, isNot(contains(cavivaraId)));
         expect(isEmployed, isFalse);
       });
 
       test('未雇用のカヴィヴァラを解雇しても状態が変わらないこと', () {
         const cavivaraId = 'cavivara_default';
-        final notifier = container.read(employmentStateProvider.notifier);
-
-        // 解雇（未雇用状態から）
-        notifier.fire(cavivaraId);
+        container.read(employmentStateProvider.notifier).fire(cavivaraId);
 
         final state = container.read(employmentStateProvider);
         expect(state, isEmpty);
@@ -109,14 +100,10 @@ void main() {
       test('複数雇用時に特定のカヴィヴァラのみ解雇できること', () {
         const cavivaraId1 = 'cavivara_default';
         const cavivaraId2 = 'cavivara_technical';
-        final notifier = container.read(employmentStateProvider.notifier);
-
-        // 両方を雇用
-        notifier.hire(cavivaraId1);
-        notifier.hire(cavivaraId2);
-
-        // 一方のみ解雇
-        notifier.fire(cavivaraId1);
+        container.read(employmentStateProvider.notifier)
+          ..hire(cavivaraId1)
+          ..hire(cavivaraId2)
+          ..fire(cavivaraId1);
 
         final state = container.read(employmentStateProvider);
         expect(state, isNot(contains(cavivaraId1)));
@@ -133,11 +120,9 @@ void main() {
       test('全員を解雇できること', () {
         const cavivaraId1 = 'cavivara_default';
         const cavivaraId2 = 'cavivara_technical';
-        final notifier = container.read(employmentStateProvider.notifier);
-
-        // 複数を雇用
-        notifier.hire(cavivaraId1);
-        notifier.hire(cavivaraId2);
+        final notifier = container.read(employmentStateProvider.notifier)
+          ..hire(cavivaraId1)
+          ..hire(cavivaraId2);
         expect(container.read(employmentStateProvider), hasLength(2));
 
         // 全員解雇
@@ -153,9 +138,7 @@ void main() {
       });
 
       test('全員未雇用状態で全員解雇しても状態が変わらないこと', () {
-        final notifier = container.read(employmentStateProvider.notifier);
-
-        notifier.fireAll();
+        container.read(employmentStateProvider.notifier).fireAll();
 
         final state = container.read(employmentStateProvider);
         expect(state, isEmpty);
@@ -166,10 +149,9 @@ void main() {
       test('雇用中のカヴィヴァラIDリストが正しく取得できること', () {
         const cavivaraId1 = 'cavivara_default';
         const cavivaraId2 = 'cavivara_technical';
-        final notifier = container.read(employmentStateProvider.notifier);
-
-        notifier.hire(cavivaraId1);
-        notifier.hire(cavivaraId2);
+        container.read(employmentStateProvider.notifier)
+          ..hire(cavivaraId1)
+          ..hire(cavivaraId2);
 
         final employedIds = container.read(employedCavivaraIdsProvider);
         expect(employedIds, hasLength(2));
