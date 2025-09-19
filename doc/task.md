@@ -35,11 +35,13 @@
 - **完了日**: 2025-09-19
 - **実装ファイル**: `employment_state_service.dart`, `employment_state_service_test.dart`
 
-## 5. AI チャットサービスのプロンプト対応改修
+## ✅ 5. AI チャットサービスのプロンプト対応改修（完了）
 
-- `client/lib/data/service/ai_chat_service.dart` の `sendMessage`/`sendMessageStream` を拡張し、カヴィヴァラごとの `systemPrompt` と（必要なら）会話履歴を受け取れるようにする。
-- 既存の呼び出し側をすべて更新し、新しいシグネチャでもストリーミング挙動とエラーハンドリングが維持されることを確認する。
+- ✅ `client/lib/data/service/ai_chat_service.dart` の `sendMessage`/`sendMessageStream` を拡張し、カヴィヴァラごとの `systemPrompt` と（必要なら）会話履歴を受け取れるようにする。
+- ✅ 既存の呼び出し側をすべて更新し、新しいシグネチャでもストリーミング挙動とエラーハンドリングが維持されることを確認する。
 - 依存関係: タスク 1
+- **完了日**: 2025-09-19
+- **実装内容**: sendMessageStreamメソッドにsystemPromptとconversationHistoryの任意パラメーターを追加。チャットセッションをsystemPromptごとにキャッシュする仕組みを実装。既存のAPIとの後方互換性を維持。
 
 ## 6. チャットメッセージプロバイダーの多キャラクター対応
 
