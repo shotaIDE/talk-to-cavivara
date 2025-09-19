@@ -18,7 +18,8 @@ class CavivaraAvatar extends StatelessWidget {
   final String? cavivaraId;
   final String? semanticsLabel;
 
-  static const String _defaultAssetPath = 'assets/image/cavivara.png';
+  static const String defaultAssetPath = 'assets/image/cavivara.png';
+  static const String _defaultAssetPath = defaultAssetPath;
 
   @override
   Widget build(BuildContext context) {

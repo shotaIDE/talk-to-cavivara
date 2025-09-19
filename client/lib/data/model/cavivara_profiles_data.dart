@@ -15,7 +15,7 @@ class CavivaraProfilesData {
         'ブラック企業仕込みの愛社精神とウィットで社員とユーザーの士気を支える、'
         'マンドリン界の相談窓口。情報不足な相談にも丁寧に寄り添い、'
         '次の一歩につながる提案を届ける。',
-    iconPath: CavivaraAvatar.assetPath,
+    iconPath: CavivaraAvatar.defaultAssetPath,
     aiPrompt: _defaultCavivaraPrompt,
     tags: [
       '愛社精神レベル∞',
@@ -78,7 +78,7 @@ class CavivaraProfilesData {
         '豊富な開発経験と知識欲で、最新技術と実用性のバランスを取りながら、'
         '効率的で美しいコードを追求するエンジニア。'
         '新人から上級者まで、個々のレベルに合わせた技術指導で成長を支援する。',
-    iconPath: CavivaraAvatar.assetPath,
+    iconPath: CavivaraAvatar.defaultAssetPath,
     aiPrompt: _technicalCavivaraPrompt,
     tags: [
       'フルスタック開発',
