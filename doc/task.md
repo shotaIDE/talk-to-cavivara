@@ -17,12 +17,14 @@
 - **完了日**: 2025-09-19
 - **実装内容**: assetPath, backgroundColor, cavivaraId, semanticsLabel パラメーターを追加。Hero タグによるアニメーション対応、ID ベースの Semantics 対応を実装。
 
-## 3. カヴィヴァラ一覧プロバイダーの実装
+## ✅ 3. カヴィヴァラ一覧プロバイダーの実装（完了）
 
-- タスク 1 で作成したプロフィール定義を返す `Provider`/`@riverpod`（例: `cavivaraDirectoryProvider`）を `client/lib/data/service/` 配下に追加し、アプリ全体で参照できるようにする。
-- ID からプロフィールを取得するヘルパー（`cavivaraByIdProvider` など）を用意し、例外時の扱いを決める。
-- プロバイダーのユニットテストを `client/test/` に追加し、2 名分のデータが期待通り取得できることを確認する。
+- ✅ タスク 1 で作成したプロフィール定義を返す `Provider`/`@riverpod`（例: `cavivaraDirectoryProvider`）を `client/lib/data/service/` 配下に追加し、アプリ全体で参照できるようにする。
+- ✅ ID からプロフィールを取得するヘルパー（`cavivaraByIdProvider` など）を用意し、例外時の扱いを決める。
+- ✅ プロバイダーのユニットテストを `client/test/` に追加し、2 名分のデータが期待通り取得できることを確認する。
 - 依存関係: タスク 1
+- **完了日**: 2025-09-19
+- **実装ファイル**: `cavivara_directory_service.dart`, `cavivara_directory_service_test.dart`
 
 ## 4. 雇用状態管理ロジックの追加
 
