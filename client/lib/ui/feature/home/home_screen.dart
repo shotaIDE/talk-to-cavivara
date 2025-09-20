@@ -47,7 +47,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           size: 32,
           assetPath: cavivaraProfile.iconPath,
           cavivaraId: widget.cavivaraId,
-          onTap: () => Navigator.of(context).push(ResumeScreen.route()),
+          onTap: () => Navigator.of(context).push(
+            ResumeScreen.route(widget.cavivaraId),
+          ),
         ),
         const SizedBox(width: 12),
         Text(cavivaraProfile.displayName),
@@ -383,7 +385,9 @@ class _ChatBubble extends ConsumerWidget {
           CavivaraAvatar(
             assetPath: cavivaraProfile.iconPath,
             cavivaraId: cavivaraId,
-            onTap: () => Navigator.of(context).push(ResumeScreen.route()),
+            onTap: () => Navigator.of(context).push(
+              ResumeScreen.route(cavivaraId),
+            ),
           ),
           const SizedBox(width: 8),
         ],
