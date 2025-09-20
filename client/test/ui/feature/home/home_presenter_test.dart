@@ -37,7 +37,7 @@ void main() {
         '異なるカヴィヴァラIDに対して独立したメッセージリストが管理されること',
         () {
           const cavivaraId1 = 'cavivara_default';
-          const cavivaraId2 = 'cavivara_technical';
+          const cavivaraId2 = 'cavivara_mascot';
 
           final messages1 = container.read(chatMessagesProvider(cavivaraId1));
           final messages2 = container.read(chatMessagesProvider(cavivaraId2));
@@ -188,7 +188,7 @@ void main() {
     group('clearMessages', () {
       test('特定のカヴィヴァラのメッセージのみクリアされること', () async {
         const cavivaraId1 = 'cavivara_default';
-        const cavivaraId2 = 'cavivara_technical';
+        const cavivaraId2 = 'cavivara_mascot';
 
         // AI サービスのモック設定
         when(

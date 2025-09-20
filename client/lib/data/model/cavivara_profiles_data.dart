@@ -73,7 +73,7 @@ class CavivaraProfilesData {
 
   /// 2番目のカヴィヴァラプロフィール
   static CavivaraProfile get secondCavivara => const CavivaraProfile(
-    id: 'cavivara_technical',
+    id: 'cavivara_mascot',
     displayName: 'カヴィヴァラ・マスコット',
     title: 'プレクトラム結社さざなみ工業\n応援隊長／マスコットキャラクター',
     description:

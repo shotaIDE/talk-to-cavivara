@@ -28,13 +28,13 @@ void main() {
         expect(defaultCavivara.title, contains('マスコットキャラクター'));
         expect(defaultCavivara.resumeSections, isNotEmpty);
 
-        // 技術系カヴィヴァラの確認
-        final technicalCavivara = profiles.firstWhere(
-          (profile) => profile.id == 'cavivara_technical',
+        // マスコットカヴィヴァラの確認
+        final mascotCavivara = profiles.firstWhere(
+          (profile) => profile.id == 'cavivara_mascot',
         );
-        expect(technicalCavivara.displayName, equals('カヴィヴァラ・テック'));
-        expect(technicalCavivara.title, contains('技術開発チーフ'));
-        expect(technicalCavivara.resumeSections, isNotEmpty);
+        expect(mascotCavivara.displayName, equals('カヴィヴァラ・マスコット'));
+        expect(mascotCavivara.title, contains('応援隊長'));
+        expect(mascotCavivara.resumeSections, isNotEmpty);
       });
     });
 
@@ -47,12 +47,12 @@ void main() {
         expect(profile.displayName, equals('カヴィヴァラ'));
       });
 
-      test('技術系カヴィヴァラのIDで正しいプロフィールが取得できること', () {
-        const targetId = 'cavivara_technical';
+      test('マスコットカヴィヴァラのIDで正しいプロフィールが取得できること', () {
+        const targetId = 'cavivara_mascot';
         final profile = container.read(cavivaraByIdProvider(targetId));
 
         expect(profile.id, equals(targetId));
-        expect(profile.displayName, equals('カヴィヴァラ・テック'));
+        expect(profile.displayName, equals('カヴィヴァラ・マスコット'));
       });
 
       test('存在しないIDでCavivaraNotFoundExceptionが投げられること', () {
