@@ -2,13 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/data/model/chat_message.dart';
 import 'package:house_worker/data/service/cavivara_directory_service.dart';
+import 'package:house_worker/ui/component/app_drawer.dart';
 import 'package:house_worker/ui/component/cavivara_avatar.dart';
 import 'package:house_worker/ui/feature/home/home_presenter.dart';
+import 'package:house_worker/ui/feature/job_market/job_market_screen.dart';
 import 'package:house_worker/ui/feature/resume/resume_screen.dart';
 import 'package:house_worker/ui/feature/settings/settings_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key, required this.cavivaraId});
+
+  static const defaultCavivaraId = 'cavivara_default';
 
   /// 対象のカヴィヴァラID
   final String cavivaraId;
@@ -56,14 +60,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ],
     );
 
-    final settingsButton = IconButton(
-      onPressed: () {
-        Navigator.of(context).push(SettingsScreen.route());
-      },
-      tooltip: '設定を表示する',
-      icon: const Icon(Icons.settings),
-    );
-
     final clearButton = IconButton(
       onPressed: _clearChat,
       tooltip: 'チャット履歴をクリアする',
@@ -86,7 +82,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: title,
-        actions: [clearButton, settingsButton],
+        actions: [clearButton],
+      ),
+      drawer: AppDrawer(
+        isTalkSelected: true,
+        isJobMarketSelected: false,
+        onSelectTalk: () {
+          Navigator.of(context).pushAndRemoveUntil(
+            HomeScreen.route(widget.cavivaraId),
+            (route) => false,
+          );
+        },
+        onSelectJobMarket: () {
+          Navigator.of(context).pushAndRemoveUntil(
+            JobMarketScreen.route(),
+            (route) => false,
+          );
+        },
+        onSelectSettings: () {
+          Navigator.of(context).push(SettingsScreen.route());
+        },
       ),
       body: body,
     );
