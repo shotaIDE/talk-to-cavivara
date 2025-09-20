@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/data/service/cavivara_directory_service.dart';
 import 'package:house_worker/data/service/employment_state_service.dart';
+import 'package:house_worker/ui/component/app_drawer.dart';
 import 'package:house_worker/ui/component/cavivara_avatar.dart';
 import 'package:house_worker/ui/feature/home/home_screen.dart';
 import 'package:house_worker/ui/feature/resume/resume_screen.dart';
+import 'package:house_worker/ui/feature/settings/settings_screen.dart';
 
 class JobMarketScreen extends ConsumerWidget {
   const JobMarketScreen({super.key});
@@ -21,11 +23,33 @@ class JobMarketScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final allCavivaras = ref.watch(cavivaraDirectoryProvider);
     final employmentState = ref.watch(employmentStateProvider);
+    final defaultCavivaraId = employmentState.isNotEmpty
+        ? employmentState.first
+        : HomeScreen.defaultCavivaraId;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('転職市場'),
         centerTitle: true,
+      ),
+      drawer: AppDrawer(
+        isTalkSelected: false,
+        isJobMarketSelected: true,
+        onSelectTalk: () {
+          Navigator.of(context).pushAndRemoveUntil(
+            HomeScreen.route(defaultCavivaraId),
+            (route) => false,
+          );
+        },
+        onSelectJobMarket: () {
+          Navigator.of(context).pushAndRemoveUntil(
+            JobMarketScreen.route(),
+            (route) => false,
+          );
+        },
+        onSelectSettings: () {
+          Navigator.of(context).push(SettingsScreen.route());
+        },
       ),
       body: ListView(
         padding: EdgeInsets.only(
@@ -156,6 +180,9 @@ class _CavivaraListItem extends StatelessWidget {
 
   /// チャット画面に遷移
   void _navigateToChat(BuildContext context) {
-    Navigator.of(context).push(HomeScreen.route(cavivaraId));
+    Navigator.of(context).pushAndRemoveUntil(
+      HomeScreen.route(cavivaraId),
+      (route) => false,
+    );
   }
 }
