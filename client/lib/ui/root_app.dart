@@ -54,7 +54,7 @@ class _RootAppState extends ConsumerState<RootApp> {
       case AppInitialRoute.login:
         initialRoutes = [LoginScreen.route()];
       case AppInitialRoute.home:
-        initialRoutes = [HomeScreen.route('cavivara1')];
+        initialRoutes = [HomeScreen.route('cavivara_default')];
     }
 
     final navigatorObservers = <NavigatorObserver>[
@@ -62,7 +62,7 @@ class _RootAppState extends ConsumerState<RootApp> {
     ];
 
     return MaterialApp(
-      routes: {'/': (_) => const HomeScreen(cavivaraId: 'cavivara1')},
+      routes: {'/': (_) => const HomeScreen(cavivaraId: 'cavivara_default')},
       // `initialRoute` and `routes` are ineffective settings
       // that are set to avoid assertion errors.
       initialRoute: '/',
