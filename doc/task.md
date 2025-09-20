@@ -80,12 +80,14 @@
 - **実装ファイル**: `job_market_screen.dart`, `job_market_screen_test.dart`
 - **実装内容**: 転職市場画面をConsumerWidgetで実装。カヴィヴァラのアイコン・名称・肩書きを一覧表示。雇用状態に応じて「雇用中」バッジと「相談する」ボタンを表示。履歴書画面とチャット画面への遷移機能を実装。ウィジェットテストを追加。
 
-## 10. ナビゲーションとルート初期化の調整
+## ✅ 10. ナビゲーションとルート初期化の調整（完了）
 
-- `client/lib/ui/root_app.dart` や関連ルート設定を更新し、サインイン済みユーザーの初期画面が転職市場一覧になるよう変更する。
-- MaterialApp の `routes` / `onGenerateInitialRoutes` / `Navigator` 操作を見直し、新規画面間の戻る遷移が自然になるようスタック構成を整理する。
-- 必要に応じて `AppInitialRoute` の enum や関連テストを更新する。
+- ✅ `client/lib/ui/root_app.dart` や関連ルート設定を更新し、サインイン済みユーザーの初期画面が転職市場一覧になるよう変更する。
+- ✅ MaterialApp の `routes` / `onGenerateInitialRoutes` / `Navigator` 操作を見直し、新規画面間の戻る遷移が自然になるようスタック構成を整理する。
+- ✅ 必要に応じて `AppInitialRoute` の enum や関連テストを更新する。
 - 依存関係: タスク 7, タスク 8, タスク 9
+- **完了日**: 2025-09-20
+- **実装内容**: `AppInitialRoute` enumに `jobMarket` を追加。`appInitialRoute` providerでサインイン済みユーザーに対して `jobMarket` を返すように変更。`root_app.dart` で `JobMarketScreen` のimportとルート設定を追加し、初期画面を転職市場一覧に設定。
 
 ## 11. プロバイダー・画面ロジックのテスト追加
 

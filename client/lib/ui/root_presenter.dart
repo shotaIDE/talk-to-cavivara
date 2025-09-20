@@ -32,7 +32,7 @@ Future<AppInitialRoute> appInitialRoute(Ref ref) async {
   final appSession = await appSessionFuture;
   switch (appSession) {
     case AppSessionSignedIn():
-      return AppInitialRoute.home;
+      return AppInitialRoute.jobMarket;
     case AppSessionNotSignedIn():
       return AppInitialRoute.login;
   }
