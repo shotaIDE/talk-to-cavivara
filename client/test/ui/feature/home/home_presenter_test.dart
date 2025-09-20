@@ -58,7 +58,7 @@ void main() {
         when(
           () => mockAiChatService.sendMessageStream(
             messageText,
-            systemPrompt: any<String?>(named: 'systemPrompt'),
+            systemPrompt: any<String>(named: 'systemPrompt'),
             conversationHistory: any<List<ChatMessage>?>(
               named: 'conversationHistory',
             ),
@@ -91,7 +91,7 @@ void main() {
           when(
             () => mockAiChatService.sendMessageStream(
               messageText,
-              systemPrompt: any<String?>(named: 'systemPrompt'),
+              systemPrompt: any<String>(named: 'systemPrompt'),
               conversationHistory: any<List<ChatMessage>?>(
                 named: 'conversationHistory',
               ),
@@ -107,7 +107,7 @@ void main() {
           verify(
             () => mockAiChatService.sendMessageStream(
               messageText,
-              systemPrompt: any<String?>(named: 'systemPrompt'),
+              systemPrompt: any<String>(named: 'systemPrompt'),
               conversationHistory: any<List<ChatMessage>?>(
                 named: 'conversationHistory',
               ),
@@ -123,7 +123,7 @@ void main() {
         when(
           () => mockAiChatService.sendMessageStream(
             messageText,
-            systemPrompt: any<String?>(named: 'systemPrompt'),
+            systemPrompt: any<String>(named: 'systemPrompt'),
             conversationHistory: any<List<ChatMessage>?>(
               named: 'conversationHistory',
             ),
@@ -158,7 +158,7 @@ void main() {
         when(
           () => mockAiChatService.sendMessageStream(
             messageText,
-            systemPrompt: any<String?>(named: 'systemPrompt'),
+            systemPrompt: any<String>(named: 'systemPrompt'),
             conversationHistory: any<List<ChatMessage>?>(
               named: 'conversationHistory',
             ),
@@ -194,7 +194,7 @@ void main() {
         when(
           () => mockAiChatService.sendMessageStream(
             any<String>(),
-            systemPrompt: any<String?>(named: 'systemPrompt'),
+            systemPrompt: any<String>(named: 'systemPrompt'),
             conversationHistory: any<List<ChatMessage>?>(
               named: 'conversationHistory',
             ),
