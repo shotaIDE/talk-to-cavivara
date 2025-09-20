@@ -17,10 +17,10 @@ void main() {
       container.dispose();
     });
 
-    EmploymentState get notifier =>
+    EmploymentState notifier() =>
         container.read(employmentStateProvider.notifier);
 
-    Future<void> waitForInitialization() => notifier.ensureInitialized();
+    Future<void> waitForInitialization() => notifier().ensureInitialized();
 
     group('初期状態', () {
       test('永続化データがない場合はデフォルトカヴィヴァラのみ雇用されていること', () async {
@@ -65,7 +65,7 @@ void main() {
     group('永続化', () {
       test('雇用状態の変更が永続化されること', () async {
         await waitForInitialization();
-        await notifier.hire('cavivara_mascot');
+        await notifier().hire('cavivara_mascot');
 
         final newContainer = ProviderContainer();
         addTearDown(newContainer.dispose);
@@ -79,7 +79,7 @@ void main() {
 
       test('全員解雇後の状態が永続化されること', () async {
         await waitForInitialization();
-        await notifier.fireAll();
+        await notifier().fireAll();
 
         final newContainer = ProviderContainer();
         addTearDown(newContainer.dispose);
@@ -96,7 +96,7 @@ void main() {
         await waitForInitialization();
         const cavivaraId = 'cavivara_mascot';
 
-        await notifier.hire(cavivaraId);
+        await notifier().hire(cavivaraId);
 
         final state = container.read(employmentStateProvider);
         final isEmployed = container.read(isEmployedProvider(cavivaraId));
@@ -110,9 +110,9 @@ void main() {
         const cavivaraId1 = 'cavivara_default';
         const cavivaraId2 = 'cavivara_mascot';
 
-        await notifier.fireAll();
-        await notifier.hire(cavivaraId1);
-        await notifier.hire(cavivaraId2);
+        await notifier().fireAll();
+        await notifier().hire(cavivaraId1);
+        await notifier().hire(cavivaraId2);
 
         final state = container.read(employmentStateProvider);
         final isEmployed1 = container.read(isEmployedProvider(cavivaraId1));
@@ -127,9 +127,9 @@ void main() {
         await waitForInitialization();
         const cavivaraId = 'cavivara_mascot';
 
-        await notifier.fireAll();
-        await notifier.hire(cavivaraId);
-        await notifier.hire(cavivaraId); // 重複雇用
+        await notifier().fireAll();
+        await notifier().hire(cavivaraId);
+        await notifier().hire(cavivaraId); // 重複雇用
 
         final state = container.read(employmentStateProvider);
         expect(state.where((id) => id == cavivaraId), hasLength(1));
@@ -142,7 +142,7 @@ void main() {
         const cavivaraId = 'cavivara_default';
         expect(container.read(isEmployedProvider(cavivaraId)), isTrue);
 
-        await notifier.fire(cavivaraId);
+        await notifier().fire(cavivaraId);
 
         final state = container.read(employmentStateProvider);
         final isEmployed = container.read(isEmployedProvider(cavivaraId));
@@ -155,7 +155,7 @@ void main() {
         await waitForInitialization();
         const cavivaraId = 'cavivara_mascot';
 
-        await notifier.fire(cavivaraId);
+        await notifier().fire(cavivaraId);
 
         final state = container.read(employmentStateProvider);
         expect(state, equals({'cavivara_default'}));
@@ -166,8 +166,8 @@ void main() {
         const cavivaraId1 = 'cavivara_default';
         const cavivaraId2 = 'cavivara_mascot';
 
-        await notifier.hire(cavivaraId2);
-        await notifier.fire(cavivaraId1);
+        await notifier().hire(cavivaraId2);
+        await notifier().fire(cavivaraId1);
 
         final state = container.read(employmentStateProvider);
         expect(state, isNot(contains(cavivaraId1)));
@@ -183,28 +183,32 @@ void main() {
     group('全員解雇処理', () {
       test('全員を解雇できること', () async {
         await waitForInitialization();
-        await notifier.hire('cavivara_mascot');
+        await notifier().hire('cavivara_mascot');
         expect(container.read(employmentStateProvider), hasLength(2));
 
-        await notifier.fireAll();
+        await notifier().fireAll();
 
         final state = container.read(employmentStateProvider);
         expect(state, isEmpty);
 
-        final isEmployed1 = container.read(isEmployedProvider('cavivara_default'));
-        final isEmployed2 = container.read(isEmployedProvider('cavivara_mascot'));
+        final isEmployed1 = container.read(
+          isEmployedProvider('cavivara_default'),
+        );
+        final isEmployed2 = container.read(
+          isEmployedProvider('cavivara_mascot'),
+        );
         expect(isEmployed1, isFalse);
         expect(isEmployed2, isFalse);
       });
 
       test('全員未雇用状態で全員解雇しても状態が変わらないこと', () async {
         await waitForInitialization();
-        await notifier.fireAll();
+        await notifier().fireAll();
 
         final stateAfterFirst = container.read(employmentStateProvider);
         expect(stateAfterFirst, isEmpty);
 
-        await notifier.fireAll();
+        await notifier().fireAll();
 
         final stateAfterSecond = container.read(employmentStateProvider);
         expect(stateAfterSecond, isEmpty);
@@ -214,10 +218,13 @@ void main() {
     group('雇用リスト取得', () {
       test('雇用中のカヴィヴァラIDリストが正しく取得できること', () async {
         await waitForInitialization();
-        await notifier.hire('cavivara_mascot');
+        await notifier().hire('cavivara_mascot');
 
         final employedIds = container.read(employedCavivaraIdsProvider);
-        expect(employedIds, containsAll(['cavivara_default', 'cavivara_mascot']));
+        expect(
+          employedIds,
+          containsAll(['cavivara_default', 'cavivara_mascot']),
+        );
       });
 
       test('雇用状態の変化がリアルタイムで反映されること', () async {
@@ -228,11 +235,11 @@ void main() {
         expect(employedIds, contains('cavivara_default'));
         expect(employedIds, isNot(contains(cavivaraId)));
 
-        await notifier.hire(cavivaraId);
+        await notifier().hire(cavivaraId);
         employedIds = container.read(employedCavivaraIdsProvider);
         expect(employedIds, contains(cavivaraId));
 
-        await notifier.fire(cavivaraId);
+        await notifier().fire(cavivaraId);
         employedIds = container.read(employedCavivaraIdsProvider);
         expect(employedIds, isNot(contains(cavivaraId)));
       });
@@ -241,7 +248,7 @@ void main() {
     group('状態通知', () {
       test('雇用状態の変化でプロバイダーが通知されること', () async {
         await waitForInitialization();
-        final employmentStateNotifier = notifier;
+        final employmentStateNotifier = notifier();
         var notificationCount = 0;
 
         container.listen<Set<String>>(
