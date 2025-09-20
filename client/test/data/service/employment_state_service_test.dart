@@ -46,7 +46,7 @@ void main() {
 
       test('複数のカヴィヴァラを同時に雇用できること', () {
         const cavivaraId1 = 'cavivara_default';
-        const cavivaraId2 = 'cavivara_technical';
+        const cavivaraId2 = 'cavivara_mascot';
         container.read(employmentStateProvider.notifier)
           ..hire(cavivaraId1)
           ..hire(cavivaraId2);
@@ -99,7 +99,7 @@ void main() {
 
       test('複数雇用時に特定のカヴィヴァラのみ解雇できること', () {
         const cavivaraId1 = 'cavivara_default';
-        const cavivaraId2 = 'cavivara_technical';
+        const cavivaraId2 = 'cavivara_mascot';
         container.read(employmentStateProvider.notifier)
           ..hire(cavivaraId1)
           ..hire(cavivaraId2)
@@ -119,7 +119,7 @@ void main() {
     group('全員解雇処理', () {
       test('全員を解雇できること', () {
         const cavivaraId1 = 'cavivara_default';
-        const cavivaraId2 = 'cavivara_technical';
+        const cavivaraId2 = 'cavivara_mascot';
         final notifier = container.read(employmentStateProvider.notifier)
           ..hire(cavivaraId1)
           ..hire(cavivaraId2);
@@ -148,7 +148,7 @@ void main() {
     group('雇用リスト取得', () {
       test('雇用中のカヴィヴァラIDリストが正しく取得できること', () {
         const cavivaraId1 = 'cavivara_default';
-        const cavivaraId2 = 'cavivara_technical';
+        const cavivaraId2 = 'cavivara_mascot';
         container.read(employmentStateProvider.notifier)
           ..hire(cavivaraId1)
           ..hire(cavivaraId2);

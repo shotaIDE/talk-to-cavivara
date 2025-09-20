@@ -49,7 +49,7 @@ void main() {
 
       // カヴィヴァラの名前が表示されることを確認
       expect(find.text('カヴィヴァラ'), findsOneWidget);
-      expect(find.text('カヴィヴァラ・テック'), findsOneWidget);
+      expect(find.text('カヴィヴァラ・マスコット'), findsOneWidget);
     });
 
     testWidgets(
@@ -140,7 +140,7 @@ void main() {
         // 複数のカヴィヴァラを雇用
         container.read(employmentStateProvider.notifier)
           ..hire('cavivara_default')
-          ..hire('cavivara_technical');
+          ..hire('cavivara_mascot');
         await tester.pumpAndSettle();
 
         // 両方の雇用中バッジが表示されることを確認
