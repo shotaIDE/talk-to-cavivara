@@ -55,7 +55,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     final children = <Widget>[
       const Text(
-        'House Worker',
+        'カヴィヴァラチャット',
         style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
       ),
       const SizedBox(height: 20),

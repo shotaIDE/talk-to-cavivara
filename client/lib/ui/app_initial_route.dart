@@ -1,1 +1,1 @@
-enum AppInitialRoute { updateApp, login, home }
+enum AppInitialRoute { updateApp, login, home, jobMarket }
