@@ -210,12 +210,14 @@ class _ResumeScreenState extends ConsumerState<ResumeScreen> {
     EmploymentState employmentStateNotifier,
   ) async {
     await employmentStateNotifier.hire(widget.cavivaraId);
-    if (mounted) {
-      await Navigator.of(context).pushAndRemoveUntil(
-        HomeScreen.route(widget.cavivaraId),
-        (route) => false,
-      );
+    if (!mounted) {
+      return;
     }
+
+    await Navigator.of(context).pushAndRemoveUntil(
+      HomeScreen.route(widget.cavivaraId),
+      (route) => false,
+    );
   }
 
   /// 解雇して転職市場画面に戻る
@@ -223,12 +225,14 @@ class _ResumeScreenState extends ConsumerState<ResumeScreen> {
     EmploymentState employmentStateNotifier,
   ) async {
     await employmentStateNotifier.fire(widget.cavivaraId);
-    if (mounted) {
-      await Navigator.of(context).pushAndRemoveUntil(
-        JobMarketScreen.route(),
-        (route) => false,
-      );
+    if (!mounted) {
+      return;
     }
+
+    await Navigator.of(context).pushAndRemoveUntil(
+      JobMarketScreen.route(),
+      (route) => false,
+    );
   }
 
   /// チャット画面に遷移
