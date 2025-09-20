@@ -65,116 +65,131 @@ class ResumeScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text('${cavivaraProfile.displayName}の履歴書'),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
+      body: Column(
         children: [
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CavivaraAvatar(
-                        size: 96,
-                        assetPath: cavivaraProfile.iconPath,
-                        cavivaraId: cavivaraId,
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
+          Expanded(
+            child: ListView(
+              padding: EdgeInsets.only(
+                left: 16 + MediaQuery.of(context).viewPadding.left,
+                right: 16 + MediaQuery.of(context).viewPadding.right,
+                top: 16,
+                bottom: 16,
+              ),
+              children: [
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              cavivaraProfile.displayName,
-                              style: theme.textTheme.headlineSmall,
+                            CavivaraAvatar(
+                              size: 96,
+                              assetPath: cavivaraProfile.iconPath,
+                              cavivaraId: cavivaraId,
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              cavivaraProfile.title,
-                              style: theme.textTheme.titleMedium,
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              cavivaraProfile.description,
-                              style: theme.textTheme.bodyMedium,
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    cavivaraProfile.displayName,
+                                    style: theme.textTheme.headlineSmall,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    cavivaraProfile.title,
+                                    style: theme.textTheme.titleMedium,
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    cavivaraProfile.description,
+                                    style: theme.textTheme.bodyMedium,
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 16),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            for (final tag in cavivaraProfile.tags)
+                              Chip(label: Text(tag)),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
+                ),
+                // 履歴書セクションを動的に生成
+                for (final section in cavivaraProfile.resumeSections) ...[
                   const SizedBox(height: 16),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      for (final tag in cavivaraProfile.tags)
-                        Chip(label: Text(tag)),
-                    ],
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          sectionTitle(section.title),
+                          const SizedBox(height: 12),
+                          bulletList(section.items),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
-              ),
+              ],
             ),
           ),
-          // 履歴書セクションを動的に生成
-          for (final section in cavivaraProfile.resumeSections) ...[
-            const SizedBox(height: 16),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    sectionTitle(section.title),
-                    const SizedBox(height: 12),
-                    bulletList(section.items),
-                  ],
-                ),
-              ),
+          // 画面下部に固定表示される雇用ボタン
+          Container(
+            color: theme.colorScheme.surface,
+            padding: EdgeInsets.only(
+              left: 16 + MediaQuery.of(context).viewPadding.left,
+              right: 16 + MediaQuery.of(context).viewPadding.right,
+              top: 16,
+              bottom: 16 + MediaQuery.of(context).viewPadding.bottom,
             ),
-          ],
-          const SizedBox(height: 16),
-          // 雇用状態に応じた雇用・解雇ボタン
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (isEmployed) ...[
-                    ElevatedButton.icon(
-                      onPressed: () => _fireAndNavigateToJobMarket(
-                        context,
-                        employmentStateNotifier,
-                      ),
-                      icon: const Icon(Icons.work_off),
-                      label: const Text('解雇する'),
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: theme.colorScheme.onError,
-                        backgroundColor: theme.colorScheme.error,
-                      ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (isEmployed) ...[
+                  ElevatedButton.icon(
+                    onPressed: () => _fireAndNavigateToJobMarket(
+                      context,
+                      employmentStateNotifier,
                     ),
-                    const SizedBox(height: 8),
-                    OutlinedButton.icon(
-                      onPressed: () => _navigateToChat(context),
-                      icon: const Icon(Icons.chat),
-                      label: const Text('相談する'),
+                    icon: const Icon(Icons.work_off),
+                    label: const Text('解雇する'),
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: theme.colorScheme.onError,
+                      backgroundColor: theme.colorScheme.error,
                     ),
-                  ] else ...[
-                    ElevatedButton.icon(
-                      onPressed: () => _hireAndNavigateToChat(
-                        context,
-                        employmentStateNotifier,
-                      ),
-                      icon: const Icon(Icons.work),
-                      label: const Text('雇用する'),
+                  ),
+                  const SizedBox(height: 8),
+                  OutlinedButton.icon(
+                    onPressed: () => _navigateToChat(context),
+                    icon: const Icon(Icons.chat),
+                    label: const Text('相談する'),
+                  ),
+                ] else ...[
+                  ElevatedButton.icon(
+                    onPressed: () => _hireAndNavigateToChat(
+                      context,
+                      employmentStateNotifier,
                     ),
-                  ],
+                    icon: const Icon(Icons.work),
+                    label: const Text('雇用する'),
+                  ),
                 ],
-              ),
+              ],
             ),
           ),
         ],
