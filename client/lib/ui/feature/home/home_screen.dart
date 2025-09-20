@@ -81,6 +81,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: title,
+        actions: [clearButton],
       ),
       drawer: AppDrawer(
         isTalkSelected: true,
