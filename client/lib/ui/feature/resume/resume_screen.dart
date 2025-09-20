@@ -163,10 +163,12 @@ class ResumeScreen extends ConsumerWidget {
               children: [
                 if (isEmployed) ...[
                   ElevatedButton.icon(
-                    onPressed: () => _fireAndNavigateToJobMarket(
-                      context,
-                      employmentStateNotifier,
-                    ),
+                    onPressed: () async {
+                      await _fireAndNavigateToJobMarket(
+                        context,
+                        employmentStateNotifier,
+                      );
+                    },
                     icon: const Icon(Icons.work_off),
                     label: const Text('解雇する'),
                     style: ElevatedButton.styleFrom(
@@ -182,10 +184,12 @@ class ResumeScreen extends ConsumerWidget {
                   ),
                 ] else ...[
                   ElevatedButton.icon(
-                    onPressed: () => _hireAndNavigateToChat(
-                      context,
-                      employmentStateNotifier,
-                    ),
+                    onPressed: () async {
+                      await _hireAndNavigateToChat(
+                        context,
+                        employmentStateNotifier,
+                      );
+                    },
                     icon: const Icon(Icons.work),
                     label: const Text('雇用する'),
                   ),
@@ -199,11 +203,11 @@ class ResumeScreen extends ConsumerWidget {
   }
 
   /// 雇用してチャット画面に遷移
-  void _hireAndNavigateToChat(
+  Future<void> _hireAndNavigateToChat(
     BuildContext context,
     EmploymentState employmentStateNotifier,
-  ) {
-    employmentStateNotifier.hire(cavivaraId);
+  ) async {
+    await employmentStateNotifier.hire(cavivaraId);
     Navigator.of(context).pushAndRemoveUntil(
       HomeScreen.route(cavivaraId),
       (route) => false,
@@ -211,11 +215,11 @@ class ResumeScreen extends ConsumerWidget {
   }
 
   /// 解雇して転職市場画面に戻る
-  void _fireAndNavigateToJobMarket(
+  Future<void> _fireAndNavigateToJobMarket(
     BuildContext context,
     EmploymentState employmentStateNotifier,
-  ) {
-    employmentStateNotifier.fire(cavivaraId);
+  ) async {
+    await employmentStateNotifier.fire(cavivaraId);
     Navigator.of(context).pushAndRemoveUntil(
       JobMarketScreen.route(),
       (route) => false,
