@@ -75,7 +75,9 @@ void main() {
         expect(find.text('雇用中'), findsNothing);
 
         // カヴィヴァラを雇用
-        container.read(employmentStateProvider.notifier).hire('cavivara_default');
+        container
+            .read(employmentStateProvider.notifier)
+            .hire('cavivara_default');
         await tester.pumpAndSettle();
 
         // 雇用中バッジが表示されることを確認
@@ -106,7 +108,9 @@ void main() {
         expect(find.text('相談する'), findsNothing);
 
         // カヴィヴァラを雇用
-        container.read(employmentStateProvider.notifier).hire('cavivara_default');
+        container
+            .read(employmentStateProvider.notifier)
+            .hire('cavivara_default');
         await tester.pumpAndSettle();
 
         // 相談ボタンが表示されることを確認

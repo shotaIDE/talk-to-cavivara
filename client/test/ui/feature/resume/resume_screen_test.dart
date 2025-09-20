@@ -145,7 +145,7 @@ void main() {
         );
 
         await tester.pumpAndSettle();
-        
+
         // 履歴書画面が正常に表示されることを確認
         expect(find.byType(ResumeScreen), findsOneWidget);
         expect(find.text('雇用する'), findsOneWidget);

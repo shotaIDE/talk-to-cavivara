@@ -65,8 +65,9 @@ void main() {
           ),
         ).thenAnswer((_) => Stream.value('AIからの返信'));
 
-        final notifier = 
-            container.read(chatMessagesProvider(cavivaraId).notifier);
+        final notifier = container.read(
+          chatMessagesProvider(cavivaraId).notifier,
+        );
 
         // メッセージ送信
         await notifier.sendMessage(messageText);
@@ -97,8 +98,9 @@ void main() {
             ),
           ).thenAnswer((_) => Stream.value('AIからの返信'));
 
-          final notifier =
-              container.read(chatMessagesProvider(cavivaraId).notifier);
+          final notifier = container.read(
+            chatMessagesProvider(cavivaraId).notifier,
+          );
           await notifier.sendMessage(messageText);
 
           // AI サービスが適切なパラメーターで呼び出されたことを確認
@@ -128,8 +130,9 @@ void main() {
           ),
         ).thenThrow(Exception('AI service error'));
 
-        final notifier = 
-            container.read(chatMessagesProvider(cavivaraId).notifier);
+        final notifier = container.read(
+          chatMessagesProvider(cavivaraId).notifier,
+        );
 
         // エラーが発生してもメッセージリストが破綻しないことを確認
         expect(
@@ -168,8 +171,9 @@ void main() {
           ]),
         );
 
-        final notifier = 
-            container.read(chatMessagesProvider(cavivaraId).notifier);
+        final notifier = container.read(
+          chatMessagesProvider(cavivaraId).notifier,
+        );
         await notifier.sendMessage(messageText);
 
         final messages = container.read(chatMessagesProvider(cavivaraId));
@@ -198,10 +202,12 @@ void main() {
         ).thenAnswer((_) => Stream.value('AIからの返信'));
 
         // 両方のカヴィヴァラにメッセージを追加
-        final notifier1 =
-            container.read(chatMessagesProvider(cavivaraId1).notifier);
-        final notifier2 =
-            container.read(chatMessagesProvider(cavivaraId2).notifier);
+        final notifier1 = container.read(
+          chatMessagesProvider(cavivaraId1).notifier,
+        );
+        final notifier2 = container.read(
+          chatMessagesProvider(cavivaraId2).notifier,
+        );
 
         await notifier1.sendMessage('メッセージ1');
         await notifier2.sendMessage('メッセージ2');

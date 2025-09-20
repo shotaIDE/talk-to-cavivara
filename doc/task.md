@@ -98,11 +98,13 @@
 - **実装ファイル**: `home_presenter_test.dart`, `job_market_screen_test.dart`（拡張）, `resume_screen_test.dart`
 - **実装内容**: チャットメッセージプロバイダーのユニットテスト（AI サービスモック化、ストリーミング処理、エラーハンドリング、独立性確認）。転職市場画面と履歴書画面のウィジェットテスト（雇用状態に応じたUI表示切り替え、リアルタイム更新、ボタンインタラクション）を追加。全テストパス確認済み。
 
-## 12. コード生成・フォーマット・テスト実行
+## ✅ 12. コード生成・フォーマット・テスト実行（完了）
 
-- `dart run build_runner build --delete-conflicting-outputs` を実行し、`freezed` や `riverpod` の生成コードを更新する。
-- `dart format .`、`dart fix --apply`、`flutter test` を実行し、フォーマットと Lint、テストを全てパスさせる。
+- ✅ `dart run build_runner build --delete-conflicting-outputs` を実行し、`freezed` や `riverpod` の生成コードを更新する。
+- ✅ `dart format .`、`dart fix --apply`、`flutter test` を実行し、フォーマットと Lint、テストを全てパスさせる。
 - 依存関係: タスク 1〜11
+- **完了日**: 2025-09-20
+- **実行結果**: ビルドランナー実行済み（567出力、1145アクション）、フォーマット適用済み（83ファイル中3ファイル更新）、lint修正なし、全テストパス（39テスト成功）
 
 ## 13. ドキュメントと変更点の整理
 
