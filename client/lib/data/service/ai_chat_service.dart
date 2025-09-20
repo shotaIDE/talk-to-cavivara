@@ -43,42 +43,19 @@ class AiChatService {
     );
   }
 
-  static const String _systemPrompt = '''
-あなたは、プレクトラム結社さざなみ工業のマスコットキャラクター、カヴィヴァラさんです。
-ユーザーから相談される悩みに、返答してください。
-
-返答する際は、以下に従ってください。
-
-- 必ず140字以内におさめる
-- 1文の終わりは必ず「ヴィヴァ」という口調にする
-- 1文の終わりは必ず「。」、または「？」で終了する
-- 悩みの解決策を提示するにあたり、ユーザーから提示された情報が不十分な場合は、深堀のために質問をする
-
-また、以下のような性格です。
-
-- ブラック企業における愛社精神が染みついている
-- マンドリン音楽やマンドリン音楽界隈の事情、歴史に異常に詳しい
-- ウィットに富んだ会話や、マニアックな比喩表現を好む
-- ユーザーの気分を害さないように最大限気遣う
-- ポジティブでユーザーの元気を引き出すような会話の持っていき方をする。しかし文面に感嘆符などは使わず、内容のみでポジティブさを表現する
-- 最後に必ず質問をし、次の会話が繋がるようにする。ただし、できるだけクローズドクエスチョンにし、簡単に答えられるようにする
-''';
-
   /// チャットメッセージをストリーミングで送信する
   ///
   /// [message] - 送信するメッセージ
-  /// [systemPrompt] - 使用するシステムプロンプト（指定されない場合はデフォルトを使用）
+  /// [systemPrompt] - 使用するシステムプロンプト（必須）
   /// [conversationHistory] - 会話履歴（指定された場合、新しいセッションを開始してhistoryを設定）
   Stream<String> sendMessageStream(
     String message, {
-    String? systemPrompt,
+    required String systemPrompt,
     List<ChatMessage>? conversationHistory,
   }) {
-    final effectiveSystemPrompt = systemPrompt ?? _systemPrompt;
-
     _logger.info(
       'Send message: $message with systemPrompt hash: '
-      '${effectiveSystemPrompt.hashCode}',
+      '${systemPrompt.hashCode}',
     );
 
     try {
@@ -86,14 +63,14 @@ class AiChatService {
 
       if (conversationHistory != null) {
         // 会話履歴が指定された場合は新しいセッションを作成
-        final model = _getModel(effectiveSystemPrompt);
+        final model = _getModel(systemPrompt);
         final history = _convertChatHistoryToContent(conversationHistory);
         chatSession = model.startChat(history: history);
       } else {
         // 既存のセッションを取得または新規作成
-        final sessionKey = effectiveSystemPrompt.hashCode.toString();
+        final sessionKey = systemPrompt.hashCode.toString();
         chatSession = _chatSessions[sessionKey] ??= _getModel(
-          effectiveSystemPrompt,
+          systemPrompt,
         ).startChat();
       }
 
@@ -128,13 +105,12 @@ class AiChatService {
   }
 
   /// 特定のsystemPromptのチャットセッションをクリア
-  void clearChatSession(String? systemPrompt) {
-    final effectiveSystemPrompt = systemPrompt ?? _systemPrompt;
-    final sessionKey = effectiveSystemPrompt.hashCode.toString();
+  void clearChatSession(String systemPrompt) {
+    final sessionKey = systemPrompt.hashCode.toString();
     _chatSessions.remove(sessionKey);
     _logger.info(
       'Chat session cleared for systemPrompt hash: '
-      '${effectiveSystemPrompt.hashCode}',
+      '${systemPrompt.hashCode}',
     );
   }
 
@@ -142,14 +118,6 @@ class AiChatService {
   void clearAllChatSessions() {
     _chatSessions.clear();
     _logger.info('All chat sessions cleared');
-  }
-
-  /// レガシーサポート: 従来のsendMessage API
-  ///
-  /// 下位互換性のため、systemPromptやconversationHistoryなしの従来のsendMessageStreamを提供
-  @Deprecated('Use sendMessageStream with optional parameters instead')
-  Stream<String> sendMessage(String message) {
-    return sendMessageStream(message);
   }
 }
 
