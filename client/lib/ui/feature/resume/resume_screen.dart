@@ -208,10 +208,12 @@ class ResumeScreen extends ConsumerWidget {
     EmploymentState employmentStateNotifier,
   ) async {
     await employmentStateNotifier.hire(cavivaraId);
-    Navigator.of(context).pushAndRemoveUntil(
-      HomeScreen.route(cavivaraId),
-      (route) => false,
-    );
+    if (context.mounted) {
+      await Navigator.of(context).pushAndRemoveUntil(
+        HomeScreen.route(cavivaraId),
+        (route) => false,
+      );
+    }
   }
 
   /// 解雇して転職市場画面に戻る
@@ -220,10 +222,12 @@ class ResumeScreen extends ConsumerWidget {
     EmploymentState employmentStateNotifier,
   ) async {
     await employmentStateNotifier.fire(cavivaraId);
-    Navigator.of(context).pushAndRemoveUntil(
-      JobMarketScreen.route(),
-      (route) => false,
-    );
+    if (context.mounted) {
+      await Navigator.of(context).pushAndRemoveUntil(
+        JobMarketScreen.route(),
+        (route) => false,
+      );
+    }
   }
 
   /// チャット画面に遷移
