@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:house_worker/data/model/preference_key.dart';
 import 'package:house_worker/data/service/employment_state_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
+import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 
 void main() {
   group('EmploymentStateService', () {
@@ -10,6 +12,8 @@ void main() {
 
     setUp(() {
       SharedPreferences.setMockInitialValues({});
+      SharedPreferencesAsyncPlatform.instance =
+          InMemorySharedPreferencesAsync.empty();
       container = ProviderContainer();
     });
 
@@ -33,6 +37,10 @@ void main() {
       test('永続化データが存在する場合は永続化された値で初期化されること', () async {
         container.dispose();
         SharedPreferences.setMockInitialValues({
+          PreferenceKey.employedCavivaraIds.name: <String>['cavivara_mascot'],
+        });
+        SharedPreferencesAsyncPlatform
+            .instance = InMemorySharedPreferencesAsync.withData({
           PreferenceKey.employedCavivaraIds.name: <String>['cavivara_mascot'],
         });
         container = ProviderContainer();

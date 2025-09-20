@@ -5,6 +5,8 @@ import 'package:house_worker/data/model/preference_key.dart';
 import 'package:house_worker/data/service/employment_state_service.dart';
 import 'package:house_worker/ui/feature/resume/resume_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
+import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 
 void main() {
   group('ResumeScreen', () {
@@ -12,6 +14,8 @@ void main() {
 
     setUp(() {
       SharedPreferences.setMockInitialValues({});
+      SharedPreferencesAsyncPlatform.instance =
+          InMemorySharedPreferencesAsync.empty();
     });
 
     testWidgets(
@@ -38,6 +42,10 @@ void main() {
         SharedPreferences.setMockInitialValues({
           PreferenceKey.employedCavivaraIds.name: <String>[],
         });
+        SharedPreferencesAsyncPlatform.instance =
+            InMemorySharedPreferencesAsync.withData({
+              PreferenceKey.employedCavivaraIds.name: <String>[],
+            });
 
         await tester.pumpWidget(
           const ProviderScope(
@@ -82,6 +90,10 @@ void main() {
         SharedPreferences.setMockInitialValues({
           PreferenceKey.employedCavivaraIds.name: <String>[],
         });
+        SharedPreferencesAsyncPlatform.instance =
+            InMemorySharedPreferencesAsync.withData({
+              PreferenceKey.employedCavivaraIds.name: <String>[],
+            });
         late ProviderContainer container;
         await tester.pumpWidget(
           ProviderScope(
