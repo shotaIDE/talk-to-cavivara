@@ -55,7 +55,7 @@ class _RootAppState extends ConsumerState<RootApp> {
       case AppInitialRoute.login:
         initialRoutes = [LoginScreen.route()];
       case AppInitialRoute.home:
-        initialRoutes = [HomeScreen.route('cavivara_default')];
+        initialRoutes = [HomeScreen.route(HomeScreen.defaultCavivaraId)];
       case AppInitialRoute.jobMarket:
         initialRoutes = [JobMarketScreen.route()];
     }

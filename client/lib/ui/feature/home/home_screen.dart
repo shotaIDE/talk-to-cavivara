@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/data/model/chat_message.dart';
 import 'package:house_worker/data/service/cavivara_directory_service.dart';
+import 'package:house_worker/ui/component/app_drawer.dart';
 import 'package:house_worker/ui/component/cavivara_avatar.dart';
 import 'package:house_worker/ui/feature/home/home_presenter.dart';
 import 'package:house_worker/ui/feature/resume/resume_screen.dart';
@@ -9,6 +10,8 @@ import 'package:house_worker/ui/feature/settings/settings_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key, required this.cavivaraId});
+
+  static const defaultCavivaraId = 'cavivara_default';
 
   /// 対象のカヴィヴァラID
   final String cavivaraId;
@@ -87,6 +90,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       appBar: AppBar(
         title: title,
         actions: [clearButton, settingsButton],
+      ),
+      drawer: AppDrawer(
+        isTalkSelected: true,
+        isJobMarketSelected: false,
+        onSelectTalk: () {
+          Navigator.of(context).pushAndRemoveUntil(
+            HomeScreen.route(widget.cavivaraId),
+            (route) => false,
+          );
+        },
+        onSelectJobMarket: () {
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            '/',
+            (route) => false,
+          );
+        },
+        onSelectSettings: () {
+          Navigator.of(context).push(SettingsScreen.route());
+        },
       ),
       body: body,
     );
