@@ -4,6 +4,7 @@ import 'package:house_worker/data/service/cavivara_directory_service.dart';
 import 'package:house_worker/data/service/employment_state_service.dart';
 import 'package:house_worker/ui/component/cavivara_avatar.dart';
 import 'package:house_worker/ui/feature/home/home_screen.dart';
+import 'package:house_worker/ui/feature/job_market/job_market_screen.dart';
 
 class ResumeScreen extends ConsumerWidget {
   const ResumeScreen({super.key, required this.cavivaraId});
@@ -212,9 +213,7 @@ class ResumeScreen extends ConsumerWidget {
     EmploymentState employmentStateNotifier,
   ) {
     employmentStateNotifier.fire(cavivaraId);
-    // TODO(job-market): 転職市場画面が実装されたら以下のコメントアウトを解除
-    // Navigator.of(context).pushReplacement(JobMarketScreen.route());
-    Navigator.of(context).pop(); // 現在は前の画面に戻る
+    Navigator.of(context).pushReplacement(JobMarketScreen.route());
   }
 
   /// チャット画面に遷移
