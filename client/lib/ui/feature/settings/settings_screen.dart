@@ -130,9 +130,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         // シェア機能
         SharePlus.instance.share(
           ShareParams(
-            text:
-                'Flutter x Firebaseのテンプレート「Flutter Firebase Base」を使ってみませんか？ https://example.com/',
-            title: 'Flutter Firebase Base',
+            text: 'プレクトラム結社公式キャラクターのカヴィヴァラさんとお話ししてみませんか？ https://example.com/',
+            title: 'カヴィヴァラチャット',
           ),
         );
       },
@@ -190,7 +189,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         // ライセンス表示画面へ遷移
         showLicensePage(
           context: context,
-          applicationName: 'House Worker',
+          applicationName: 'カヴィヴァラチャット',
           applicationLegalese: '2025 colomney',
         );
       },

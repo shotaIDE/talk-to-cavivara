@@ -71,7 +71,7 @@ class _RootAppState extends ConsumerState<RootApp> {
       initialRoute: '/',
       onGenerateInitialRoutes: (_) => initialRoutes,
       navigatorObservers: navigatorObservers,
-      title: 'Flutter Firebase Base',
+      title: 'カヴィヴァラチャット',
       builder: (_, child) => _wrapByAppBanner(child),
       theme: getLightTheme(),
       darkTheme: getDarkTheme(),
