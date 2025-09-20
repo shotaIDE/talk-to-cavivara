@@ -59,14 +59,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ],
     );
 
-    final settingsButton = IconButton(
-      onPressed: () {
-        Navigator.of(context).push(SettingsScreen.route());
-      },
-      tooltip: '設定を表示する',
-      icon: const Icon(Icons.settings),
-    );
-
     final clearButton = IconButton(
       onPressed: _clearChat,
       tooltip: 'チャット履歴をクリアする',
@@ -89,7 +81,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: title,
-        actions: [clearButton, settingsButton],
       ),
       drawer: AppDrawer(
         isTalkSelected: true,
