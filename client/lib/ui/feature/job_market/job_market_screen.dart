@@ -42,7 +42,10 @@ class JobMarketScreen extends ConsumerWidget {
           );
         },
         onSelectJobMarket: () {
-          Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+          Navigator.of(context).pushAndRemoveUntil(
+            JobMarketScreen.route(),
+            (route) => false,
+          );
         },
         onSelectSettings: () {
           Navigator.of(context).push(SettingsScreen.route());

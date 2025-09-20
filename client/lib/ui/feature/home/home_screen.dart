@@ -5,6 +5,7 @@ import 'package:house_worker/data/service/cavivara_directory_service.dart';
 import 'package:house_worker/ui/component/app_drawer.dart';
 import 'package:house_worker/ui/component/cavivara_avatar.dart';
 import 'package:house_worker/ui/feature/home/home_presenter.dart';
+import 'package:house_worker/ui/feature/job_market/job_market_screen.dart';
 import 'package:house_worker/ui/feature/resume/resume_screen.dart';
 import 'package:house_worker/ui/feature/settings/settings_screen.dart';
 
@@ -93,8 +94,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           );
         },
         onSelectJobMarket: () {
-          Navigator.of(context).pushNamedAndRemoveUntil(
-            '/',
+          Navigator.of(context).pushAndRemoveUntil(
+            JobMarketScreen.route(),
             (route) => false,
           );
         },
