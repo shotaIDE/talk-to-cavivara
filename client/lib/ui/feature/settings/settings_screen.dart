@@ -88,13 +88,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         email: final email,
         photoUrl: final photoUrl,
       ):
-        leading =
-            photoUrl != null
-                ? CircleAvatar(
-                  backgroundImage: NetworkImage(photoUrl),
-                  radius: 20,
-                )
-                : const Icon(Icons.person);
+        leading = photoUrl != null
+            ? CircleAvatar(
+                backgroundImage: NetworkImage(photoUrl),
+                radius: 20,
+              )
+            : const Icon(Icons.person);
         titleText = displayName ?? '名前未設定';
         subtitle = email != null ? Text(email) : null;
         onTap = null;
@@ -191,7 +190,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         // ライセンス表示画面へ遷移
         showLicensePage(
           context: context,
-          applicationName: 'House Worker',
+          applicationName: 'Flutter Firebase Base',
           applicationLegalese: '2025 colomney',
         );
       },
@@ -357,35 +356,32 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   void _showLogoutConfirmDialog(BuildContext context, WidgetRef ref) {
     showDialog<void>(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('ログアウト'),
-            content: const Text('本当にログアウトしますか？'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('キャンセル'),
-              ),
-              TextButton(
-                onPressed: () async {
-                  try {
-                    await ref.read(authServiceProvider).signOut();
-                    await ref
-                        .read(currentAppSessionProvider.notifier)
-                        .signOut();
-                  } on Exception catch (e) {
-                    if (context.mounted) {
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('ログアウトに失敗しました: $e')),
-                      );
-                    }
-                  }
-                },
-                child: const Text('ログアウト'),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: const Text('ログアウト'),
+        content: const Text('本当にログアウトしますか？'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('キャンセル'),
           ),
+          TextButton(
+            onPressed: () async {
+              try {
+                await ref.read(authServiceProvider).signOut();
+                await ref.read(currentAppSessionProvider.notifier).signOut();
+              } on Exception catch (e) {
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('ログアウトに失敗しました: $e')),
+                  );
+                }
+              }
+            },
+            child: const Text('ログアウト'),
+          ),
+        ],
+      ),
     );
   }
 
@@ -397,37 +393,34 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   ) {
     showDialog<void>(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('アカウント削除'),
-            content: const Text('本当にアカウントを削除しますか？この操作は元に戻せません。'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('キャンセル'),
-              ),
-              TextButton(
-                style: TextButton.styleFrom(foregroundColor: Colors.red),
-                onPressed: () async {
-                  try {
-                    // Firebase認証からのサインアウト
-                    await ref.read(authServiceProvider).signOut();
-                    await ref
-                        .read(currentAppSessionProvider.notifier)
-                        .signOut();
-                  } on Exception catch (e) {
-                    if (context.mounted) {
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('アカウント削除に失敗しました: $e')),
-                      );
-                    }
-                  }
-                },
-                child: const Text('削除する'),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: const Text('アカウント削除'),
+        content: const Text('本当にアカウントを削除しますか？この操作は元に戻せません。'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('キャンセル'),
           ),
+          TextButton(
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            onPressed: () async {
+              try {
+                // Firebase認証からのサインアウト
+                await ref.read(authServiceProvider).signOut();
+                await ref.read(currentAppSessionProvider.notifier).signOut();
+              } on Exception catch (e) {
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('アカウント削除に失敗しました: $e')),
+                  );
+                }
+              }
+            },
+            child: const Text('削除する'),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -442,8 +435,8 @@ class _ReviewAppTile extends StatelessWidget {
       title: const Text('アプリをレビューする'),
       trailing: const _OpenTrailingIcon(),
       // アプリ内レビューは表示回数に制限があるため、ストアに移動するようにしている
-      onTap:
-          () => InAppReview.instance.openStoreListing(appStoreId: appStoreId),
+      onTap: () =>
+          InAppReview.instance.openStoreListing(appStoreId: appStoreId),
     );
   }
 }
@@ -474,9 +467,8 @@ class _AppVersionTile extends ConsumerWidget {
     final appVersionAsync = ref.watch(currentAppVersionProvider);
 
     final versionString = appVersionAsync.when(
-      data:
-          (appVersion) =>
-              'バージョン: ${appVersion.version} (${appVersion.buildNumber})',
+      data: (appVersion) =>
+          'バージョン: ${appVersion.version} (${appVersion.buildNumber})',
       loading: () => 'バージョン: n.n.n (nnn)',
       error: (_, _) => 'バージョン情報を取得できませんでした',
     );
