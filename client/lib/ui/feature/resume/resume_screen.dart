@@ -170,7 +170,6 @@ class _ResumeScreenState extends ConsumerState<ResumeScreen> {
                   ElevatedButton.icon(
                     onPressed: () async {
                       await _fireAndNavigateToJobMarket(
-                        context,
                         employmentStateNotifier,
                       );
                     },
@@ -183,7 +182,7 @@ class _ResumeScreenState extends ConsumerState<ResumeScreen> {
                   ),
                   const SizedBox(height: 8),
                   OutlinedButton.icon(
-                    onPressed: () => _navigateToChat(context),
+                    onPressed: _navigateToChat,
                     icon: const Icon(Icons.chat),
                     label: const Text('相談する'),
                   ),
@@ -191,7 +190,6 @@ class _ResumeScreenState extends ConsumerState<ResumeScreen> {
                   ElevatedButton.icon(
                     onPressed: () async {
                       await _hireAndNavigateToChat(
-                        context,
                         employmentStateNotifier,
                       );
                     },
@@ -209,11 +207,10 @@ class _ResumeScreenState extends ConsumerState<ResumeScreen> {
 
   /// 雇用してチャット画面に遷移
   Future<void> _hireAndNavigateToChat(
-    BuildContext context,
     EmploymentState employmentStateNotifier,
   ) async {
     await employmentStateNotifier.hire(widget.cavivaraId);
-    if (context.mounted) {
+    if (mounted) {
       await Navigator.of(context).pushAndRemoveUntil(
         HomeScreen.route(widget.cavivaraId),
         (route) => false,
@@ -223,11 +220,10 @@ class _ResumeScreenState extends ConsumerState<ResumeScreen> {
 
   /// 解雇して転職市場画面に戻る
   Future<void> _fireAndNavigateToJobMarket(
-    BuildContext context,
     EmploymentState employmentStateNotifier,
   ) async {
     await employmentStateNotifier.fire(widget.cavivaraId);
-    if (context.mounted) {
+    if (mounted) {
       await Navigator.of(context).pushAndRemoveUntil(
         JobMarketScreen.route(),
         (route) => false,
@@ -236,7 +232,7 @@ class _ResumeScreenState extends ConsumerState<ResumeScreen> {
   }
 
   /// チャット画面に遷移
-  void _navigateToChat(BuildContext context) {
+  void _navigateToChat() {
     Navigator.of(context).pushAndRemoveUntil(
       HomeScreen.route(widget.cavivaraId),
       (route) => false,
