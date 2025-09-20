@@ -1,20 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/data/model/chat_message.dart';
+import 'package:house_worker/data/service/cavivara_directory_service.dart';
 import 'package:house_worker/ui/component/cavivara_avatar.dart';
 import 'package:house_worker/ui/feature/home/home_presenter.dart';
 import 'package:house_worker/ui/feature/resume/resume_screen.dart';
 import 'package:house_worker/ui/feature/settings/settings_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({super.key, required this.cavivaraId});
+
+  /// 対象のカヴィヴァラID
+  final String cavivaraId;
 
   static const name = 'HomeScreen';
 
-  static MaterialPageRoute<HomeScreen> route() => MaterialPageRoute<HomeScreen>(
-    builder: (_) => const HomeScreen(),
-    settings: const RouteSettings(name: name),
-  );
+  static MaterialPageRoute<HomeScreen> route(String cavivaraId) =>
+      MaterialPageRoute<HomeScreen>(
+        builder: (_) => HomeScreen(cavivaraId: cavivaraId),
+        settings: const RouteSettings(name: name),
+      );
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -33,15 +38,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final cavivaraProfile = ref.watch(cavivaraByIdProvider(widget.cavivaraId));
+
     final title = Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         CavivaraAvatar(
           size: 32,
-          onTap: () => Navigator.of(context).push(ResumeScreen.route()),
+          assetPath: cavivaraProfile.iconPath,
+          cavivaraId: widget.cavivaraId,
+          onTap: () => Navigator.of(context).push(
+            ResumeScreen.route(widget.cavivaraId),
+          ),
         ),
         const SizedBox(width: 12),
-        const Text('カヴィヴァラさん'),
+        Text(cavivaraProfile.displayName),
       ],
     );
 
@@ -65,6 +76,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           child: _ChatMessageList(
             controller: _scrollController,
             onMessageSent: _onMessageSent,
+            cavivaraId: widget.cavivaraId,
           ),
         ),
         _messageInput(),
@@ -81,13 +93,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   void _clearChat() {
-    ref.read(chatMessagesProvider('default').notifier).clearMessages();
+    ref.read(chatMessagesProvider(widget.cavivaraId).notifier).clearMessages();
   }
 
   void _sendMessage() {
     final message = _messageController.text.trim();
     if (message.isNotEmpty) {
-      ref.read(chatMessagesProvider('default').notifier).sendMessage(message);
+      ref
+          .read(chatMessagesProvider(widget.cavivaraId).notifier)
+          .sendMessage(message);
       _messageController.clear();
     }
   }
@@ -146,10 +160,12 @@ class _ChatMessageList extends ConsumerStatefulWidget {
   const _ChatMessageList({
     required this.controller,
     required this.onMessageSent,
+    required this.cavivaraId,
   });
 
   final ScrollController controller;
   final VoidCallback onMessageSent;
+  final String cavivaraId;
 
   @override
   ConsumerState<_ChatMessageList> createState() => _ChatMessageListState();
@@ -200,7 +216,7 @@ class _ChatMessageListState extends ConsumerState<_ChatMessageList> {
 
   @override
   Widget build(BuildContext context) {
-    final messages = ref.watch(chatMessagesProvider('default'));
+    final messages = ref.watch(chatMessagesProvider(widget.cavivaraId));
     final hasStreamingMessages = messages.any(
       (ChatMessage message) => message.isStreaming,
     );
@@ -245,20 +261,28 @@ class _ChatMessageListState extends ConsumerState<_ChatMessageList> {
         final message = messages[index];
         return Padding(
           padding: const EdgeInsets.only(bottom: 16),
-          child: _ChatBubble(message: message),
+          child: _ChatBubble(
+            message: message,
+            cavivaraId: widget.cavivaraId,
+          ),
         );
       },
     );
   }
 }
 
-class _ChatBubble extends StatelessWidget {
-  const _ChatBubble({required this.message});
+class _ChatBubble extends ConsumerWidget {
+  const _ChatBubble({
+    required this.message,
+    required this.cavivaraId,
+  });
 
   final ChatMessage message;
+  final String cavivaraId;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cavivaraProfile = ref.watch(cavivaraByIdProvider(cavivaraId));
     final isUser = message.sender == const ChatMessageSender.user();
     final isStreaming = message.isStreaming;
     final theme = Theme.of(context);
@@ -284,7 +308,7 @@ class _ChatBubble extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           Text(
-            'カヴィヴァラさんが考え中…',
+            '${cavivaraProfile.displayName}が考え中…',
             style: theme.textTheme.bodyMedium?.copyWith(
               color: textColor,
             ),
@@ -359,7 +383,11 @@ class _ChatBubble extends StatelessWidget {
       children: [
         if (!isUser) ...[
           CavivaraAvatar(
-            onTap: () => Navigator.of(context).push(ResumeScreen.route()),
+            assetPath: cavivaraProfile.iconPath,
+            cavivaraId: cavivaraId,
+            onTap: () => Navigator.of(context).push(
+              ResumeScreen.route(cavivaraId),
+            ),
           ),
           const SizedBox(width: 8),
         ],
