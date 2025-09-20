@@ -6,7 +6,7 @@ import 'package:house_worker/ui/component/cavivara_avatar.dart';
 import 'package:house_worker/ui/feature/home/home_screen.dart';
 import 'package:house_worker/ui/feature/job_market/job_market_screen.dart';
 
-class ResumeScreen extends ConsumerWidget {
+class ResumeScreen extends ConsumerStatefulWidget {
   const ResumeScreen({super.key, required this.cavivaraId});
 
   /// 表示対象のカヴィヴァラID
@@ -21,10 +21,15 @@ class ResumeScreen extends ConsumerWidget {
       );
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ResumeScreen> createState() => _ResumeScreenState();
+}
+
+class _ResumeScreenState extends ConsumerState<ResumeScreen> {
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final cavivaraProfile = ref.watch(cavivaraByIdProvider(cavivaraId));
-    final isEmployed = ref.watch(isEmployedProvider(cavivaraId));
+    final cavivaraProfile = ref.watch(cavivaraByIdProvider(widget.cavivaraId));
+    final isEmployed = ref.watch(isEmployedProvider(widget.cavivaraId));
     final employmentStateNotifier = ref.read(employmentStateProvider.notifier);
 
     Widget sectionTitle(String text) {
@@ -89,7 +94,7 @@ class ResumeScreen extends ConsumerWidget {
                             CavivaraAvatar(
                               size: 96,
                               assetPath: cavivaraProfile.iconPath,
-                              cavivaraId: cavivaraId,
+                              cavivaraId: widget.cavivaraId,
                             ),
                             const SizedBox(width: 16),
                             Expanded(
@@ -163,10 +168,11 @@ class ResumeScreen extends ConsumerWidget {
               children: [
                 if (isEmployed) ...[
                   ElevatedButton.icon(
-                    onPressed: () => _fireAndNavigateToJobMarket(
-                      context,
-                      employmentStateNotifier,
-                    ),
+                    onPressed: () async {
+                      await _fireAndNavigateToJobMarket(
+                        employmentStateNotifier,
+                      );
+                    },
                     icon: const Icon(Icons.work_off),
                     label: const Text('解雇する'),
                     style: ElevatedButton.styleFrom(
@@ -176,16 +182,17 @@ class ResumeScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 8),
                   OutlinedButton.icon(
-                    onPressed: () => _navigateToChat(context),
+                    onPressed: _navigateToChat,
                     icon: const Icon(Icons.chat),
                     label: const Text('相談する'),
                   ),
                 ] else ...[
                   ElevatedButton.icon(
-                    onPressed: () => _hireAndNavigateToChat(
-                      context,
-                      employmentStateNotifier,
-                    ),
+                    onPressed: () async {
+                      await _hireAndNavigateToChat(
+                        employmentStateNotifier,
+                      );
+                    },
                     icon: const Icon(Icons.work),
                     label: const Text('雇用する'),
                   ),
@@ -199,33 +206,39 @@ class ResumeScreen extends ConsumerWidget {
   }
 
   /// 雇用してチャット画面に遷移
-  void _hireAndNavigateToChat(
-    BuildContext context,
+  Future<void> _hireAndNavigateToChat(
     EmploymentState employmentStateNotifier,
-  ) {
-    employmentStateNotifier.hire(cavivaraId);
-    Navigator.of(context).pushAndRemoveUntil(
-      HomeScreen.route(cavivaraId),
+  ) async {
+    await employmentStateNotifier.hire(widget.cavivaraId);
+    if (!mounted) {
+      return;
+    }
+
+    await Navigator.of(context).pushAndRemoveUntil(
+      HomeScreen.route(widget.cavivaraId),
       (route) => false,
     );
   }
 
   /// 解雇して転職市場画面に戻る
-  void _fireAndNavigateToJobMarket(
-    BuildContext context,
+  Future<void> _fireAndNavigateToJobMarket(
     EmploymentState employmentStateNotifier,
-  ) {
-    employmentStateNotifier.fire(cavivaraId);
-    Navigator.of(context).pushAndRemoveUntil(
+  ) async {
+    await employmentStateNotifier.fire(widget.cavivaraId);
+    if (!mounted) {
+      return;
+    }
+
+    await Navigator.of(context).pushAndRemoveUntil(
       JobMarketScreen.route(),
       (route) => false,
     );
   }
 
   /// チャット画面に遷移
-  void _navigateToChat(BuildContext context) {
+  void _navigateToChat() {
     Navigator.of(context).pushAndRemoveUntil(
-      HomeScreen.route(cavivaraId),
+      HomeScreen.route(widget.cavivaraId),
       (route) => false,
     );
   }
