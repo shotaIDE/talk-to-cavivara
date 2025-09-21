@@ -43,7 +43,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     unawaited(
       ref
           .read(lastTalkedCavivaraIdProvider.notifier)
-          .update(widget.cavivaraId),
+          .updateCavivaraId(widget.cavivaraId),
     );
   }
 
@@ -55,7 +55,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       unawaited(
         ref
             .read(lastTalkedCavivaraIdProvider.notifier)
-            .update(widget.cavivaraId),
+            .updateCavivaraId(widget.cavivaraId),
       );
     }
   }

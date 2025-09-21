@@ -26,22 +26,23 @@ Future<AppInitialRoute> appInitialRoute(Ref ref) async {
     final currentAppVersion = await ref.watch(currentAppVersionProvider.future);
     final currentBuildNumber = currentAppVersion.buildNumber;
     if (currentBuildNumber < minimumBuildNumber) {
-      return AppInitialRoute.updateApp;
+      return const AppInitialRoute.updateApp();
     }
   }
 
   final appSession = await appSessionFuture;
   switch (appSession) {
     case AppSessionSignedIn():
-      final lastTalkedCavivaraId =
-          await ref.watch(lastTalkedCavivaraIdProvider.future);
+      final lastTalkedCavivaraId = await ref.watch(
+        lastTalkedCavivaraIdProvider.future,
+      );
       if (lastTalkedCavivaraId != null) {
-        return AppInitialRoute.home;
+        return AppInitialRoute.home(cavivaraId: lastTalkedCavivaraId);
       }
 
-      return AppInitialRoute.jobMarket;
+      return const AppInitialRoute.jobMarket();
     case AppSessionNotSignedIn():
-      return AppInitialRoute.login;
+      return const AppInitialRoute.login();
   }
 }
 

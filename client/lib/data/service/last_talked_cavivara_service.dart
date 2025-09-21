@@ -6,12 +6,12 @@ import 'package:house_worker/data/service/preference_service.dart';
 
 class LastTalkedCavivaraIdNotifier extends AsyncNotifier<String?> {
   @override
-  FutureOr<String?> build() async {
+  FutureOr<String?> build() {
     final preferenceService = ref.read(preferenceServiceProvider);
     return preferenceService.getString(PreferenceKey.lastTalkedCavivaraId);
   }
 
-  Future<void> update(String cavivaraId) async {
+  Future<void> updateCavivaraId(String cavivaraId) async {
     final preferenceService = ref.read(preferenceServiceProvider);
     await preferenceService.setString(
       PreferenceKey.lastTalkedCavivaraId,
@@ -23,5 +23,5 @@ class LastTalkedCavivaraIdNotifier extends AsyncNotifier<String?> {
 
 final lastTalkedCavivaraIdProvider =
     AsyncNotifierProvider<LastTalkedCavivaraIdNotifier, String?>(
-  LastTalkedCavivaraIdNotifier.new,
-);
+      LastTalkedCavivaraIdNotifier.new,
+    );
