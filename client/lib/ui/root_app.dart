@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/data/definition/app_feature.dart';
 import 'package:house_worker/data/definition/flavor.dart';
+import 'package:house_worker/data/service/last_talked_cavivara_service.dart';
 import 'package:house_worker/data/service/remote_config_service.dart';
 import 'package:house_worker/ui/app_initial_route.dart';
 import 'package:house_worker/ui/component/app_theme.dart';
@@ -47,6 +48,19 @@ class _RootAppState extends ConsumerState<RootApp> {
       return Container();
     }
 
+    final lastTalkedCavivaraIdAsync =
+        appInitialRoute == AppInitialRoute.home
+            ? ref.watch(lastTalkedCavivaraIdProvider)
+            : null;
+    final homeCavivaraId = lastTalkedCavivaraIdAsync?.whenOrNull(
+      data: (cavivaraId) => cavivaraId,
+    );
+
+    if (appInitialRoute == AppInitialRoute.home &&
+        (homeCavivaraId == null || homeCavivaraId.isEmpty)) {
+      return Container();
+    }
+
     final List<MaterialPageRoute<Widget>> initialRoutes;
 
     switch (appInitialRoute) {
@@ -55,7 +69,7 @@ class _RootAppState extends ConsumerState<RootApp> {
       case AppInitialRoute.login:
         initialRoutes = [LoginScreen.route()];
       case AppInitialRoute.home:
-        initialRoutes = [HomeScreen.route(HomeScreen.defaultCavivaraId)];
+        initialRoutes = [HomeScreen.route(homeCavivaraId!)];
       case AppInitialRoute.jobMarket:
         initialRoutes = [JobMarketScreen.route()];
     }

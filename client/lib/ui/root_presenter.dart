@@ -4,6 +4,7 @@ import 'package:house_worker/data/model/preference_key.dart';
 import 'package:house_worker/data/model/root_app_not_initialized.dart';
 import 'package:house_worker/data/service/app_info_service.dart';
 import 'package:house_worker/data/service/auth_service.dart';
+import 'package:house_worker/data/service/last_talked_cavivara_service.dart';
 import 'package:house_worker/data/service/preference_service.dart';
 import 'package:house_worker/data/service/remote_config_service.dart';
 import 'package:house_worker/ui/app_initial_route.dart';
@@ -32,6 +33,12 @@ Future<AppInitialRoute> appInitialRoute(Ref ref) async {
   final appSession = await appSessionFuture;
   switch (appSession) {
     case AppSessionSignedIn():
+      final lastTalkedCavivaraId =
+          await ref.watch(lastTalkedCavivaraIdProvider.future);
+      if (lastTalkedCavivaraId != null) {
+        return AppInitialRoute.home;
+      }
+
       return AppInitialRoute.jobMarket;
     case AppSessionNotSignedIn():
       return AppInitialRoute.login;
