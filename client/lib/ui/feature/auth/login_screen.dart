@@ -20,9 +20,9 @@ class LoginScreen extends ConsumerStatefulWidget {
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
-    final continueWithoutAccountButton = TextButton(
+    final continueWithoutAccountButton = ElevatedButton(
       onPressed: _startWithoutAccount,
-      style: TextButton.styleFrom(
+      style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
       ),
       child: const Text('はじめる'),
