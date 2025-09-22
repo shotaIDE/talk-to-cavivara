@@ -57,9 +57,7 @@ class CavivaraKnowledgeBase {
   };
 
   static final List<Tool> _knowledgeTools = List.unmodifiable([
-    Tool(
-      functionDeclarations: [_buildFunctionDeclaration()],
-    ),
+    Tool.functionDeclarations([_buildFunctionDeclaration()]),
   ]);
 
   List<Tool> get tools => _knowledgeTools;
@@ -109,21 +107,17 @@ class CavivaraKnowledgeBase {
   }
 
   static FunctionDeclaration _buildFunctionDeclaration() {
-    final topics = _entries.keys.toList();
     return FunctionDeclaration(
-      name: _functionName,
-      description: 'プレクトラム結社に関する社内公式知識を取得します。',
-      parameters: Schema.object(
-        properties: {
-          'topic': Schema.string(
-            description: '取得したいトピックID。',
-            enumValues: topics,
-          ),
-          'query': Schema.string(
-            description: '自然言語で記述された検索クエリ。例: "給料は？"',
-          ),
-        },
-      ),
+      _functionName,
+      'プレクトラム結社に関する社内公式知識を取得します。',
+      parameters: {
+        'topic': Schema.string(
+          description: '取得したいトピックID。',
+        ),
+        'query': Schema.string(
+          description: '自然言語で記述された検索クエリ。例: "給料は？"',
+        ),
+      },
     );
   }
 

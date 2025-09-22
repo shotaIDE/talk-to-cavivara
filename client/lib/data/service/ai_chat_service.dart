@@ -86,7 +86,7 @@ class AiChatService {
           );
         } on AiChatException catch (e) {
           controller.addError(e);
-        } catch (e, stackTrace) {
+        } on Exception catch (e, stackTrace) {
           _logger.severe('ストリーミングチャットメッセージの送信に失敗: $e');
           unawaited(errorReportService.recordError(e, stackTrace));
           controller.addError(
@@ -118,8 +118,7 @@ class AiChatService {
 
     // 既存のセッションを取得または新規作成
     final sessionKey = systemPrompt.hashCode.toString();
-    return _chatSessions[sessionKey] ??=
-        _getModel(systemPrompt).startChat();
+    return _chatSessions[sessionKey] ??= _getModel(systemPrompt).startChat();
   }
 
   Future<void> _processResponseStream({
@@ -129,7 +128,7 @@ class AiChatService {
   }) async {
     await for (final chunk in responseStream) {
       final functionCalls = chunk.functionCalls;
-      if (functionCalls != null && functionCalls.isNotEmpty) {
+      if (functionCalls.isNotEmpty) {
         for (final functionCall in functionCalls) {
           await _handleFunctionCall(
             chatSession: chatSession,
@@ -173,16 +172,13 @@ class AiChatService {
       );
 
       final functionResponseContent = Content.functionResponse(
-        FunctionResponse(
-          name: functionCall.name,
-          response: responsePayload,
-        ),
+        functionCall.name,
+        responsePayload,
       );
 
       await _processResponseStream(
         chatSession: chatSession,
-        responseStream:
-            chatSession.sendMessageStream(functionResponseContent),
+        responseStream: chatSession.sendMessageStream(functionResponseContent),
         controller: controller,
       );
     } catch (e, stackTrace) {
@@ -193,22 +189,7 @@ class AiChatService {
   }
 
   Map<String, dynamic> _resolveFunctionArguments(FunctionCall functionCall) {
-    final args = functionCall.args;
-    if (args == null) {
-      return const <String, dynamic>{};
-    }
-
-    if (args is Map) {
-      return args.map(
-        (key, value) => MapEntry(key.toString(), value),
-      );
-    }
-
-    _logger.warning(
-      'Unexpected argument format received for function '
-      "'${functionCall.name}': $args",
-    );
-    return const <String, dynamic>{};
+    return functionCall.args;
   }
 
   /// ChatMessageのリストをFirebase AI用のContentリストに変換
