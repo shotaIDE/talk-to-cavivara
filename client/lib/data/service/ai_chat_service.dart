@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_ai/firebase_ai.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/data/model/chat_message.dart';
+import 'package:house_worker/data/service/cavivara_knowledge_service.dart';
 import 'package:house_worker/data/service/error_report_service.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -13,13 +14,18 @@ part 'ai_chat_service.g.dart';
 AiChatService aiChatService(Ref ref) {
   return AiChatService(
     errorReportService: ref.watch(errorReportServiceProvider),
+    knowledgeBase: ref.watch(cavivaraKnowledgeBaseProvider),
   );
 }
 
 class AiChatService {
-  AiChatService({required this.errorReportService});
+  AiChatService({
+    required this.errorReportService,
+    required this.knowledgeBase,
+  });
 
   final ErrorReportService errorReportService;
+  final CavivaraKnowledgeBase knowledgeBase;
   final Logger _logger = Logger('AiChatService');
 
   /// チャットセッションのキャッシュ（systemPromptごとに保持）
@@ -40,6 +46,7 @@ class AiChatService {
         maxOutputTokens: 2048,
       ),
       systemInstruction: Content.system(systemPrompt),
+      tools: knowledgeBase.tools,
     );
   }
 
@@ -59,39 +66,149 @@ class AiChatService {
     );
 
     try {
-      ChatSession chatSession;
+      final chatSession = _createOrReuseChatSession(
+        systemPrompt: systemPrompt,
+        conversationHistory: conversationHistory,
+      );
 
-      if (conversationHistory != null) {
-        // 会話履歴が指定された場合は新しいセッションを作成
-        final model = _getModel(systemPrompt);
-        final history = _convertChatHistoryToContent(conversationHistory);
-        chatSession = model.startChat(history: history);
-      } else {
-        // 既存のセッションを取得または新規作成
-        final sessionKey = systemPrompt.hashCode.toString();
-        chatSession = _chatSessions[sessionKey] ??= _getModel(
-          systemPrompt,
-        ).startChat();
-      }
+      final controller = StreamController<String>();
 
-      final content = Content.text(message);
-      final responseStream = chatSession.sendMessageStream(content);
+      () async {
+        try {
+          final responseStream = chatSession.sendMessageStream(
+            Content.text(message),
+          );
 
-      return responseStream.map((chunk) {
-        final text = chunk.text;
-        if (text == null) {
-          _logger.warning('AIからの応答チャンクがnullです');
-          return '';
+          await _processResponseStream(
+            chatSession: chatSession,
+            responseStream: responseStream,
+            controller: controller,
+          );
+        } on AiChatException catch (e) {
+          controller.addError(e);
+        } catch (e, stackTrace) {
+          _logger.severe('ストリーミングチャットメッセージの送信に失敗: $e');
+          unawaited(errorReportService.recordError(e, stackTrace));
+          controller.addError(
+            AiChatException('ストリーミングチャットメッセージの送信に失敗しました: $e'),
+          );
+        } finally {
+          await controller.close();
         }
+      }();
 
-        _logger.info('応答チャンクを受信: $text');
-        return text;
-      });
+      return controller.stream;
     } catch (e, stackTrace) {
       _logger.severe('ストリーミングチャットメッセージの送信に失敗: $e');
       unawaited(errorReportService.recordError(e, stackTrace));
       throw AiChatException('ストリーミングチャットメッセージの送信に失敗しました: $e');
     }
+  }
+
+  ChatSession _createOrReuseChatSession({
+    required String systemPrompt,
+    List<ChatMessage>? conversationHistory,
+  }) {
+    if (conversationHistory != null) {
+      // 会話履歴が指定された場合は新しいセッションを作成
+      final model = _getModel(systemPrompt);
+      final history = _convertChatHistoryToContent(conversationHistory);
+      return model.startChat(history: history);
+    }
+
+    // 既存のセッションを取得または新規作成
+    final sessionKey = systemPrompt.hashCode.toString();
+    return _chatSessions[sessionKey] ??=
+        _getModel(systemPrompt).startChat();
+  }
+
+  Future<void> _processResponseStream({
+    required ChatSession chatSession,
+    required Stream<GenerateContentResponse> responseStream,
+    required StreamController<String> controller,
+  }) async {
+    await for (final chunk in responseStream) {
+      final functionCalls = chunk.functionCalls;
+      if (functionCalls != null && functionCalls.isNotEmpty) {
+        for (final functionCall in functionCalls) {
+          await _handleFunctionCall(
+            chatSession: chatSession,
+            functionCall: functionCall,
+            controller: controller,
+          );
+        }
+        continue;
+      }
+
+      final text = chunk.text;
+      if (text == null) {
+        _logger.warning('AIからの応答チャンクがnullです');
+        continue;
+      }
+
+      if (text.isEmpty) {
+        continue;
+      }
+
+      _logger.info('応答チャンクを受信: $text');
+      controller.add(text);
+    }
+  }
+
+  Future<void> _handleFunctionCall({
+    required ChatSession chatSession,
+    required FunctionCall functionCall,
+    required StreamController<String> controller,
+  }) async {
+    _logger.info(
+      'Function call requested: ${functionCall.name} with args: '
+      '${functionCall.args}',
+    );
+
+    try {
+      final arguments = _resolveFunctionArguments(functionCall);
+      final responsePayload = await knowledgeBase.execute(
+        functionName: functionCall.name,
+        arguments: arguments,
+      );
+
+      final functionResponseContent = Content.functionResponse(
+        FunctionResponse(
+          name: functionCall.name,
+          response: responsePayload,
+        ),
+      );
+
+      await _processResponseStream(
+        chatSession: chatSession,
+        responseStream:
+            chatSession.sendMessageStream(functionResponseContent),
+        controller: controller,
+      );
+    } catch (e, stackTrace) {
+      _logger.severe('関数呼び出しの処理に失敗: ${functionCall.name}: $e');
+      unawaited(errorReportService.recordError(e, stackTrace));
+      throw AiChatException('関数呼び出しの処理に失敗しました: $e');
+    }
+  }
+
+  Map<String, dynamic> _resolveFunctionArguments(FunctionCall functionCall) {
+    final args = functionCall.args;
+    if (args == null) {
+      return const <String, dynamic>{};
+    }
+
+    if (args is Map) {
+      return args.map(
+        (key, value) => MapEntry(key.toString(), value),
+      );
+    }
+
+    _logger.warning(
+      'Unexpected argument format received for function '
+      "'${functionCall.name}': $args",
+    );
+    return const <String, dynamic>{};
   }
 
   /// ChatMessageのリストをFirebase AI用のContentリストに変換
