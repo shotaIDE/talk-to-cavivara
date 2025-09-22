@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:house_worker/ui/component/cavivara_avatar.dart';
 import 'package:house_worker/ui/feature/auth/login_presenter.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -29,14 +30,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
 
     final children = <Widget>[
-      const Text(
+      Text(
         'カヴィヴァラチャット',
-        style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+        style: Theme.of(context).textTheme.headlineMedium,
       ),
-      const SizedBox(height: 20),
-      const Text(
+      const SizedBox(height: 16),
+      const CavivaraAvatar(
+        size: 160,
+      ),
+      const SizedBox(height: 32),
+      Text(
         'カヴィヴァラさんと\n楽しくおしゃべりしよう',
-        style: TextStyle(fontSize: 16),
+        style: Theme.of(context).textTheme.bodyLarge,
         textAlign: TextAlign.center,
       ),
       const SizedBox(height: 60),
