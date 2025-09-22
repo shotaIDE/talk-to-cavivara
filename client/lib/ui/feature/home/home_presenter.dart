@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/data/model/chat_message.dart';
-import 'package:house_worker/data/repository/last_talked_cavivara_repository.dart';
+import 'package:house_worker/data/repository/last_talked_cavivara_id_repository.dart';
 import 'package:house_worker/data/service/ai_chat_service.dart';
 import 'package:house_worker/data/service/cavivara_directory_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -153,6 +153,6 @@ void clearAllChatMessages(Ref ref) {
 /// 最後に話したカヴィヴァラIDを更新する
 @riverpod
 Future<void> updateLastTalkedCavivaraId(Ref ref, String cavivaraId) async {
-  final repository = ref.read(lastTalkedCavivaraRepositoryProvider);
-  await repository.save(cavivaraId);
+  final notifier = ref.read(lastTalkedCavivaraIdProvider.notifier);
+  await notifier.updateId(cavivaraId);
 }

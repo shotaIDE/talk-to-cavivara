@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/data/model/app_session.dart';
 import 'package:house_worker/data/model/preference_key.dart';
 import 'package:house_worker/data/model/root_app_not_initialized.dart';
-import 'package:house_worker/data/repository/last_talked_cavivara_repository.dart';
+import 'package:house_worker/data/repository/last_talked_cavivara_id_repository.dart';
 import 'package:house_worker/data/service/app_info_service.dart';
 import 'package:house_worker/data/service/auth_service.dart';
 import 'package:house_worker/data/service/preference_service.dart';
@@ -33,8 +33,9 @@ Future<AppInitialRoute> appInitialRoute(Ref ref) async {
   final appSession = await appSessionFuture;
   switch (appSession) {
     case AppSessionSignedIn():
-      final repository = ref.read(lastTalkedCavivaraRepositoryProvider);
-      final lastTalkedCavivaraId = await repository.get();
+      final lastTalkedCavivaraId = await ref.read(
+        lastTalkedCavivaraIdProvider.future,
+      );
       if (lastTalkedCavivaraId != null) {
         return AppInitialRoute.home(cavivaraId: lastTalkedCavivaraId);
       }
