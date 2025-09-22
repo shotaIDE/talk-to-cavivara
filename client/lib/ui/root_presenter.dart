@@ -33,7 +33,7 @@ Future<AppInitialRoute> appInitialRoute(Ref ref) async {
   final appSession = await appSessionFuture;
   switch (appSession) {
     case AppSessionSignedIn():
-      final lastTalkedCavivaraId = await ref.watch(
+      final lastTalkedCavivaraId = await ref.read(
         lastTalkedCavivaraIdProvider.future,
       );
       if (lastTalkedCavivaraId != null) {
