@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/data/model/chat_message.dart';
 import 'package:house_worker/data/service/cavivara_directory_service.dart';
-import 'package:house_worker/data/service/last_talked_cavivara_service.dart';
 import 'package:house_worker/ui/component/app_drawer.dart';
 import 'package:house_worker/ui/component/cavivara_avatar.dart';
 import 'package:house_worker/ui/feature/home/home_presenter.dart';
 import 'package:house_worker/ui/feature/job_market/job_market_screen.dart';
 import 'package:house_worker/ui/feature/resume/resume_screen.dart';
 import 'package:house_worker/ui/feature/settings/settings_screen.dart';
+import 'package:house_worker/ui/usecase/last_talked_cavivara_usecase.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key, required this.cavivaraId});

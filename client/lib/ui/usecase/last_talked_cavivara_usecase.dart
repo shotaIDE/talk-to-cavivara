@@ -1,14 +1,19 @@
 import 'dart:async';
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/data/model/preference_key.dart';
 import 'package:house_worker/data/service/preference_service.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-class LastTalkedCavivaraIdNotifier extends AsyncNotifier<String?> {
+part 'last_talked_cavivara_usecase.g.dart';
+
+@riverpod
+class LastTalkedCavivaraId extends _$LastTalkedCavivaraId {
   @override
-  FutureOr<String?> build() {
+  Future<String?> build() {
     final preferenceService = ref.read(preferenceServiceProvider);
-    return preferenceService.getString(PreferenceKey.lastTalkedCavivaraId);
+    return preferenceService.getString(
+      PreferenceKey.lastTalkedCavivaraId,
+    );
   }
 
   Future<void> updateCavivaraId(String cavivaraId) async {
@@ -20,8 +25,3 @@ class LastTalkedCavivaraIdNotifier extends AsyncNotifier<String?> {
     state = AsyncValue.data(cavivaraId);
   }
 }
-
-final lastTalkedCavivaraIdProvider =
-    AsyncNotifierProvider<LastTalkedCavivaraIdNotifier, String?>(
-      LastTalkedCavivaraIdNotifier.new,
-    );
