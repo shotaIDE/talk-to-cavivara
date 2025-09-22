@@ -50,13 +50,13 @@ class _RootAppState extends ConsumerState<RootApp> {
     final List<MaterialPageRoute<Widget>> initialRoutes;
 
     switch (appInitialRoute) {
-      case AppInitialRoute.updateApp:
+      case AppInitialRouteUpdateApp():
         initialRoutes = [UpdateAppScreen.route()];
-      case AppInitialRoute.login:
+      case AppInitialRouteLogin():
         initialRoutes = [LoginScreen.route()];
-      case AppInitialRoute.home:
-        initialRoutes = [HomeScreen.route(HomeScreen.defaultCavivaraId)];
-      case AppInitialRoute.jobMarket:
+      case AppInitialRouteHome(:final cavivaraId):
+        initialRoutes = [HomeScreen.route(cavivaraId)];
+      case AppInitialRouteJobMarket():
         initialRoutes = [JobMarketScreen.route()];
     }
 

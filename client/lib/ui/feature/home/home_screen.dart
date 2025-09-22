@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/data/model/chat_message.dart';
@@ -32,6 +34,26 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    unawaited(
+      ref.read(updateLastTalkedCavivaraIdProvider(widget.cavivaraId).future),
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant HomeScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.cavivaraId != widget.cavivaraId) {
+      unawaited(
+        ref.read(updateLastTalkedCavivaraIdProvider(widget.cavivaraId).future),
+      );
+    }
+  }
 
   @override
   void dispose() {
