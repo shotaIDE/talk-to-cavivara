@@ -10,7 +10,6 @@ import 'package:house_worker/ui/feature/home/home_presenter.dart';
 import 'package:house_worker/ui/feature/job_market/job_market_screen.dart';
 import 'package:house_worker/ui/feature/resume/resume_screen.dart';
 import 'package:house_worker/ui/feature/settings/settings_screen.dart';
-import 'package:house_worker/ui/usecase/last_talked_cavivara_usecase.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key, required this.cavivaraId});
@@ -41,9 +40,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     super.initState();
 
     unawaited(
-      ref
-          .read(lastTalkedCavivaraIdProvider.notifier)
-          .updateCavivaraId(widget.cavivaraId),
+      ref.read(updateLastTalkedCavivaraIdProvider(widget.cavivaraId).future),
     );
   }
 
@@ -53,9 +50,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     if (oldWidget.cavivaraId != widget.cavivaraId) {
       unawaited(
-        ref
-            .read(lastTalkedCavivaraIdProvider.notifier)
-            .updateCavivaraId(widget.cavivaraId),
+        ref.read(updateLastTalkedCavivaraIdProvider(widget.cavivaraId).future),
       );
     }
   }

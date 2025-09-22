@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/data/model/chat_message.dart';
 import 'package:house_worker/data/service/ai_chat_service.dart';
 import 'package:house_worker/data/service/cavivara_directory_service.dart';
+import 'package:house_worker/ui/usecase/last_talked_cavivara_usecase.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'home_presenter.g.dart';
@@ -147,4 +148,12 @@ void clearAllChatMessages(Ref ref) {
 
   // AIサービスの全セッションをクリア
   aiChatService.clearAllChatSessions();
+}
+
+/// 最後に話したカヴィヴァラIDを更新する
+@riverpod
+Future<void> updateLastTalkedCavivaraId(Ref ref, String cavivaraId) async {
+  await ref
+      .read(lastTalkedCavivaraIdProvider.notifier)
+      .updateCavivaraId(cavivaraId);
 }
