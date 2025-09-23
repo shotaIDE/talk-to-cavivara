@@ -8,6 +8,7 @@ import 'package:house_worker/data/service/cavivara_directory_service.dart';
 import 'package:house_worker/data/service/preference_service.dart';
 import 'package:house_worker/ui/component/app_drawer.dart';
 import 'package:house_worker/ui/component/cavivara_avatar.dart';
+import 'package:house_worker/ui/component/clear_chat_confirmation_dialog.dart';
 import 'package:house_worker/ui/feature/home/home_presenter.dart';
 import 'package:house_worker/ui/feature/job_market/job_market_screen.dart';
 import 'package:house_worker/ui/feature/resume/resume_screen.dart';
@@ -149,9 +150,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         return;
       }
 
-      final result = await showDialog<_ClearChatDialogResult>(
+      final result = await showDialog<ClearChatDialogResult>(
         context: context,
-        builder: (context) => const _ClearChatConfirmationDialog(),
+        builder: (context) => const ClearChatConfirmationDialog(),
       );
 
       if (result == null || !result.confirmed) {
@@ -466,80 +467,6 @@ class _ChatBubble extends ConsumerWidget {
           const SizedBox(width: 8),
         ],
         Flexible(child: bubble),
-      ],
-    );
-  }
-}
-
-class _ClearChatDialogResult {
-  const _ClearChatDialogResult({
-    required this.confirmed,
-    this.shouldSkipConfirmation = false,
-  });
-
-  final bool confirmed;
-  final bool shouldSkipConfirmation;
-}
-
-class _ClearChatConfirmationDialog extends StatefulWidget {
-  const _ClearChatConfirmationDialog();
-
-  @override
-  State<_ClearChatConfirmationDialog> createState() =>
-      _ClearChatConfirmationDialogState();
-}
-
-class _ClearChatConfirmationDialogState
-    extends State<_ClearChatConfirmationDialog> {
-  bool _shouldSkipConfirmation = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('記憶をクリアしますか？'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'カヴィヴァラさんの記憶を消去し、新しく会議を始めますか？\n'
-            'カヴィヴァラさんからの一言「記憶消さないでほしいヴィヴァ」',
-          ),
-          const SizedBox(height: 16),
-          CheckboxListTile(
-            value: _shouldSkipConfirmation,
-            contentPadding: EdgeInsets.zero,
-            controlAffinity: ListTileControlAffinity.leading,
-            onChanged: (value) {
-              setState(() {
-                _shouldSkipConfirmation = value ?? false;
-              });
-            },
-            title: const Text('今後この確認を表示しない'),
-          ),
-        ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop(
-              const _ClearChatDialogResult(confirmed: false),
-            );
-          },
-          child: const Text('キャンセル'),
-        ),
-        FilledButton.icon(
-          onPressed: () {
-            Navigator.of(context).pop(
-              _ClearChatDialogResult(
-                confirmed: true,
-                shouldSkipConfirmation: _shouldSkipConfirmation,
-              ),
-            );
-          },
-          icon: const Icon(Icons.delete_forever),
-          label: const Text('記憶を消去'),
-        ),
       ],
     );
   }
