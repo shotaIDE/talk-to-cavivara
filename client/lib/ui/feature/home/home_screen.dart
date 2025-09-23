@@ -80,7 +80,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         Expanded(
           child: Text(
             cavivaraProfile.displayName,
-            style: Theme.of(context).textTheme.titleMedium,
             overflow: TextOverflow.ellipsis,
             maxLines: 2,
           ),
