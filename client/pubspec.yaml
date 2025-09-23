@@ -18,6 +18,8 @@ dependencies:
   firebase_remote_config: ^6.0.0
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   flutter_riverpod: ^2.6.1
   font_awesome_flutter: ^10.8.0
   freezed_annotation: ^3.0.0

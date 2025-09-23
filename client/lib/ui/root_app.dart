@@ -1,5 +1,6 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/data/definition/app_feature.dart';
 import 'package:house_worker/data/definition/flavor.dart';
@@ -72,6 +73,14 @@ class _RootAppState extends ConsumerState<RootApp> {
       builder: (_, child) => _wrapByAppBanner(child),
       theme: getLightTheme(),
       darkTheme: getDarkTheme(),
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('ja', 'JP'),
+      ],
       // `_wrapByAppBanner` でオリジナルのバナーを表示するため、
       // デフォルトのデバッグバナーは無効化する
       debugShowCheckedModeBanner: false,
