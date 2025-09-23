@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/data/model/chat_message.dart';
+import 'package:house_worker/data/model/preference_key.dart';
 import 'package:house_worker/data/service/cavivara_directory_service.dart';
+import 'package:house_worker/data/service/preference_service.dart';
 import 'package:house_worker/ui/component/app_drawer.dart';
 import 'package:house_worker/ui/component/cavivara_avatar.dart';
 import 'package:house_worker/ui/feature/home/home_presenter.dart';
@@ -82,10 +84,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ],
     );
 
-    final clearButton = IconButton(
-      onPressed: _clearChat,
-      tooltip: 'チャット履歴をクリアする',
-      icon: const Icon(Icons.clear_all),
+    final clearButton = Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: Tooltip(
+        message: 'チャット履歴をクリアする',
+        child: FilledButton.icon(
+          onPressed: () {
+            unawaited(_clearChat());
+          },
+          icon: const Icon(Icons.delete_forever),
+          label: const Text('記憶クリア'),
+        ),
+      ),
     );
 
     final body = Column(
@@ -129,8 +139,39 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  void _clearChat() {
-    ref.read(chatMessagesProvider(widget.cavivaraId).notifier).clearMessages();
+  Future<void> _clearChat() async {
+    final preferenceService = ref.read(preferenceServiceProvider);
+    final skipConfirmation =
+        await preferenceService.getBool(PreferenceKey.skipClearChatConfirmation) ??
+            false;
+
+    if (!skipConfirmation) {
+      if (!mounted) {
+        return;
+      }
+
+      final result = await showDialog<_ClearChatDialogResult>(
+        context: context,
+        builder: (context) => const _ClearChatConfirmationDialog(),
+      );
+
+      if (result == null || !result.confirmed) {
+        return;
+      }
+
+      await preferenceService.setBool(
+        PreferenceKey.skipClearChatConfirmation,
+        value: result.shouldSkipConfirmation,
+      );
+    }
+
+    if (!mounted) {
+      return;
+    }
+
+    ref
+        .read(chatMessagesProvider(widget.cavivaraId).notifier)
+        .clearMessages();
   }
 
   void _sendMessage() {
@@ -188,6 +229,80 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _ClearChatDialogResult {
+  const _ClearChatDialogResult({
+    required this.confirmed,
+    this.shouldSkipConfirmation = false,
+  });
+
+  final bool confirmed;
+  final bool shouldSkipConfirmation;
+}
+
+class _ClearChatConfirmationDialog extends StatefulWidget {
+  const _ClearChatConfirmationDialog();
+
+  @override
+  State<_ClearChatConfirmationDialog> createState() =>
+      _ClearChatConfirmationDialogState();
+}
+
+class _ClearChatConfirmationDialogState
+    extends State<_ClearChatConfirmationDialog> {
+  bool _shouldSkipConfirmation = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('記憶をクリアしますか？'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'カヴィヴァラさんの記憶を消去し、新しく会議を始めますか？\n'
+            'カヴィヴァラさんからの一言「記憶消さないでほしいヴィヴァ」',
+          ),
+          const SizedBox(height: 16),
+          CheckboxListTile(
+            value: _shouldSkipConfirmation,
+            contentPadding: EdgeInsets.zero,
+            controlAffinity: ListTileControlAffinity.leading,
+            onChanged: (value) {
+              setState(() {
+                _shouldSkipConfirmation = value ?? false;
+              });
+            },
+            title: const Text('今後この確認を表示しない'),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop(
+              const _ClearChatDialogResult(confirmed: false),
+            );
+          },
+          child: const Text('キャンセル'),
+        ),
+        FilledButton.icon(
+          onPressed: () {
+            Navigator.of(context).pop(
+              _ClearChatDialogResult(
+                confirmed: true,
+                shouldSkipConfirmation: _shouldSkipConfirmation,
+              ),
+            );
+          },
+          icon: const Icon(Icons.delete_forever),
+          label: const Text('記憶を消去'),
+        ),
+      ],
     );
   }
 }
