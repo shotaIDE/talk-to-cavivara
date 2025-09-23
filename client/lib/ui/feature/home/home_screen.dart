@@ -3,9 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/data/model/chat_message.dart';
-import 'package:house_worker/data/model/preference_key.dart';
+import 'package:house_worker/data/repository/skip_clear_chat_confirmation_repository.dart';
 import 'package:house_worker/data/service/cavivara_directory_service.dart';
-import 'package:house_worker/data/service/preference_service.dart';
 import 'package:house_worker/ui/component/app_drawer.dart';
 import 'package:house_worker/ui/component/cavivara_avatar.dart';
 import 'package:house_worker/ui/component/clear_chat_confirmation_dialog.dart';
@@ -138,12 +137,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Future<void> _clearChat() async {
-    final preferenceService = ref.read(preferenceServiceProvider);
-    final skipConfirmation =
-        await preferenceService.getBool(
-          PreferenceKey.skipClearChatConfirmation,
-        ) ??
-        false;
+    final skipConfirmation = await ref.read(
+      skipClearChatConfirmationProvider.future,
+    );
 
     if (!skipConfirmation) {
       if (!mounted) {
@@ -159,10 +155,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         return;
       }
 
-      await preferenceService.setBool(
-        PreferenceKey.skipClearChatConfirmation,
-        value: result.shouldSkipConfirmation,
-      );
+      await ref
+          .read(skipClearChatConfirmationProvider.notifier)
+          .updateSkip(shouldSkip: result.shouldSkipConfirmation);
     }
 
     if (!mounted) {
