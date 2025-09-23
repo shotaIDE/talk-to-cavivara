@@ -87,7 +87,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final clearButton = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child: Tooltip(
-        message: 'チャット履歴をクリアする',
+        message: '記憶を消去する',
         child: IconButton(
           onPressed: _clearChat,
           icon: const Icon(Icons.delete_forever),

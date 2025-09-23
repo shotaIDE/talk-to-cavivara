@@ -26,7 +26,7 @@ class _ClearChatConfirmationDialogState
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('記憶をクリアしますか？'),
+      title: const Text('記憶を消去しますか？'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -53,6 +53,17 @@ class _ClearChatConfirmationDialogState
         TextButton(
           onPressed: () {
             Navigator.of(context).pop(
+              ClearChatDialogResult(
+                confirmed: true,
+                shouldSkipConfirmation: _shouldSkipConfirmation,
+              ),
+            );
+          },
+          child: const Text('記憶を消去'),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop(
               const ClearChatDialogResult(
                 confirmed: false,
                 shouldSkipConfirmation: false,
@@ -60,18 +71,6 @@ class _ClearChatConfirmationDialogState
             );
           },
           child: const Text('キャンセル'),
-        ),
-        FilledButton.icon(
-          onPressed: () {
-            Navigator.of(context).pop(
-              ClearChatDialogResult(
-                confirmed: true,
-                shouldSkipConfirmation: _shouldSkipConfirmation,
-              ),
-            );
-          },
-          icon: const Icon(Icons.delete_forever),
-          label: const Text('記憶を消去'),
         ),
       ],
     );
