@@ -69,7 +69,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final cavivaraProfile = ref.watch(cavivaraByIdProvider(widget.cavivaraId));
 
     final title = Row(
-      mainAxisSize: MainAxisSize.min,
       children: [
         CavivaraAvatar(
           size: 32,
@@ -80,7 +79,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ),
         const SizedBox(width: 12),
-        Text(cavivaraProfile.displayName),
+        Expanded(
+          child: Text(
+            cavivaraProfile.displayName,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 2,
+          ),
+        ),
       ],
     );
 
