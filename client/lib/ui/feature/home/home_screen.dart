@@ -89,9 +89,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       child: Tooltip(
         message: 'チャット履歴をクリアする',
         child: IconButton(
-          onPressed: () {
-            unawaited(_clearChat());
-          },
+          onPressed: _clearChat,
           icon: const Icon(Icons.delete_forever),
         ),
       ),
