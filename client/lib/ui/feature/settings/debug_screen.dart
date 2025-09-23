@@ -59,31 +59,11 @@ class _ResetConfirmationSettingsTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ListTile(
-      title: const Text('確認ダイアログ設定をリセット'),
-      subtitle: const Text('「今後この確認を表示しない」チェックをリセットします'),
+      title: const Text('記憶消去の確認ダイアログの設定をリセット'),
       onTap: () async {
-        try {
-          await ref
-              .read(skipClearChatConfirmationProvider.notifier)
-              .updateSkip(shouldSkip: false);
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('確認ダイアログ設定をリセットしました'),
-                duration: Duration(seconds: 2),
-              ),
-            );
-          }
-        } on Exception {
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('リセットに失敗しました'),
-                duration: Duration(seconds: 2),
-              ),
-            );
-          }
-        }
+        await ref
+            .read(skipClearChatConfirmationProvider.notifier)
+            .updateSkip(shouldSkip: false);
       },
     );
   }
