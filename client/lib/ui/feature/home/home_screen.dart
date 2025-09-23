@@ -142,8 +142,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Future<void> _clearChat() async {
     final preferenceService = ref.read(preferenceServiceProvider);
     final skipConfirmation =
-        await preferenceService.getBool(PreferenceKey.skipClearChatConfirmation) ??
-            false;
+        await preferenceService.getBool(
+          PreferenceKey.skipClearChatConfirmation,
+        ) ??
+        false;
 
     if (!skipConfirmation) {
       if (!mounted) {
@@ -169,9 +171,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       return;
     }
 
-    ref
-        .read(chatMessagesProvider(widget.cavivaraId).notifier)
-        .clearMessages();
+    ref.read(chatMessagesProvider(widget.cavivaraId).notifier).clearMessages();
   }
 
   void _sendMessage() {
