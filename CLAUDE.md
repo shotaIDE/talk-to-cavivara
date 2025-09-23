@@ -52,6 +52,11 @@ When using new SDK functions that have not been used in the code base until now,
 
 - Check the official documentation to make sure the usage is simple. If the usage is complicated, revise it to a simpler usage.
 
+### Git コミット
+
+コード修正した後は、必ずコミットする。
+コミットメッセージは修正内容を踏まえて簡潔に記述する。
+
 # Architecture
 
 This project is an iOS and Android application, including front-end and back-end code.
