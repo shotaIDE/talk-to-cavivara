@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-class ClearChatDialogResult {
-  const ClearChatDialogResult({
-    required this.confirmed,
-    this.shouldSkipConfirmation = false,
-  });
+part 'clear_chat_confirmation_dialog.freezed.dart';
 
-  final bool confirmed;
-  final bool shouldSkipConfirmation;
+@freezed
+sealed class ClearChatDialogResult with _$ClearChatDialogResult {
+  const factory ClearChatDialogResult({
+    required bool confirmed,
+    required bool shouldSkipConfirmation,
+  }) = _ClearChatDialogResult;
 }
 
 class ClearChatConfirmationDialog extends StatefulWidget {
@@ -52,7 +53,10 @@ class _ClearChatConfirmationDialogState
         TextButton(
           onPressed: () {
             Navigator.of(context).pop(
-              const ClearChatDialogResult(confirmed: false),
+              const ClearChatDialogResult(
+                confirmed: false,
+                shouldSkipConfirmation: false,
+              ),
             );
           },
           child: const Text('キャンセル'),
