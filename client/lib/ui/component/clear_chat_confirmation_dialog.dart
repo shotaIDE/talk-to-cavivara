@@ -31,9 +31,23 @@ class _ClearChatConfirmationDialogState
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'カヴィヴァラさんの記憶を消去し、新しく会議を始めますか？\n'
-            'カヴィヴァラさんからの一言「記憶消さないでほしいヴィヴァ」',
+          const Text('カヴィヴァラさんの記憶を消去し、新しく会議を始めますか？'),
+          const SizedBox(height: 16),
+          Text(
+            '”記憶消さないでほしいヴィヴァ”',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontStyle: FontStyle.italic,
+              color: Theme.of(context).dividerColor,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 8, top: 4),
+            child: Text(
+              '— カヴィヴァラさん',
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                color: Theme.of(context).dividerColor,
+              ),
+            ),
           ),
           const SizedBox(height: 16),
           CheckboxListTile(
