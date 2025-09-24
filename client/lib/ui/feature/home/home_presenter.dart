@@ -116,7 +116,7 @@ class ChatMessages extends _$ChatMessages {
         case SendMessageExceptionUncategorized(message: final errorMessage):
           updateAiMessage(
             (message) => message.copyWith(
-              content: 'エラーが発生しました: $errorMessage',
+              content: '原因不明のエラーが発生しました。カヴィヴァラさんが疲れているのかもしれません: $errorMessage',
               sender: const ChatMessageSender.app(),
               timestamp: DateTime.now(),
               isStreaming: false,
