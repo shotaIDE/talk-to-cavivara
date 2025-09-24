@@ -107,6 +107,7 @@ class ChatMessages extends _$ChatMessages {
           updateAiMessage(
             (message) => message.copyWith(
               content: 'ネットワークエラーが発生しました。接続を確認してください。',
+              sender: const ChatMessageSender.app(),
               timestamp: DateTime.now(),
               isStreaming: false,
             ),
@@ -116,6 +117,7 @@ class ChatMessages extends _$ChatMessages {
           updateAiMessage(
             (message) => message.copyWith(
               content: 'エラーが発生しました: $errorMessage',
+              sender: const ChatMessageSender.app(),
               timestamp: DateTime.now(),
               isStreaming: false,
             ),
