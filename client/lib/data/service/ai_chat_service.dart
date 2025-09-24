@@ -122,6 +122,8 @@ class AiChatService {
           return switch (message.sender) {
             ChatMessageSenderUser() => Content.text(message.content),
             ChatMessageSenderAi() => Content.model([TextPart(message.content)]),
+            // アプリメッセージはAIモデルに送信される会話の一部となることを意図していないため、
+            // チャット履歴から除外
             ChatMessageSenderApp() => null,
           };
         })
