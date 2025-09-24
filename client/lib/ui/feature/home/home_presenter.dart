@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/data/model/chat_message.dart';
+import 'package:house_worker/data/model/send_message_exception.dart';
 import 'package:house_worker/data/repository/last_talked_cavivara_id_repository.dart';
 import 'package:house_worker/data/service/ai_chat_service.dart';
 import 'package:house_worker/data/service/cavivara_directory_service.dart';
@@ -98,15 +99,29 @@ class ChatMessages extends _$ChatMessages {
           ),
         );
       }
-    } on Exception catch (e) {
+    } on SendMessageException catch (e) {
       hasError = true;
-      updateAiMessage(
-        (message) => message.copyWith(
-          content: 'エラーが発生しました: $e',
-          timestamp: DateTime.now(),
-          isStreaming: false,
-        ),
-      );
+
+      switch (e) {
+        case SendMessageExceptionNoNetwork():
+          // ネットワークエラーの場合のメッセージ
+          updateAiMessage(
+            (message) => message.copyWith(
+              content: 'ネットワークエラーが発生しました。接続を確認してください。',
+              timestamp: DateTime.now(),
+              isStreaming: false,
+            ),
+          );
+        case SendMessageExceptionUncategorized(message: final msg):
+          // その他のエラーの場合のメッセージ
+          updateAiMessage(
+            (message) => message.copyWith(
+              content: 'エラーが発生しました: $msg',
+              timestamp: DateTime.now(),
+              isStreaming: false,
+            ),
+          );
+      }
     }
 
     if (!hasError) {
