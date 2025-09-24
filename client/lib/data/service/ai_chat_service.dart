@@ -104,7 +104,9 @@ class AiChatService {
               errorReportService.recordError(error, StackTrace.current),
             );
 
-            throw SendMessageException.uncategorized(message: '$error');
+            throw SendMessageException.uncategorized(
+              message: '[${error.runtimeType}] $error',
+            );
           });
     } catch (e, stackTrace) {
       _logger.severe('ストリーミングチャットメッセージの送信に失敗: $e');
