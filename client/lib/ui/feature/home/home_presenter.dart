@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/data/model/chat_message.dart';
+import 'package:house_worker/data/model/send_message_exception.dart';
 import 'package:house_worker/data/repository/last_talked_cavivara_id_repository.dart';
 import 'package:house_worker/data/service/ai_chat_service.dart';
 import 'package:house_worker/data/service/cavivara_directory_service.dart';
@@ -98,11 +99,37 @@ class ChatMessages extends _$ChatMessages {
           ),
         );
       }
+    } on SendMessageException catch (e) {
+      hasError = true;
+
+      switch (e) {
+        case SendMessageExceptionNoNetwork():
+          updateAiMessage(
+            (message) => message.copyWith(
+              content: 'カヴィヴァラさんに声が届きませんでした。ネットワークの接続状況を確認してください。',
+              sender: const ChatMessageSender.app(),
+              timestamp: DateTime.now(),
+              isStreaming: false,
+            ),
+          );
+
+        case SendMessageExceptionUncategorized(message: final errorMessage):
+          updateAiMessage(
+            (message) => message.copyWith(
+              content: '原因不明のエラーが発生しました。カヴィヴァラさんが疲れているのかもしれません: $errorMessage',
+              sender: const ChatMessageSender.app(),
+              timestamp: DateTime.now(),
+              isStreaming: false,
+            ),
+          );
+      }
     } on Exception catch (e) {
       hasError = true;
+      // TODO(ide): ここは不要なはずなので削除を検討する。テストがパスしなくなる
       updateAiMessage(
         (message) => message.copyWith(
           content: 'エラーが発生しました: $e',
+          sender: const ChatMessageSender.app(),
           timestamp: DateTime.now(),
           isStreaming: false,
         ),

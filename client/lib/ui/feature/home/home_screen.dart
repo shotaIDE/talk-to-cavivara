@@ -367,10 +367,13 @@ class _ChatBubble extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final cavivaraProfile = ref.watch(cavivaraByIdProvider(cavivaraId));
     final isUser = message.sender == const ChatMessageSender.user();
+    final isApp = message.sender == const ChatMessageSender.app();
     final isStreaming = message.isStreaming;
     final theme = Theme.of(context);
     final textColor = isUser
         ? theme.colorScheme.onPrimary
+        : isApp
+        ? theme.colorScheme.onSecondaryContainer
         : theme.colorScheme.onSurface;
     final indicatorColor = isUser
         ? theme.colorScheme.onPrimary
@@ -401,9 +404,10 @@ class _ChatBubble extends ConsumerWidget {
     } else {
       final textWidget = Text(
         message.content,
-        style: theme.textTheme.bodyMedium?.copyWith(
-          color: textColor,
-        ),
+        style: (isApp ? theme.textTheme.bodySmall : theme.textTheme.bodyMedium)
+            ?.copyWith(
+              color: textColor,
+            ),
       );
 
       if (isStreaming) {
@@ -435,6 +439,8 @@ class _ChatBubble extends ConsumerWidget {
       decoration: BoxDecoration(
         color: isUser
             ? theme.colorScheme.primary
+            : isApp
+            ? theme.colorScheme.secondaryContainer
             : theme.colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(20),
       ),
@@ -450,6 +456,10 @@ class _ChatBubble extends ConsumerWidget {
               style: theme.textTheme.bodySmall?.copyWith(
                 color: isUser
                     ? theme.colorScheme.onPrimary.withValues(alpha: 0.7)
+                    : isApp
+                    ? theme.colorScheme.onSecondaryContainer.withValues(
+                        alpha: 0.7,
+                      )
                     : theme.colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
