@@ -106,7 +106,7 @@ class ChatMessages extends _$ChatMessages {
         case SendMessageExceptionNoNetwork():
           updateAiMessage(
             (message) => message.copyWith(
-              content: 'ネットワークエラーが発生しました。接続を確認してください。',
+              content: 'カヴィヴァラさんに声が届きませんでした。ネットワークの接続状況を確認してください。',
               sender: const ChatMessageSender.app(),
               timestamp: DateTime.now(),
               isStreaming: false,
