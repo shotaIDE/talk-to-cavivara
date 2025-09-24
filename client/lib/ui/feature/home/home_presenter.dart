@@ -104,7 +104,6 @@ class ChatMessages extends _$ChatMessages {
 
       switch (e) {
         case SendMessageExceptionNoNetwork():
-          // ネットワークエラーの場合のメッセージ
           updateAiMessage(
             (message) => message.copyWith(
               content: 'ネットワークエラーが発生しました。接続を確認してください。',
@@ -112,11 +111,11 @@ class ChatMessages extends _$ChatMessages {
               isStreaming: false,
             ),
           );
-        case SendMessageExceptionUncategorized(message: final msg):
-          // その他のエラーの場合のメッセージ
+
+        case SendMessageExceptionUncategorized(message: final errorMessage):
           updateAiMessage(
             (message) => message.copyWith(
-              content: 'エラーが発生しました: $msg',
+              content: 'エラーが発生しました: $errorMessage',
               timestamp: DateTime.now(),
               isStreaming: false,
             ),
