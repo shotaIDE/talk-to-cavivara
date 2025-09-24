@@ -117,12 +117,16 @@ class AiChatService {
 
   /// ChatMessageのリストをFirebase AI用のContentリストに変換
   List<Content> _convertChatHistoryToContent(List<ChatMessage> history) {
-    return history.map((message) {
-      return switch (message.sender) {
-        ChatMessageSenderUser() => Content.text(message.content),
-        ChatMessageSenderAi() => Content.model([TextPart(message.content)]),
-      };
-    }).toList();
+    return history
+        .map((message) {
+          return switch (message.sender) {
+            ChatMessageSenderUser() => Content.text(message.content),
+            ChatMessageSenderAi() => Content.model([TextPart(message.content)]),
+            ChatMessageSenderApp() => null,
+          };
+        })
+        .nonNulls
+        .toList();
   }
 
   /// 特定のsystemPromptのチャットセッションをクリア
