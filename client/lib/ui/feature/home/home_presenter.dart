@@ -125,6 +125,7 @@ class ChatMessages extends _$ChatMessages {
       }
     } on Exception catch (e) {
       hasError = true;
+      // TODO(ide): ここは不要なはずなので削除を検討する。テストがパスしなくなる
       updateAiMessage(
         (message) => message.copyWith(
           content: 'エラーが発生しました: $e',
