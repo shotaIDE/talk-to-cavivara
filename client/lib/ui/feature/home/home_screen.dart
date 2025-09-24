@@ -103,10 +103,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final body = Column(
       children: [
         Expanded(
-          child: _ChatMessageList(
-            controller: _scrollController,
-            onMessageSent: _onMessageSent,
-            cavivaraId: widget.cavivaraId,
+          child: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: _dismissKeyboard,
+            child: _ChatMessageList(
+              controller: _scrollController,
+              onMessageSent: _onMessageSent,
+              cavivaraId: widget.cavivaraId,
+            ),
           ),
         ),
         _messageInput(),
@@ -180,6 +184,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           .sendMessage(message);
       _messageController.clear();
     }
+  }
+
+  void _dismissKeyboard() {
+    FocusScope.of(context).unfocus();
   }
 
   void _onMessageSent() {
