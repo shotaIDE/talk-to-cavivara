@@ -147,7 +147,7 @@ void main() {
         expect(messages[0].content, equals(messageText));
         expect(messages[0].sender, equals(const ChatMessageSender.user()));
         expect(messages[1].content, contains('エラーが発生しました'));
-        expect(messages[1].sender, equals(const ChatMessageSender.ai()));
+        expect(messages[1].sender, equals(const ChatMessageSender.app()));
       });
 
       test('ストリーミングレスポンスが部分的に更新されること', () async {

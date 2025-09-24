@@ -123,6 +123,16 @@ class ChatMessages extends _$ChatMessages {
             ),
           );
       }
+    } on Exception catch (e) {
+      hasError = true;
+      updateAiMessage(
+        (message) => message.copyWith(
+          content: 'エラーが発生しました: $e',
+          sender: const ChatMessageSender.app(),
+          timestamp: DateTime.now(),
+          isStreaming: false,
+        ),
+      );
     }
 
     if (!hasError) {
