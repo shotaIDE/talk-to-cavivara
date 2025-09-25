@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/data/service/cavivara_directory_service.dart';
 import 'package:house_worker/data/service/employment_state_service.dart';
 import 'package:house_worker/ui/component/cavivara_avatar.dart';
+import 'package:house_worker/ui/component/fire_confirmation_dialog.dart';
 import 'package:house_worker/ui/feature/home/home_screen.dart';
 import 'package:house_worker/ui/feature/job_market/job_market_screen.dart';
 
@@ -169,6 +170,11 @@ class _ResumeScreenState extends ConsumerState<ResumeScreen> {
                 if (isEmployed) ...[
                   ElevatedButton.icon(
                     onPressed: () async {
+                      final confirmed = await _showFireConfirmationDialog();
+                      if (!confirmed) {
+                        return;
+                      }
+
                       await _fireAndNavigateToJobMarket(
                         employmentStateNotifier,
                       );
@@ -241,5 +247,18 @@ class _ResumeScreenState extends ConsumerState<ResumeScreen> {
       HomeScreen.route(widget.cavivaraId),
       (route) => false,
     );
+  }
+
+  Future<bool> _showFireConfirmationDialog() async {
+    if (!mounted) {
+      return false;
+    }
+
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => const FireConfirmationDialog(),
+    );
+
+    return result ?? false;
   }
 }
