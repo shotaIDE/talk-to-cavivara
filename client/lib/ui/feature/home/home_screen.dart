@@ -365,22 +365,121 @@ class _ChatBubble extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final cavivaraProfile = ref.watch(cavivaraByIdProvider(cavivaraId));
-    final isUser = message.sender == const ChatMessageSender.user();
-    final isApp = message.sender == const ChatMessageSender.app();
-    final isStreaming = message.isStreaming;
+    return switch (message.sender) {
+      ChatMessageSenderUser() => _UserChatBubble(message: message),
+      ChatMessageSenderAi() => _AiChatBubble(
+        message: message,
+        cavivaraId: cavivaraId,
+      ),
+      ChatMessageSenderApp() => _AppChatBubble(
+        message: message,
+        cavivaraId: cavivaraId,
+      ),
+    };
+  }
+}
+
+class _UserChatBubble extends StatelessWidget {
+  const _UserChatBubble({
+    required this.message,
+  });
+
+  final ChatMessage message;
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final textColor = isUser
-        ? theme.colorScheme.onPrimary
-        : isApp
-        ? theme.colorScheme.onSecondaryContainer
-        : theme.colorScheme.onSurface;
-    final indicatorColor = isUser
-        ? theme.colorScheme.onPrimary
-        : theme.colorScheme.primary;
+    final textColor = theme.colorScheme.onPrimary;
+    final indicatorColor = theme.colorScheme.onPrimary;
 
     Widget messageContent;
-    if (isStreaming && message.content.isEmpty) {
+    if (message.isStreaming) {
+      final textWidget = Text(
+        message.content,
+        style: theme.textTheme.bodyMedium?.copyWith(
+          color: textColor,
+        ),
+      );
+
+      messageContent = Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(child: textWidget),
+          const SizedBox(width: 8),
+          SizedBox(
+            width: 16,
+            height: 16,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              valueColor: AlwaysStoppedAnimation<Color>(indicatorColor),
+            ),
+          ),
+        ],
+      );
+    } else {
+      messageContent = Text(
+        message.content,
+        style: theme.textTheme.bodyMedium?.copyWith(
+          color: textColor,
+        ),
+      );
+    }
+
+    final bubble = Container(
+      constraints: BoxConstraints(
+        maxWidth: MediaQuery.of(context).size.width * 0.8,
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primary,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          messageContent,
+          if (!message.isStreaming || message.content.isNotEmpty) ...[
+            const SizedBox(height: 4),
+            Text(
+              '${message.timestamp.hour.toString().padLeft(2, '0')}:'
+              '${message.timestamp.minute.toString().padLeft(2, '0')}',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onPrimary.withValues(alpha: 0.7),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Flexible(child: bubble),
+      ],
+    );
+  }
+}
+
+class _AiChatBubble extends ConsumerWidget {
+  const _AiChatBubble({
+    required this.message,
+    required this.cavivaraId,
+  });
+
+  final ChatMessage message;
+  final String cavivaraId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cavivaraProfile = ref.watch(cavivaraByIdProvider(cavivaraId));
+    final theme = Theme.of(context);
+    final textColor = theme.colorScheme.onSurface;
+    final indicatorColor = theme.colorScheme.primary;
+
+    Widget messageContent;
+    if (message.isStreaming && message.content.isEmpty) {
       messageContent = Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -404,13 +503,12 @@ class _ChatBubble extends ConsumerWidget {
     } else {
       final textWidget = Text(
         message.content,
-        style: (isApp ? theme.textTheme.bodySmall : theme.textTheme.bodyMedium)
-            ?.copyWith(
-              color: textColor,
-            ),
+        style: theme.textTheme.bodyMedium?.copyWith(
+          color: textColor,
+        ),
       );
 
-      if (isStreaming) {
+      if (message.isStreaming) {
         messageContent = Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -437,30 +535,20 @@ class _ChatBubble extends ConsumerWidget {
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: isUser
-            ? theme.colorScheme.primary
-            : isApp
-            ? theme.colorScheme.secondaryContainer
-            : theme.colorScheme.surfaceContainerHighest,
+        color: theme.colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           messageContent,
-          if (!isStreaming || message.content.isNotEmpty) ...[
+          if (!message.isStreaming || message.content.isNotEmpty) ...[
             const SizedBox(height: 4),
             Text(
               '${message.timestamp.hour.toString().padLeft(2, '0')}:'
               '${message.timestamp.minute.toString().padLeft(2, '0')}',
               style: theme.textTheme.bodySmall?.copyWith(
-                color: isUser
-                    ? theme.colorScheme.onPrimary.withValues(alpha: 0.7)
-                    : isApp
-                    ? theme.colorScheme.onSecondaryContainer.withValues(
-                        alpha: 0.7,
-                      )
-                    : theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
           ],
@@ -470,20 +558,128 @@ class _ChatBubble extends ConsumerWidget {
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: isUser
-          ? MainAxisAlignment.end
-          : MainAxisAlignment.start,
       children: [
-        if (!isUser) ...[
-          CavivaraAvatar(
-            assetPath: cavivaraProfile.iconPath,
-            cavivaraId: cavivaraId,
-            onTap: () => Navigator.of(context).push(
-              ResumeScreen.route(cavivaraId),
+        CavivaraAvatar(
+          assetPath: cavivaraProfile.iconPath,
+          cavivaraId: cavivaraId,
+          onTap: () => Navigator.of(context).push(
+            ResumeScreen.route(cavivaraId),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Flexible(child: bubble),
+      ],
+    );
+  }
+}
+
+class _AppChatBubble extends ConsumerWidget {
+  const _AppChatBubble({
+    required this.message,
+    required this.cavivaraId,
+  });
+
+  final ChatMessage message;
+  final String cavivaraId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cavivaraProfile = ref.watch(cavivaraByIdProvider(cavivaraId));
+    final theme = Theme.of(context);
+    final textColor = theme.colorScheme.onSecondaryContainer;
+    final indicatorColor = theme.colorScheme.primary;
+
+    Widget messageContent;
+    if (message.isStreaming && message.content.isEmpty) {
+      messageContent = Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            width: 16,
+            height: 16,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              valueColor: AlwaysStoppedAnimation<Color>(indicatorColor),
             ),
           ),
           const SizedBox(width: 8),
+          Text(
+            '${cavivaraProfile.displayName}が考え中…',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: textColor,
+            ),
+          ),
         ],
+      );
+    } else {
+      final textWidget = Text(
+        message.content,
+        style: theme.textTheme.bodySmall?.copyWith(
+          color: textColor,
+        ),
+      );
+
+      if (message.isStreaming) {
+        messageContent = Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(child: textWidget),
+            const SizedBox(width: 8),
+            SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(indicatorColor),
+              ),
+            ),
+          ],
+        );
+      } else {
+        messageContent = textWidget;
+      }
+    }
+
+    final bubble = Container(
+      constraints: BoxConstraints(
+        maxWidth: MediaQuery.of(context).size.width * 0.8,
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.secondaryContainer,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          messageContent,
+          if (!message.isStreaming || message.content.isNotEmpty) ...[
+            const SizedBox(height: 4),
+            Text(
+              '${message.timestamp.hour.toString().padLeft(2, '0')}:'
+              '${message.timestamp.minute.toString().padLeft(2, '0')}',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSecondaryContainer.withValues(
+                  alpha: 0.7,
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CavivaraAvatar(
+          assetPath: cavivaraProfile.iconPath,
+          cavivaraId: cavivaraId,
+          onTap: () => Navigator.of(context).push(
+            ResumeScreen.route(cavivaraId),
+          ),
+        ),
+        const SizedBox(width: 8),
         Flexible(child: bubble),
       ],
     );
