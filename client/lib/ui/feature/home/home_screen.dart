@@ -373,7 +373,6 @@ class _ChatBubble extends ConsumerWidget {
       ),
       ChatMessageSenderApp() => _AppChatBubble(
         message: message,
-        cavivaraId: cavivaraId,
       ),
     };
   }
@@ -605,16 +604,17 @@ class _AppChatBubble extends ConsumerWidget {
         color: Theme.of(context).colorScheme.surfaceContainer.withAlpha(100),
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          bodyText,
-          const SizedBox(height: 4),
-          timeText,
-        ],
-      ),
+      child: bodyText,
     );
 
-    return Center(child: bubble);
+    final expanded = Expanded(child: bubble);
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      spacing: 8,
+      children: [
+        expanded,
+        timeText,
+      ],
+    );
   }
 }
