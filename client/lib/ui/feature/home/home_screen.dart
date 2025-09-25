@@ -584,23 +584,21 @@ class _AppChatBubble extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final textWidget = Text(
+    final messageContent = Text(
       message.content,
       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-        color: Theme.of(context).colorScheme.onSurface,
+        color: Theme.of(context).colorScheme.onSurface.withAlpha(150),
       ),
     );
-
-    final messageContent = textWidget;
 
     final bubble = Container(
       constraints: BoxConstraints(
         maxWidth: MediaQuery.of(context).size.width * 0.8,
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.inverseSurface.withAlpha(100),
-        borderRadius: BorderRadius.circular(20),
+        color: Theme.of(context).colorScheme.surfaceContainer.withAlpha(100),
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -612,9 +610,7 @@ class _AppChatBubble extends ConsumerWidget {
               '${message.timestamp.hour.toString().padLeft(2, '0')}:'
               '${message.timestamp.minute.toString().padLeft(2, '0')}',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withValues(
-                  alpha: 0.7,
-                ),
+                color: Theme.of(context).colorScheme.onSurface.withAlpha(100),
               ),
             ),
           ],
