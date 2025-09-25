@@ -576,11 +576,9 @@ class _AiChatBubble extends ConsumerWidget {
 class _AppChatBubble extends ConsumerWidget {
   const _AppChatBubble({
     required this.message,
-    required this.cavivaraId,
   });
 
   final ChatMessage message;
-  final String cavivaraId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
