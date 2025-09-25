@@ -584,61 +584,14 @@ class _AppChatBubble extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final cavivaraProfile = ref.watch(cavivaraByIdProvider(cavivaraId));
-    final theme = Theme.of(context);
-    final textColor = theme.colorScheme.onSecondaryContainer;
-    final indicatorColor = theme.colorScheme.primary;
+    final textWidget = Text(
+      message.content,
+      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+        color: Theme.of(context).colorScheme.onSurface,
+      ),
+    );
 
-    Widget messageContent;
-    if (message.isStreaming && message.content.isEmpty) {
-      messageContent = Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(
-            width: 16,
-            height: 16,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              valueColor: AlwaysStoppedAnimation<Color>(indicatorColor),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            '${cavivaraProfile.displayName}が考え中…',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: textColor,
-            ),
-          ),
-        ],
-      );
-    } else {
-      final textWidget = Text(
-        message.content,
-        style: theme.textTheme.bodySmall?.copyWith(
-          color: textColor,
-        ),
-      );
-
-      if (message.isStreaming) {
-        messageContent = Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(child: textWidget),
-            const SizedBox(width: 8),
-            SizedBox(
-              width: 16,
-              height: 16,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(indicatorColor),
-              ),
-            ),
-          ],
-        );
-      } else {
-        messageContent = textWidget;
-      }
-    }
+    final messageContent = textWidget;
 
     final bubble = Container(
       constraints: BoxConstraints(
@@ -646,7 +599,7 @@ class _AppChatBubble extends ConsumerWidget {
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: theme.colorScheme.secondaryContainer,
+        color: Theme.of(context).colorScheme.inverseSurface.withAlpha(100),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
@@ -658,8 +611,8 @@ class _AppChatBubble extends ConsumerWidget {
             Text(
               '${message.timestamp.hour.toString().padLeft(2, '0')}:'
               '${message.timestamp.minute.toString().padLeft(2, '0')}',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSecondaryContainer.withValues(
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.onSurface.withValues(
                   alpha: 0.7,
                 ),
               ),
@@ -669,19 +622,6 @@ class _AppChatBubble extends ConsumerWidget {
       ),
     );
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        CavivaraAvatar(
-          assetPath: cavivaraProfile.iconPath,
-          cavivaraId: cavivaraId,
-          onTap: () => Navigator.of(context).push(
-            ResumeScreen.route(cavivaraId),
-          ),
-        ),
-        const SizedBox(width: 8),
-        Flexible(child: bubble),
-      ],
-    );
+    return Center(child: bubble);
   }
 }
