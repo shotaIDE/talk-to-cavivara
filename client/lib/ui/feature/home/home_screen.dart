@@ -396,13 +396,7 @@ class _UserChatBubble extends StatelessWidget {
         color: textColor,
       ),
     );
-    final timeText = Text(
-      '${message.timestamp.hour.toString().padLeft(2, '0')}:'
-      '${message.timestamp.minute.toString().padLeft(2, '0')}',
-      style: theme.textTheme.bodySmall?.copyWith(
-        color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-      ),
-    );
+    final timeText = _TimestampText(timestamp: message.timestamp);
 
     final bubble = Container(
       constraints: BoxConstraints(
@@ -419,7 +413,7 @@ class _UserChatBubble extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.end,
-      spacing: 8,
+      spacing: 4,
       children: [timeText, bubble],
     );
   }
@@ -492,13 +486,7 @@ class _AiChatBubble extends ConsumerWidget {
       }
     }
 
-    final timeText = Text(
-      '${message.timestamp.hour.toString().padLeft(2, '0')}:'
-      '${message.timestamp.minute.toString().padLeft(2, '0')}',
-      style: theme.textTheme.bodySmall?.copyWith(
-        color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-      ),
-    );
+    final timeText = _TimestampText(timestamp: message.timestamp);
 
     final bubble = Container(
       constraints: BoxConstraints(
@@ -523,11 +511,12 @@ class _AiChatBubble extends ConsumerWidget {
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 8,
         children: [
           avatar,
+          const SizedBox(width: 8),
           Flexible(child: bubble),
           if (!message.isStreaming || message.content.isNotEmpty) ...[
+            const SizedBox(width: 4),
             Align(
               alignment: Alignment.bottomCenter,
               child: timeText,
@@ -554,12 +543,8 @@ class _AppChatBubble extends ConsumerWidget {
         color: Theme.of(context).colorScheme.onSurface.withAlpha(150),
       ),
     );
-    final timeText = Text(
-      '${message.timestamp.hour.toString().padLeft(2, '0')}:'
-      '${message.timestamp.minute.toString().padLeft(2, '0')}',
-      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-        color: Theme.of(context).colorScheme.onSurface.withAlpha(100),
-      ),
+    final timeText = _TimestampText(
+      timestamp: message.timestamp,
     );
 
     final bubble = Container(
@@ -577,11 +562,30 @@ class _AppChatBubble extends ConsumerWidget {
     final expanded = Expanded(child: bubble);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
-      spacing: 8,
+      spacing: 4,
       children: [
         expanded,
         timeText,
       ],
+    );
+  }
+}
+
+class _TimestampText extends StatelessWidget {
+  const _TimestampText({
+    required this.timestamp,
+  });
+
+  final DateTime timestamp;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      '${timestamp.hour.toString().padLeft(2, '0')}:'
+      '${timestamp.minute.toString().padLeft(2, '0')}',
+      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+        color: Theme.of(context).colorScheme.onSurface.withAlpha(100),
+      ),
     );
   }
 }
