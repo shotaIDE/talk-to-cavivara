@@ -582,10 +582,17 @@ class _AppChatBubble extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final messageContent = Text(
+    final bodyText = Text(
       message.content,
       style: Theme.of(context).textTheme.bodySmall?.copyWith(
         color: Theme.of(context).colorScheme.onSurface.withAlpha(150),
+      ),
+    );
+    final timeText = Text(
+      '${message.timestamp.hour.toString().padLeft(2, '0')}:'
+      '${message.timestamp.minute.toString().padLeft(2, '0')}',
+      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+        color: Theme.of(context).colorScheme.onSurface.withAlpha(100),
       ),
     );
 
@@ -601,17 +608,9 @@ class _AppChatBubble extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          messageContent,
-          if (!message.isStreaming || message.content.isNotEmpty) ...[
-            const SizedBox(height: 4),
-            Text(
-              '${message.timestamp.hour.toString().padLeft(2, '0')}:'
-              '${message.timestamp.minute.toString().padLeft(2, '0')}',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withAlpha(100),
-              ),
-            ),
-          ],
+          bodyText,
+          const SizedBox(height: 4),
+          timeText,
         ],
       ),
     );
