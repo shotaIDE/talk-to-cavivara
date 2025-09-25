@@ -441,9 +441,9 @@ class _AiChatBubble extends ConsumerWidget {
     final textColor = theme.colorScheme.onSurface;
     final indicatorColor = theme.colorScheme.primary;
 
-    Widget messageContent;
+    Widget bodyText;
     if (message.isStreaming && message.content.isEmpty) {
-      messageContent = Row(
+      bodyText = Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(
@@ -472,7 +472,7 @@ class _AiChatBubble extends ConsumerWidget {
       );
 
       if (message.isStreaming) {
-        messageContent = Row(
+        bodyText = Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(child: textWidget),
@@ -488,7 +488,7 @@ class _AiChatBubble extends ConsumerWidget {
           ],
         );
       } else {
-        messageContent = textWidget;
+        bodyText = textWidget;
       }
     }
 
@@ -509,22 +509,7 @@ class _AiChatBubble extends ConsumerWidget {
         color: theme.colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          messageContent,
-          if (!message.isStreaming || message.content.isNotEmpty) ...[
-            const SizedBox(height: 4),
-            Text(
-              '${message.timestamp.hour.toString().padLeft(2, '0')}:'
-              '${message.timestamp.minute.toString().padLeft(2, '0')}',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-              ),
-            ),
-          ],
-        ],
-      ),
+      child: bodyText,
     );
 
     final avatar = CavivaraAvatar(
@@ -535,14 +520,21 @@ class _AiChatBubble extends ConsumerWidget {
       ),
     );
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: 8,
-      children: [
-        avatar,
-        Flexible(child: bubble),
-        timeText,
-      ],
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 8,
+        children: [
+          avatar,
+          Flexible(child: bubble),
+          if (!message.isStreaming || message.content.isNotEmpty) ...[
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: timeText,
+            ),
+          ],
+        ],
+      ),
     );
   }
 }
