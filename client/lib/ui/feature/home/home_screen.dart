@@ -387,12 +387,11 @@ class _UserChatBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final textColor = theme.colorScheme.onPrimary;
+    final textColor = Theme.of(context).colorScheme.onPrimary;
 
     final bodyText = Text(
       message.content,
-      style: theme.textTheme.bodyMedium?.copyWith(
+      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
         color: textColor,
       ),
     );
@@ -404,7 +403,7 @@ class _UserChatBubble extends StatelessWidget {
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: theme.colorScheme.primary,
+        color: Theme.of(context).colorScheme.primary,
         borderRadius: BorderRadius.circular(20),
       ),
       child: bodyText,
@@ -431,9 +430,8 @@ class _AiChatBubble extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cavivaraProfile = ref.watch(cavivaraByIdProvider(cavivaraId));
-    final theme = Theme.of(context);
-    final textColor = theme.colorScheme.onSurface;
-    final indicatorColor = theme.colorScheme.primary;
+    final textColor = Theme.of(context).colorScheme.onSurface;
+    final indicatorColor = Theme.of(context).colorScheme.primary;
 
     Widget bodyText;
     if (message.isStreaming && message.content.isEmpty) {
@@ -451,7 +449,7 @@ class _AiChatBubble extends ConsumerWidget {
           const SizedBox(width: 8),
           Text(
             '${cavivaraProfile.displayName}が考え中…',
-            style: theme.textTheme.bodyMedium?.copyWith(
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: textColor,
             ),
           ),
@@ -460,7 +458,7 @@ class _AiChatBubble extends ConsumerWidget {
     } else {
       final textWidget = Text(
         message.content,
-        style: theme.textTheme.bodyMedium?.copyWith(
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
           color: textColor,
         ),
       );
@@ -494,7 +492,7 @@ class _AiChatBubble extends ConsumerWidget {
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(20),
       ),
       child: bodyText,
