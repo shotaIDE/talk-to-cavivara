@@ -60,13 +60,21 @@ void main() {
         // 雇用するボタンが表示されることを確認
         expect(find.text('雇用する'), findsOneWidget);
         expect(find.text('解雇する'), findsNothing);
-        expect(find.text('相談する'), findsNothing);
+        expect(find.text('会議する'), findsNothing);
       },
     );
 
     testWidgets(
       'shows fire and consult buttons when cavivara is employed',
       (WidgetTester tester) async {
+        SharedPreferences.setMockInitialValues({
+          PreferenceKey.employedCavivaraIds.name: [testCavivaraId],
+        });
+        SharedPreferencesAsyncPlatform.instance =
+            InMemorySharedPreferencesAsync.withData({
+              PreferenceKey.employedCavivaraIds.name: [testCavivaraId],
+            });
+
         await tester.pumpWidget(
           const ProviderScope(
             child: MaterialApp(
@@ -77,9 +85,9 @@ void main() {
 
         await tester.pumpAndSettle();
 
-        // 解雇ボタンと相談ボタンが表示されることを確認
+        // 解雇ボタンと会議ボタンが表示されることを確認
         expect(find.text('解雇する'), findsOneWidget);
-        expect(find.text('相談する'), findsOneWidget);
+        expect(find.text('会議する'), findsOneWidget);
         expect(find.text('雇用する'), findsNothing);
       },
     );
@@ -113,9 +121,9 @@ void main() {
         // 初期状態: 雇用するボタンのみ
         expect(find.text('雇用する'), findsOneWidget);
         expect(find.text('解雇する'), findsNothing);
-        expect(find.text('相談する'), findsNothing);
+        expect(find.text('会議する'), findsNothing);
 
-        // 雇用後: 解雇と相談ボタン
+        // 雇用後: 解雇と会議ボタン
         await container
             .read(employmentStateProvider.notifier)
             .hire(testCavivaraId);
@@ -123,7 +131,7 @@ void main() {
 
         expect(find.text('雇用する'), findsNothing);
         expect(find.text('解雇する'), findsOneWidget);
-        expect(find.text('相談する'), findsOneWidget);
+        expect(find.text('会議する'), findsOneWidget);
 
         // 解雇後: 雇用するボタンのみ
         await container
@@ -133,7 +141,7 @@ void main() {
 
         expect(find.text('雇用する'), findsOneWidget);
         expect(find.text('解雇する'), findsNothing);
-        expect(find.text('相談する'), findsNothing);
+        expect(find.text('会議する'), findsNothing);
       },
     );
 
