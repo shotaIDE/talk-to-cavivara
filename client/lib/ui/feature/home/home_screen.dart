@@ -492,6 +492,14 @@ class _AiChatBubble extends ConsumerWidget {
       }
     }
 
+    final timeText = Text(
+      '${message.timestamp.hour.toString().padLeft(2, '0')}:'
+      '${message.timestamp.minute.toString().padLeft(2, '0')}',
+      style: theme.textTheme.bodySmall?.copyWith(
+        color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+      ),
+    );
+
     final bubble = Container(
       constraints: BoxConstraints(
         maxWidth: MediaQuery.of(context).size.width * 0.8,
@@ -519,18 +527,21 @@ class _AiChatBubble extends ConsumerWidget {
       ),
     );
 
+    final avatar = CavivaraAvatar(
+      assetPath: cavivaraProfile.iconPath,
+      cavivaraId: cavivaraId,
+      onTap: () => Navigator.of(context).push(
+        ResumeScreen.route(cavivaraId),
+      ),
+    );
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 8,
       children: [
-        CavivaraAvatar(
-          assetPath: cavivaraProfile.iconPath,
-          cavivaraId: cavivaraId,
-          onTap: () => Navigator.of(context).push(
-            ResumeScreen.route(cavivaraId),
-          ),
-        ),
-        const SizedBox(width: 8),
+        avatar,
         Flexible(child: bubble),
+        timeText,
       ],
     );
   }
