@@ -166,8 +166,14 @@ class _ResumeScreenState extends ConsumerState<ResumeScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: 8,
               children: [
                 if (isEmployed) ...[
+                  OutlinedButton.icon(
+                    onPressed: _navigateToChat,
+                    icon: const Icon(Icons.chat),
+                    label: const Text('会議する'),
+                  ),
                   ElevatedButton.icon(
                     onPressed: () async {
                       final confirmed = await _showFireConfirmationDialog();
@@ -185,12 +191,6 @@ class _ResumeScreenState extends ConsumerState<ResumeScreen> {
                       foregroundColor: theme.colorScheme.onError,
                       backgroundColor: theme.colorScheme.error,
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  OutlinedButton.icon(
-                    onPressed: _navigateToChat,
-                    icon: const Icon(Icons.chat),
-                    label: const Text('相談する'),
                   ),
                 ] else ...[
                   ElevatedButton.icon(
