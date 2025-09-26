@@ -130,7 +130,23 @@ class AiChatService {
     required ChatSession chatSession,
     required Stream<GenerateContentResponse> responseStream,
     required StreamController<String> controller,
+    int functionCallDepth = 0,
   }) async {
+    // 関数呼び出しの最大深度を制限（無限再帰を防ぐ）
+    const maxFunctionCallDepth = 10;
+
+    if (functionCallDepth > maxFunctionCallDepth) {
+      _logger.warning(
+        'Function call depth limit exceeded ($maxFunctionCallDepth). '
+        'Stopping further function calls to prevent infinite recursion.',
+      );
+      controller.addError(
+        const SendMessageException.uncategorized(
+          message: '関数呼び出しの深度制限を超過しました。処理を停止します。',
+        ),
+      );
+      return;
+    }
     try {
       await for (final chunk in responseStream) {
         final functionCalls = chunk.functionCalls;
@@ -140,6 +156,7 @@ class AiChatService {
               chatSession: chatSession,
               functionCall: functionCall,
               controller: controller,
+              functionCallDepth: functionCallDepth,
             );
           }
           continue;
@@ -179,6 +196,7 @@ class AiChatService {
     required ChatSession chatSession,
     required FunctionCall functionCall,
     required StreamController<String> controller,
+    required int functionCallDepth,
   }) async {
     _logger.info(
       'Function call requested: ${functionCall.name} with args: '
@@ -201,6 +219,7 @@ class AiChatService {
         chatSession: chatSession,
         responseStream: chatSession.sendMessageStream(functionResponseContent),
         controller: controller,
+        functionCallDepth: functionCallDepth + 1,
       );
     } on Exception catch (e, stackTrace) {
       _logger.severe('関数呼び出しの処理に失敗: ${functionCall.name}: $e');
