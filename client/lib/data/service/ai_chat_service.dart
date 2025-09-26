@@ -75,21 +75,11 @@ class AiChatService {
 
       final controller = StreamController<String>();
 
-      () async {
-        try {
-          final responseStream = chatSession.sendMessageStream(
-            Content.text(message),
-          );
-
-          await _processResponseStream(
-            chatSession: chatSession,
-            responseStream: responseStream,
-            controller: controller,
-          );
-        } finally {
-          await controller.close();
-        }
-      }();
+      _startMessageProcessing(
+        chatSession: chatSession,
+        message: message,
+        controller: controller,
+      );
 
       return controller.stream;
     } catch (e, stackTrace) {
@@ -115,6 +105,29 @@ class AiChatService {
     // 既存のセッションを取得または新規作成
     final sessionKey = systemPrompt.hashCode.toString();
     return _chatSessions[sessionKey] ??= _getModel(systemPrompt).startChat();
+  }
+
+  /// メッセージ処理を開始する
+  void _startMessageProcessing({
+    required ChatSession chatSession,
+    required String message,
+    required StreamController<String> controller,
+  }) {
+    () async {
+      try {
+        final responseStream = chatSession.sendMessageStream(
+          Content.text(message),
+        );
+
+        await _processResponseStream(
+          chatSession: chatSession,
+          responseStream: responseStream,
+          controller: controller,
+        );
+      } finally {
+        await controller.close();
+      }
+    }();
   }
 
   Future<void> _processResponseStream({
