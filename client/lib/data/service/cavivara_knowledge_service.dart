@@ -1,3 +1,5 @@
+// cspell:ignore hitomi
+
 import 'package:firebase_ai/firebase_ai.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -35,11 +37,11 @@ class CavivaraKnowledgeBase {
     'regular_concert_11': _KnowledgeEntry(
       topic: 'regular_concert_11',
       title: '第11回定期演奏会',
-      summary: 'プレクトラム結社の第11回定期演奏会は2026年9月12日(土)、メニコンANNX HITOMIホールで開催予定。',
+      summary: 'プレクトラム結社の第11回定期演奏会は2026年9月12日(土)、メニコンANNEX HITOMIホールで開催予定。',
       details: [
         'イベント名: プレクトラム結社 第11回定期演奏会。',
         '開催日: 2026年9月12日(土)。',
-        '会場: メニコンANNX HITOMIホール。',
+        '会場: メニコンANNEX HITOMIホール。',
       ],
       keywords: [
         '演奏会',
@@ -49,7 +51,7 @@ class CavivaraKnowledgeBase {
         '2026年9月12日',
         '2026/9/12',
         'メニコン',
-        'annx',
+        'annex',
         'hitomi',
         'ホール',
       ],
