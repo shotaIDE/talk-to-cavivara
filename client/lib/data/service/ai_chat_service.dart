@@ -73,15 +73,10 @@ class AiChatService {
         conversationHistory: conversationHistory,
       );
 
-      final controller = StreamController<String>();
-
-      _startMessageProcessing(
+      return _startMessageProcessing(
         chatSession: chatSession,
         message: message,
-        controller: controller,
       );
-
-      return controller.stream;
     } catch (e, stackTrace) {
       _logger.severe('ストリーミングチャットメッセージの送信に失敗: $e');
       unawaited(errorReportService.recordError(e, stackTrace));
@@ -108,26 +103,27 @@ class AiChatService {
   }
 
   /// メッセージ処理を開始する
-  void _startMessageProcessing({
+  Stream<String> _startMessageProcessing({
     required ChatSession chatSession,
     required String message,
-    required StreamController<String> controller,
   }) {
-    () async {
-      try {
-        final responseStream = chatSession.sendMessageStream(
-          Content.text(message),
-        );
+    final controller = StreamController<String>();
 
-        await _processResponseStream(
-          chatSession: chatSession,
-          responseStream: responseStream,
-          controller: controller,
-        );
-      } finally {
-        await controller.close();
-      }
-    }();
+    unawaited(() async {
+      final responseStream = chatSession.sendMessageStream(
+        Content.text(message),
+      );
+
+      await _processResponseStream(
+        chatSession: chatSession,
+        responseStream: responseStream,
+        controller: controller,
+      );
+
+      await controller.close();
+    }());
+
+    return controller.stream;
   }
 
   Future<void> _processResponseStream({
