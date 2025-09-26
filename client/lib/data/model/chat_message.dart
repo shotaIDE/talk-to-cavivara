@@ -17,4 +17,5 @@ sealed class ChatMessage with _$ChatMessage {
 sealed class ChatMessageSender with _$ChatMessageSender {
   const factory ChatMessageSender.user() = ChatMessageSenderUser;
   const factory ChatMessageSender.ai() = ChatMessageSenderAi;
+  const factory ChatMessageSender.app() = ChatMessageSenderApp;
 }

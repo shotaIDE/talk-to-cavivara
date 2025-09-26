@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:firebase_ai/firebase_ai.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/data/model/chat_message.dart';
+import 'package:house_worker/data/model/send_message_exception.dart';
 import 'package:house_worker/data/service/cavivara_knowledge_service.dart';
 import 'package:house_worker/data/service/error_report_service.dart';
 import 'package:logging/logging.dart';
@@ -84,14 +86,6 @@ class AiChatService {
             responseStream: responseStream,
             controller: controller,
           );
-        } on AiChatException catch (e) {
-          controller.addError(e);
-        } on Exception catch (e, stackTrace) {
-          _logger.severe('ストリーミングチャットメッセージの送信に失敗: $e');
-          unawaited(errorReportService.recordError(e, stackTrace));
-          controller.addError(
-            AiChatException('ストリーミングチャットメッセージの送信に失敗しました: $e'),
-          );
         } finally {
           await controller.close();
         }
@@ -101,7 +95,9 @@ class AiChatService {
     } catch (e, stackTrace) {
       _logger.severe('ストリーミングチャットメッセージの送信に失敗: $e');
       unawaited(errorReportService.recordError(e, stackTrace));
-      throw AiChatException('ストリーミングチャットメッセージの送信に失敗しました: $e');
+      throw SendMessageException.uncategorized(
+        message: '$e',
+      );
     }
   }
 
@@ -126,31 +122,47 @@ class AiChatService {
     required Stream<GenerateContentResponse> responseStream,
     required StreamController<String> controller,
   }) async {
-    await for (final chunk in responseStream) {
-      final functionCalls = chunk.functionCalls;
-      if (functionCalls.isNotEmpty) {
-        for (final functionCall in functionCalls) {
-          await _handleFunctionCall(
-            chatSession: chatSession,
-            functionCall: functionCall,
-            controller: controller,
-          );
+    try {
+      await for (final chunk in responseStream) {
+        final functionCalls = chunk.functionCalls;
+        if (functionCalls.isNotEmpty) {
+          for (final functionCall in functionCalls) {
+            await _handleFunctionCall(
+              chatSession: chatSession,
+              functionCall: functionCall,
+              controller: controller,
+            );
+          }
+          continue;
         }
-        continue;
-      }
 
-      final text = chunk.text;
-      if (text == null) {
-        _logger.warning('AIからの応答チャンクがnullです');
-        continue;
-      }
+        final text = chunk.text;
+        if (text == null) {
+          _logger.warning('AIからの応答チャンクがnullです');
+          continue;
+        }
 
-      if (text.isEmpty) {
-        continue;
-      }
+        if (text.isEmpty) {
+          continue;
+        }
 
-      _logger.info('応答チャンクを受信: $text');
-      controller.add(text);
+        _logger.info('応答チャンクを受信: $text');
+        controller.add(text);
+      }
+    } on SocketException catch (e) {
+      _logger.severe('Network error occurred during response processing: $e');
+
+      controller.addError(const SendMessageException.noNetwork());
+    } on Exception catch (e, stackTrace) {
+      _logger.severe('Failed to process response stream: $e');
+
+      unawaited(errorReportService.recordError(e, stackTrace));
+
+      controller.addError(
+        SendMessageException.uncategorized(
+          message: 'Failed to process response stream: $e',
+        ),
+      );
     }
   }
 
@@ -181,10 +193,16 @@ class AiChatService {
         responseStream: chatSession.sendMessageStream(functionResponseContent),
         controller: controller,
       );
-    } catch (e, stackTrace) {
+    } on Exception catch (e, stackTrace) {
       _logger.severe('関数呼び出しの処理に失敗: ${functionCall.name}: $e');
+
       unawaited(errorReportService.recordError(e, stackTrace));
-      throw AiChatException('関数呼び出しの処理に失敗しました: $e');
+
+      controller.addError(
+        SendMessageException.uncategorized(
+          message: '関数呼び出しの処理に失敗しました: $e',
+        ),
+      );
     }
   }
 
@@ -194,12 +212,18 @@ class AiChatService {
 
   /// ChatMessageのリストをFirebase AI用のContentリストに変換
   List<Content> _convertChatHistoryToContent(List<ChatMessage> history) {
-    return history.map((message) {
-      return switch (message.sender) {
-        ChatMessageSenderUser() => Content.text(message.content),
-        ChatMessageSenderAi() => Content.model([TextPart(message.content)]),
-      };
-    }).toList();
+    return history
+        .map((message) {
+          return switch (message.sender) {
+            ChatMessageSenderUser() => Content.text(message.content),
+            ChatMessageSenderAi() => Content.model([TextPart(message.content)]),
+            // アプリメッセージはAIモデルに送信される会話の一部となることを意図していないため、
+            // チャット履歴から除外
+            ChatMessageSenderApp() => null,
+          };
+        })
+        .nonNulls
+        .toList();
   }
 
   /// 特定のsystemPromptのチャットセッションをクリア
@@ -217,13 +241,4 @@ class AiChatService {
     _chatSessions.clear();
     _logger.info('All chat sessions cleared');
   }
-}
-
-class AiChatException implements Exception {
-  const AiChatException(this.message);
-
-  final String message;
-
-  @override
-  String toString() => 'AiChatException: $message';
 }

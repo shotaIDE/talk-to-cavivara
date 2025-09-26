@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/data/model/chat_message.dart';
+import 'package:house_worker/data/repository/skip_clear_chat_confirmation_repository.dart';
 import 'package:house_worker/data/service/cavivara_directory_service.dart';
 import 'package:house_worker/ui/component/app_drawer.dart';
 import 'package:house_worker/ui/component/cavivara_avatar.dart';
+import 'package:house_worker/ui/component/clear_chat_confirmation_dialog.dart';
 import 'package:house_worker/ui/feature/home/home_presenter.dart';
 import 'package:house_worker/ui/feature/job_market/job_market_screen.dart';
 import 'package:house_worker/ui/feature/resume/resume_screen.dart';
@@ -67,7 +69,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final cavivaraProfile = ref.watch(cavivaraByIdProvider(widget.cavivaraId));
 
     final title = Row(
-      mainAxisSize: MainAxisSize.min,
       children: [
         CavivaraAvatar(
           size: 32,
@@ -78,23 +79,38 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ),
         const SizedBox(width: 12),
-        Text(cavivaraProfile.displayName),
+        Expanded(
+          child: Text(
+            cavivaraProfile.displayName,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 2,
+          ),
+        ),
       ],
     );
 
-    final clearButton = IconButton(
-      onPressed: _clearChat,
-      tooltip: 'チャット履歴をクリアする',
-      icon: const Icon(Icons.clear_all),
+    final clearButton = Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: Tooltip(
+        message: '記憶を消去する',
+        child: IconButton(
+          onPressed: _clearChat,
+          icon: const Icon(Icons.delete_forever),
+        ),
+      ),
     );
 
     final body = Column(
       children: [
         Expanded(
-          child: _ChatMessageList(
-            controller: _scrollController,
-            onMessageSent: _onMessageSent,
-            cavivaraId: widget.cavivaraId,
+          child: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: _dismissKeyboard,
+            child: _ChatMessageList(
+              controller: _scrollController,
+              onMessageSent: _onMessageSent,
+              cavivaraId: widget.cavivaraId,
+            ),
           ),
         ),
         _messageInput(),
@@ -129,7 +145,34 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  void _clearChat() {
+  Future<void> _clearChat() async {
+    final skipConfirmation = await ref.read(
+      skipClearChatConfirmationProvider.future,
+    );
+
+    if (!skipConfirmation) {
+      if (!mounted) {
+        return;
+      }
+
+      final result = await showDialog<ClearChatDialogResult>(
+        context: context,
+        builder: (context) => const ClearChatConfirmationDialog(),
+      );
+
+      if (result == null || !result.confirmed) {
+        return;
+      }
+
+      await ref
+          .read(skipClearChatConfirmationProvider.notifier)
+          .updateSkip(shouldSkip: result.shouldSkipConfirmation);
+    }
+
+    if (!mounted) {
+      return;
+    }
+
     ref.read(chatMessagesProvider(widget.cavivaraId).notifier).clearMessages();
   }
 
@@ -141,6 +184,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           .sendMessage(message);
       _messageController.clear();
     }
+  }
+
+  void _dismissKeyboard() {
+    FocusScope.of(context).unfocus();
   }
 
   void _onMessageSent() {
@@ -177,8 +224,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
               maxLines: null,
-              textInputAction: TextInputAction.send,
-              onSubmitted: (_) => _sendMessage(),
+              textInputAction: TextInputAction.newline,
             ),
           ),
           const SizedBox(width: 8),
@@ -319,20 +365,77 @@ class _ChatBubble extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final cavivaraProfile = ref.watch(cavivaraByIdProvider(cavivaraId));
-    final isUser = message.sender == const ChatMessageSender.user();
-    final isStreaming = message.isStreaming;
-    final theme = Theme.of(context);
-    final textColor = isUser
-        ? theme.colorScheme.onPrimary
-        : theme.colorScheme.onSurface;
-    final indicatorColor = isUser
-        ? theme.colorScheme.onPrimary
-        : theme.colorScheme.primary;
+    return switch (message.sender) {
+      ChatMessageSenderUser() => _UserChatBubble(message: message),
+      ChatMessageSenderAi() => _AiChatBubble(
+        message: message,
+        cavivaraId: cavivaraId,
+      ),
+      ChatMessageSenderApp() => _AppChatBubble(
+        message: message,
+      ),
+    };
+  }
+}
 
-    Widget messageContent;
-    if (isStreaming && message.content.isEmpty) {
-      messageContent = Row(
+class _UserChatBubble extends StatelessWidget {
+  const _UserChatBubble({
+    required this.message,
+  });
+
+  final ChatMessage message;
+
+  @override
+  Widget build(BuildContext context) {
+    final textColor = Theme.of(context).colorScheme.onPrimary;
+
+    final bodyText = Text(
+      message.content,
+      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+        color: textColor,
+      ),
+    );
+    final timeText = _TimestampText(timestamp: message.timestamp);
+
+    final bubble = Container(
+      constraints: BoxConstraints(
+        maxWidth: MediaQuery.of(context).size.width * 0.8,
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primary,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: bodyText,
+    );
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      spacing: 4,
+      children: [timeText, bubble],
+    );
+  }
+}
+
+class _AiChatBubble extends ConsumerWidget {
+  const _AiChatBubble({
+    required this.message,
+    required this.cavivaraId,
+  });
+
+  final ChatMessage message;
+  final String cavivaraId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cavivaraProfile = ref.watch(cavivaraByIdProvider(cavivaraId));
+    final textColor = Theme.of(context).colorScheme.onSurface;
+    final indicatorColor = Theme.of(context).colorScheme.primary;
+
+    Widget bodyText;
+    if (message.isStreaming && message.content.isEmpty) {
+      bodyText = Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(
@@ -346,7 +449,7 @@ class _ChatBubble extends ConsumerWidget {
           const SizedBox(width: 8),
           Text(
             '${cavivaraProfile.displayName}が考え中…',
-            style: theme.textTheme.bodyMedium?.copyWith(
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: textColor,
             ),
           ),
@@ -355,13 +458,13 @@ class _ChatBubble extends ConsumerWidget {
     } else {
       final textWidget = Text(
         message.content,
-        style: theme.textTheme.bodyMedium?.copyWith(
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
           color: textColor,
         ),
       );
 
-      if (isStreaming) {
-        messageContent = Row(
+      if (message.isStreaming) {
+        bodyText = Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(child: textWidget),
@@ -377,9 +480,11 @@ class _ChatBubble extends ConsumerWidget {
           ],
         );
       } else {
-        messageContent = textWidget;
+        bodyText = textWidget;
       }
     }
+
+    final timeText = _TimestampText(timestamp: message.timestamp);
 
     final bubble = Container(
       constraints: BoxConstraints(
@@ -387,49 +492,98 @@ class _ChatBubble extends ConsumerWidget {
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: isUser
-            ? theme.colorScheme.primary
-            : theme.colorScheme.surfaceContainerHighest,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Column(
+      child: bodyText,
+    );
+
+    final avatar = CavivaraAvatar(
+      assetPath: cavivaraProfile.iconPath,
+      cavivaraId: cavivaraId,
+      onTap: () => Navigator.of(context).push(
+        ResumeScreen.route(cavivaraId),
+      ),
+    );
+
+    return IntrinsicHeight(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          messageContent,
-          if (!isStreaming || message.content.isNotEmpty) ...[
-            const SizedBox(height: 4),
-            Text(
-              '${message.timestamp.hour.toString().padLeft(2, '0')}:'
-              '${message.timestamp.minute.toString().padLeft(2, '0')}',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: isUser
-                    ? theme.colorScheme.onPrimary.withValues(alpha: 0.7)
-                    : theme.colorScheme.onSurface.withValues(alpha: 0.7),
-              ),
+          avatar,
+          const SizedBox(width: 8),
+          Flexible(child: bubble),
+          if (!message.isStreaming || message.content.isNotEmpty) ...[
+            const SizedBox(width: 4),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: timeText,
             ),
           ],
         ],
       ),
     );
+  }
+}
 
+class _AppChatBubble extends ConsumerWidget {
+  const _AppChatBubble({
+    required this.message,
+  });
+
+  final ChatMessage message;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bodyText = Text(
+      message.content,
+      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+        color: Theme.of(context).colorScheme.onSurface.withAlpha(150),
+      ),
+    );
+    final timeText = _TimestampText(
+      timestamp: message.timestamp,
+    );
+
+    final bubble = Container(
+      constraints: BoxConstraints(
+        maxWidth: MediaQuery.of(context).size.width * 0.8,
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainer.withAlpha(100),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: bodyText,
+    );
+
+    final expanded = Expanded(child: bubble);
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: isUser
-          ? MainAxisAlignment.end
-          : MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      spacing: 4,
       children: [
-        if (!isUser) ...[
-          CavivaraAvatar(
-            assetPath: cavivaraProfile.iconPath,
-            cavivaraId: cavivaraId,
-            onTap: () => Navigator.of(context).push(
-              ResumeScreen.route(cavivaraId),
-            ),
-          ),
-          const SizedBox(width: 8),
-        ],
-        Flexible(child: bubble),
+        expanded,
+        timeText,
       ],
+    );
+  }
+}
+
+class _TimestampText extends StatelessWidget {
+  const _TimestampText({
+    required this.timestamp,
+  });
+
+  final DateTime timestamp;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      '${timestamp.hour.toString().padLeft(2, '0')}:'
+      '${timestamp.minute.toString().padLeft(2, '0')}',
+      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+        color: Theme.of(context).colorScheme.onSurface.withAlpha(100),
+      ),
     );
   }
 }
