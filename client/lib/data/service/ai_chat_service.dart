@@ -5,6 +5,7 @@ import 'package:firebase_ai/firebase_ai.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/data/model/chat_message.dart';
 import 'package:house_worker/data/model/send_message_exception.dart';
+import 'package:house_worker/data/service/cavivara_knowledge_service.dart';
 import 'package:house_worker/data/service/error_report_service.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -15,13 +16,18 @@ part 'ai_chat_service.g.dart';
 AiChatService aiChatService(Ref ref) {
   return AiChatService(
     errorReportService: ref.watch(errorReportServiceProvider),
+    knowledgeBase: ref.watch(cavivaraKnowledgeBaseProvider),
   );
 }
 
 class AiChatService {
-  AiChatService({required this.errorReportService});
+  AiChatService({
+    required this.errorReportService,
+    required this.knowledgeBase,
+  });
 
   final ErrorReportService errorReportService;
+  final CavivaraKnowledgeBase knowledgeBase;
   final Logger _logger = Logger('AiChatService');
 
   /// チャットセッションのキャッシュ（systemPromptごとに保持）
@@ -42,6 +48,7 @@ class AiChatService {
         maxOutputTokens: 2048,
       ),
       systemInstruction: Content.system(systemPrompt),
+      tools: knowledgeBase.tools,
     );
   }
 
@@ -61,53 +68,15 @@ class AiChatService {
     );
 
     try {
-      ChatSession chatSession;
+      final chatSession = _createOrReuseChatSession(
+        systemPrompt: systemPrompt,
+        conversationHistory: conversationHistory,
+      );
 
-      if (conversationHistory != null) {
-        // 会話履歴が指定された場合は新しいセッションを作成
-        final model = _getModel(systemPrompt);
-        final history = _convertChatHistoryToContent(conversationHistory);
-        chatSession = model.startChat(history: history);
-      } else {
-        // 既存のセッションを取得または新規作成
-        final sessionKey = systemPrompt.hashCode.toString();
-        chatSession = _chatSessions[sessionKey] ??= _getModel(
-          systemPrompt,
-        ).startChat();
-      }
-
-      final content = Content.text(message);
-      final responseStream = chatSession.sendMessageStream(content);
-
-      return responseStream
-          .map((chunk) {
-            final text = chunk.text;
-            if (text == null) {
-              _logger.warning('AIからの応答チャンクがnullです');
-              return '';
-            }
-
-            _logger.info('応答チャンクを受信: $text');
-            return text;
-          })
-          .handleError((dynamic error) {
-            _logger.severe('Failed to stream chat message: $error');
-
-            if (error is SocketException) {
-              _logger.severe('Network error occurred: $error');
-              throw const SendMessageException.noNetwork();
-            }
-
-            _logger.severe('Uncategorized error occurred: $error');
-
-            unawaited(
-              errorReportService.recordError(error, StackTrace.current),
-            );
-
-            throw SendMessageException.uncategorized(
-              message: '[${error.runtimeType}] $error',
-            );
-          });
+      return _startMessageProcessing(
+        chatSession: chatSession,
+        message: message,
+      );
     } catch (e, stackTrace) {
       _logger.severe('ストリーミングチャットメッセージの送信に失敗: $e');
       unawaited(errorReportService.recordError(e, stackTrace));
@@ -115,6 +84,158 @@ class AiChatService {
         message: '$e',
       );
     }
+  }
+
+  ChatSession _createOrReuseChatSession({
+    required String systemPrompt,
+    List<ChatMessage>? conversationHistory,
+  }) {
+    if (conversationHistory != null) {
+      // 会話履歴が指定された場合は新しいセッションを作成
+      final model = _getModel(systemPrompt);
+      final history = _convertChatHistoryToContent(conversationHistory);
+      return model.startChat(history: history);
+    }
+
+    // 既存のセッションを取得または新規作成
+    final sessionKey = systemPrompt.hashCode.toString();
+    return _chatSessions[sessionKey] ??= _getModel(systemPrompt).startChat();
+  }
+
+  /// メッセージ処理を開始する
+  Stream<String> _startMessageProcessing({
+    required ChatSession chatSession,
+    required String message,
+  }) {
+    final controller = StreamController<String>();
+
+    unawaited(() async {
+      final responseStream = chatSession.sendMessageStream(
+        Content.text(message),
+      );
+
+      await _processResponseStream(
+        chatSession: chatSession,
+        responseStream: responseStream,
+        controller: controller,
+      );
+
+      await controller.close();
+    }());
+
+    return controller.stream;
+  }
+
+  Future<void> _processResponseStream({
+    required ChatSession chatSession,
+    required Stream<GenerateContentResponse> responseStream,
+    required StreamController<String> controller,
+    int functionCallDepth = 0,
+  }) async {
+    // 関数呼び出しの最大深度を制限（無限再帰を防ぐ）
+    const maxFunctionCallDepth = 10;
+
+    if (functionCallDepth > maxFunctionCallDepth) {
+      _logger.warning(
+        'Function call depth limit exceeded ($maxFunctionCallDepth). '
+        'Stopping further function calls to prevent infinite recursion.',
+      );
+      controller.addError(
+        const SendMessageException.uncategorized(
+          message: '関数呼び出しの深度制限を超過しました。処理を停止します。',
+        ),
+      );
+      return;
+    }
+    try {
+      await for (final chunk in responseStream) {
+        final functionCalls = chunk.functionCalls;
+        if (functionCalls.isNotEmpty) {
+          for (final functionCall in functionCalls) {
+            await _handleFunctionCall(
+              chatSession: chatSession,
+              functionCall: functionCall,
+              controller: controller,
+              functionCallDepth: functionCallDepth,
+            );
+          }
+          continue;
+        }
+
+        final text = chunk.text;
+        if (text == null) {
+          _logger.warning('AIからの応答チャンクがnullです');
+          continue;
+        }
+
+        if (text.isEmpty) {
+          continue;
+        }
+
+        _logger.info('応答チャンクを受信: $text');
+        controller.add(text);
+      }
+    } on SocketException catch (e) {
+      _logger.severe('Network error occurred during response processing: $e');
+
+      controller.addError(const SendMessageException.noNetwork());
+    } on Exception catch (e, stackTrace) {
+      _logger.severe('Failed to process response stream: $e');
+
+      unawaited(errorReportService.recordError(e, stackTrace));
+
+      controller.addError(
+        SendMessageException.uncategorized(
+          message: 'Failed to process response stream: $e',
+        ),
+      );
+    }
+  }
+
+  Future<void> _handleFunctionCall({
+    required ChatSession chatSession,
+    required FunctionCall functionCall,
+    required StreamController<String> controller,
+    required int functionCallDepth,
+  }) async {
+    _logger.info(
+      'Function call requested: ${functionCall.name} with args: '
+      '${functionCall.args}',
+    );
+
+    try {
+      final arguments = _resolveFunctionArguments(functionCall);
+      final responsePayload = await knowledgeBase.execute(
+        functionName: functionCall.name,
+        arguments: arguments,
+      );
+
+      final functionResponseContent = Content.functionResponse(
+        functionCall.name,
+        responsePayload,
+      );
+
+      await _processResponseStream(
+        chatSession: chatSession,
+        responseStream: chatSession.sendMessageStream(functionResponseContent),
+        controller: controller,
+        functionCallDepth: functionCallDepth + 1,
+      );
+    } on Exception catch (e, stackTrace) {
+      _logger.severe('関数呼び出しの処理に失敗: ${functionCall.name}: $e');
+
+      unawaited(errorReportService.recordError(e, stackTrace));
+
+      controller.addError(
+        SendMessageException.uncategorized(
+          message: '関数呼び出しの処理に失敗しました: $e',
+        ),
+      );
+    }
+  }
+
+  Map<String, dynamic> _resolveFunctionArguments(FunctionCall functionCall) {
+    return functionCall.args;
   }
 
   /// ChatMessageのリストをFirebase AI用のContentリストに変換
