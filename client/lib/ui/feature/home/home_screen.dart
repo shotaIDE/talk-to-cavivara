@@ -198,9 +198,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Container(
       padding: EdgeInsets.only(
         left: 16 + MediaQuery.of(context).viewPadding.left,
-        right: 16 + MediaQuery.of(context).viewPadding.right,
-        bottom: 16 + MediaQuery.of(context).viewPadding.bottom,
         top: 16,
+        right: 16 + MediaQuery.of(context).viewPadding.right,
+        bottom: 16 + MediaQuery.of(context).padding.bottom,
       ),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
