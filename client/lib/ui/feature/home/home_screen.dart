@@ -195,11 +195,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _messageInput() {
+    final mediaQuery = MediaQuery.of(context);
+    final safeBottomPadding = mediaQuery.padding.bottom;
+
     return Container(
       padding: EdgeInsets.only(
-        left: 16 + MediaQuery.of(context).viewPadding.left,
-        right: 16 + MediaQuery.of(context).viewPadding.right,
-        bottom: 16 + MediaQuery.of(context).viewPadding.bottom,
+        left: 16 + mediaQuery.viewPadding.left,
+        right: 16 + mediaQuery.viewPadding.right,
+        bottom: 16 + safeBottomPadding,
         top: 16,
       ),
       decoration: BoxDecoration(
