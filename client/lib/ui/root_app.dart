@@ -76,6 +76,7 @@ class _RootAppState extends ConsumerState<RootApp> {
       builder: (_, child) => _wrapByAppBanner(child),
       theme: getLightTheme(),
       darkTheme: getDarkTheme(),
+      themeMode: ThemeMode.dark,
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
