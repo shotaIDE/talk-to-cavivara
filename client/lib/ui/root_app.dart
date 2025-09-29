@@ -74,8 +74,8 @@ class _RootAppState extends ConsumerState<RootApp> {
       navigatorObservers: navigatorObservers,
       title: 'カヴィヴァラチャット',
       builder: (_, child) => _wrapByAppBanner(child),
-      theme: getLightTheme(),
       darkTheme: getDarkTheme(),
+      themeMode: ThemeMode.dark,
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
