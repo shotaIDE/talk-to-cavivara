@@ -4,7 +4,7 @@ ThemeData getDarkTheme() {
   return ThemeData(
     useMaterial3: true,
     colorScheme: ColorScheme.fromSeed(
-      seedColor: Colors.blue,
+      seedColor: Colors.red,
       brightness: Brightness.dark,
     ),
   );
