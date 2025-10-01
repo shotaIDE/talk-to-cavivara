@@ -493,10 +493,10 @@ class _AiChatBubble extends ConsumerWidget {
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(2),
         border: Border(
-          bottom: BorderSide(color: colorScheme.primary),
+          bottom: BorderSide(color: Theme.of(context).colorScheme.primary),
         ),
       ),
       child: bodyText,
