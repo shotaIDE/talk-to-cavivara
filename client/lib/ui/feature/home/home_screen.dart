@@ -387,12 +387,10 @@ class _UserChatBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     final bodyText = Text(
       message.content,
       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-        color: colorScheme.onPrimaryContainer,
+        color: Theme.of(context).colorScheme.onPrimaryContainer,
       ),
     );
     final timeText = _TimestampText(timestamp: message.timestamp);
@@ -403,10 +401,10 @@ class _UserChatBubble extends StatelessWidget {
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: colorScheme.primaryContainer,
+        color: Theme.of(context).colorScheme.primaryContainer,
         borderRadius: BorderRadius.circular(2),
         border: Border(
-          bottom: BorderSide(color: colorScheme.primary),
+          bottom: BorderSide(color: Theme.of(context).colorScheme.primary),
         ),
       ),
       child: bodyText,
@@ -433,9 +431,8 @@ class _AiChatBubble extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cavivaraProfile = ref.watch(cavivaraByIdProvider(cavivaraId));
-    final colorScheme = Theme.of(context).colorScheme;
-    final textColor = colorScheme.onSurface;
-    final indicatorColor = colorScheme.primary;
+    final textColor = Theme.of(context).colorScheme.onSurface;
+    final indicatorColor = Theme.of(context).colorScheme.primary;
 
     Widget bodyText;
     if (message.isStreaming && message.content.isEmpty) {
