@@ -387,12 +387,10 @@ class _UserChatBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textColor = Theme.of(context).colorScheme.onPrimary;
-
     final bodyText = Text(
       message.content,
       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-        color: textColor,
+        color: Theme.of(context).colorScheme.onPrimaryContainer,
       ),
     );
     final timeText = _TimestampText(timestamp: message.timestamp);
@@ -403,8 +401,11 @@ class _UserChatBubble extends StatelessWidget {
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary,
-        borderRadius: BorderRadius.circular(20),
+        color: Theme.of(context).colorScheme.primaryContainer,
+        borderRadius: BorderRadius.circular(2),
+        border: Border(
+          bottom: BorderSide(color: Theme.of(context).colorScheme.primary),
+        ),
       ),
       child: bodyText,
     );
@@ -493,7 +494,10 @@ class _AiChatBubble extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(2),
+        border: Border(
+          bottom: BorderSide(color: Theme.of(context).colorScheme.primary),
+        ),
       ),
       child: bodyText,
     );
@@ -552,7 +556,10 @@ class _AppChatBubble extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceContainer.withAlpha(100),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(2),
+        border: Border(
+          bottom: BorderSide(color: Theme.of(context).colorScheme.primary),
+        ),
       ),
       child: bodyText,
     );
