@@ -387,7 +387,8 @@ class _UserChatBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textColor = Theme.of(context).colorScheme.onPrimary;
+    final colorScheme = Theme.of(context).colorScheme;
+    final textColor = colorScheme.onPrimary;
 
     final bodyText = Text(
       message.content,
@@ -403,8 +404,14 @@ class _UserChatBubble extends StatelessWidget {
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary,
-        borderRadius: BorderRadius.circular(20),
+        color: colorScheme.primary,
+        borderRadius: BorderRadius.circular(4),
+        border: Border(
+          top: BorderSide(color: colorScheme.outlineVariant),
+          left: BorderSide(color: colorScheme.outlineVariant),
+          right: BorderSide(color: colorScheme.outlineVariant),
+          bottom: BorderSide(color: colorScheme.primary, width: 2),
+        ),
       ),
       child: bodyText,
     );
@@ -430,8 +437,9 @@ class _AiChatBubble extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cavivaraProfile = ref.watch(cavivaraByIdProvider(cavivaraId));
-    final textColor = Theme.of(context).colorScheme.onSurface;
-    final indicatorColor = Theme.of(context).colorScheme.primary;
+    final colorScheme = Theme.of(context).colorScheme;
+    final textColor = colorScheme.onSurface;
+    final indicatorColor = colorScheme.primary;
 
     Widget bodyText;
     if (message.isStreaming && message.content.isEmpty) {
@@ -492,8 +500,14 @@ class _AiChatBubble extends ConsumerWidget {
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(20),
+        color: colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(4),
+        border: Border(
+          top: BorderSide(color: colorScheme.outlineVariant),
+          left: BorderSide(color: colorScheme.outlineVariant),
+          right: BorderSide(color: colorScheme.outlineVariant),
+          bottom: BorderSide(color: colorScheme.primary, width: 2),
+        ),
       ),
       child: bodyText,
     );
@@ -535,10 +549,12 @@ class _AppChatBubble extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     final bodyText = Text(
       message.content,
       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-        color: Theme.of(context).colorScheme.onSurface.withAlpha(150),
+        color: colorScheme.onSurface.withAlpha(150),
       ),
     );
     final timeText = _TimestampText(
@@ -551,8 +567,14 @@ class _AppChatBubble extends ConsumerWidget {
       ),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainer.withAlpha(100),
-        borderRadius: BorderRadius.circular(8),
+        color: colorScheme.surfaceContainer.withAlpha(100),
+        borderRadius: BorderRadius.circular(4),
+        border: Border(
+          top: BorderSide(color: colorScheme.outlineVariant),
+          left: BorderSide(color: colorScheme.outlineVariant),
+          right: BorderSide(color: colorScheme.outlineVariant),
+          bottom: BorderSide(color: colorScheme.primary, width: 2),
+        ),
       ),
       child: bodyText,
     );
