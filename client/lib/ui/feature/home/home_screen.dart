@@ -388,7 +388,7 @@ class _UserChatBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final textColor = colorScheme.onPrimary;
+    final textColor = colorScheme.onPrimaryContainer;
 
     final bodyText = Text(
       message.content,
@@ -404,13 +404,10 @@ class _UserChatBubble extends StatelessWidget {
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: colorScheme.primary,
-        borderRadius: BorderRadius.circular(4),
+        color: colorScheme.primaryContainer,
+        borderRadius: BorderRadius.circular(2),
         border: Border(
-          top: BorderSide(color: colorScheme.outlineVariant),
-          left: BorderSide(color: colorScheme.outlineVariant),
-          right: BorderSide(color: colorScheme.outlineVariant),
-          bottom: BorderSide(color: colorScheme.primary, width: 2),
+          bottom: BorderSide(color: colorScheme.primary),
         ),
       ),
       child: bodyText,
@@ -501,12 +498,9 @@ class _AiChatBubble extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(2),
         border: Border(
-          top: BorderSide(color: colorScheme.outlineVariant),
-          left: BorderSide(color: colorScheme.outlineVariant),
-          right: BorderSide(color: colorScheme.outlineVariant),
-          bottom: BorderSide(color: colorScheme.primary, width: 2),
+          bottom: BorderSide(color: colorScheme.primary),
         ),
       ),
       child: bodyText,
@@ -568,12 +562,9 @@ class _AppChatBubble extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainer.withAlpha(100),
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(2),
         border: Border(
-          top: BorderSide(color: colorScheme.outlineVariant),
-          left: BorderSide(color: colorScheme.outlineVariant),
-          right: BorderSide(color: colorScheme.outlineVariant),
-          bottom: BorderSide(color: colorScheme.primary, width: 2),
+          bottom: BorderSide(color: colorScheme.primary),
         ),
       ),
       child: bodyText,
