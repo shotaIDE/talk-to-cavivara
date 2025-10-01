@@ -388,12 +388,11 @@ class _UserChatBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final textColor = colorScheme.onPrimaryContainer;
 
     final bodyText = Text(
       message.content,
       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-        color: textColor,
+        color: colorScheme.onPrimaryContainer,
       ),
     );
     final timeText = _TimestampText(timestamp: message.timestamp);
@@ -543,12 +542,10 @@ class _AppChatBubble extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     final bodyText = Text(
       message.content,
       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-        color: colorScheme.onSurface.withAlpha(150),
+        color: Theme.of(context).colorScheme.onSurface.withAlpha(150),
       ),
     );
     final timeText = _TimestampText(
@@ -561,10 +558,10 @@ class _AppChatBubble extends ConsumerWidget {
       ),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainer.withAlpha(100),
+        color: Theme.of(context).colorScheme.surfaceContainer.withAlpha(100),
         borderRadius: BorderRadius.circular(2),
         border: Border(
-          bottom: BorderSide(color: colorScheme.primary),
+          bottom: BorderSide(color: Theme.of(context).colorScheme.primary),
         ),
       ),
       child: bodyText,
