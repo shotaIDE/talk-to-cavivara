@@ -345,7 +345,7 @@ class _ChatMessageListState extends ConsumerState<_ChatMessageList> {
         );
       },
     );
-}
+  }
 
   void _sendSuggestion(String message) {
     ref
@@ -386,7 +386,7 @@ class _ChatSuggestions extends StatelessWidget {
 
   final ValueChanged<String> onSuggestionSelected;
 
-  static const _suggestions = [
+  static const List<({IconData icon, String label})> _suggestions = [
     (
       icon: Icons.queue_music,
       label: 'マンドリンの演奏会の選曲会議で何を出すか迷っています',
@@ -407,8 +407,9 @@ class _ChatSuggestions extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final minHeight =
-            constraints.maxHeight.isFinite ? constraints.maxHeight : 0;
+        final minHeight = constraints.maxHeight.isFinite
+            ? constraints.maxHeight
+            : 0.0;
 
         return SingleChildScrollView(
           padding: EdgeInsets.only(
@@ -420,8 +421,9 @@ class _ChatSuggestions extends StatelessWidget {
           child: ConstrainedBox(
             constraints: BoxConstraints(minHeight: minHeight),
             child: Column(
-              mainAxisAlignment:
-                  minHeight > 0 ? MainAxisAlignment.center : MainAxisAlignment.start,
+              mainAxisAlignment: minHeight > 0
+                  ? MainAxisAlignment.center
+                  : MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -442,7 +444,7 @@ class _ChatSuggestions extends StatelessWidget {
                         onTap: () => onSuggestionSelected(suggestion.label),
                       );
                     },
-                    separatorBuilder: (_, __) => const SizedBox(width: 12),
+                    separatorBuilder: (_, _) => const SizedBox(width: 12),
                     itemCount: _suggestions.length,
                   ),
                 ),
@@ -479,10 +481,10 @@ class _SuggestionCard extends StatelessWidget {
         child: Ink(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: colorScheme.surfaceVariant.withOpacity(0.6),
+            color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: colorScheme.outline.withOpacity(0.4),
+              color: colorScheme.outline.withValues(alpha: 0.4),
             ),
           ),
           child: Column(
