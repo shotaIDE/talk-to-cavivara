@@ -320,13 +320,10 @@ class _ChatMessageListState extends ConsumerState<_ChatMessageList> {
     _previousHasStreamingMessages = hasStreamingMessages;
 
     if (messages.isEmpty) {
-      return const Center(
-        child: Padding(
-          padding: EdgeInsets.all(16),
-          child: Text(
-            'AIとチャットを始めましょう！\n下のテキストフィールドにメッセージを入力してください。',
-            textAlign: TextAlign.center,
-          ),
+      return Align(
+        alignment: Alignment.bottomCenter,
+        child: _ChatSuggestions(
+          onSuggestionSelected: _sendSuggestion,
         ),
       );
     }
@@ -352,6 +349,13 @@ class _ChatMessageListState extends ConsumerState<_ChatMessageList> {
       },
     );
   }
+
+  void _sendSuggestion(String message) {
+    ref
+        .read(chatMessagesProvider(widget.cavivaraId).notifier)
+        .sendMessage(message);
+    widget.onMessageSent();
+  }
 }
 
 class _ChatBubble extends ConsumerWidget {
@@ -375,6 +379,124 @@ class _ChatBubble extends ConsumerWidget {
         message: message,
       ),
     };
+  }
+}
+
+class _ChatSuggestions extends StatelessWidget {
+  const _ChatSuggestions({
+    required this.onSuggestionSelected,
+  });
+
+  final ValueChanged<String> onSuggestionSelected;
+
+  static const List<({IconData icon, String label})> _suggestions = [
+    (
+      icon: Icons.queue_music,
+      label: 'マンドリンの演奏会の選曲会議で何を出すか迷っています',
+    ),
+    (
+      icon: Icons.group,
+      label: 'プレクトラム結社の最新の演奏会について教えて',
+    ),
+    (
+      icon: Icons.restaurant_menu,
+      label: '今晩の夜ご飯のレシピを考えて',
+    ),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final title = Text(
+      '質問してみましょう',
+      style: Theme.of(context).textTheme.titleMedium,
+    );
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(vertical: 32),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 16,
+        children: [
+          Padding(
+            padding: EdgeInsets.only(
+              left: 16 + MediaQuery.of(context).viewPadding.left,
+              right: 16 + MediaQuery.of(context).viewPadding.right,
+            ),
+            child: title,
+          ),
+          SizedBox(
+            height: 136,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              primary: false,
+              padding: EdgeInsets.only(
+                left: 16 + MediaQuery.of(context).viewPadding.left,
+                right: 16 + MediaQuery.of(context).viewPadding.right,
+              ),
+              itemBuilder: (context, index) {
+                final suggestion = _suggestions[index];
+                return _SuggestionCard(
+                  icon: suggestion.icon,
+                  label: suggestion.label,
+                  onTap: () => onSuggestionSelected(suggestion.label),
+                );
+              },
+              separatorBuilder: (_, _) => const SizedBox(width: 12),
+              itemCount: _suggestions.length,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SuggestionCard extends StatelessWidget {
+  const _SuggestionCard({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final indicatorIcon = Icon(
+      icon,
+      color: Theme.of(context).colorScheme.primary,
+    );
+    final bodyText = Text(
+      label,
+      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+        color: Theme.of(context).colorScheme.onSurface,
+      ),
+    );
+
+    return SizedBox(
+      width: 240,
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(2),
+        ),
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 16,
+              children: [
+                indicatorIcon,
+                bodyText,
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -403,9 +525,6 @@ class _UserChatBubble extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primaryContainer,
         borderRadius: BorderRadius.circular(2),
-        border: Border(
-          bottom: BorderSide(color: Theme.of(context).colorScheme.primary),
-        ),
       ),
       child: bodyText,
     );
@@ -495,9 +614,6 @@ class _AiChatBubble extends ConsumerWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(2),
-        border: Border(
-          bottom: BorderSide(color: Theme.of(context).colorScheme.primary),
-        ),
       ),
       child: bodyText,
     );
@@ -557,9 +673,6 @@ class _AppChatBubble extends ConsumerWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceContainer.withAlpha(100),
         borderRadius: BorderRadius.circular(2),
-        border: Border(
-          bottom: BorderSide(color: Theme.of(context).colorScheme.primary),
-        ),
       ),
       child: bodyText,
     );
