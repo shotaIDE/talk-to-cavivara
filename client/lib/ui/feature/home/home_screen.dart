@@ -406,55 +406,47 @@ class _ChatSuggestions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final minHeight = constraints.maxHeight.isFinite
-            ? constraints.maxHeight
-            : 0.0;
+    final title = Text(
+      '質問してみましょう',
+      style: Theme.of(context).textTheme.titleMedium,
+    );
 
-        final title = Text(
-          '質問してみましょう',
-          style: Theme.of(context).textTheme.titleMedium,
-        );
-
-        return SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(vertical: 32),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 16,
-            children: [
-              Padding(
-                padding: EdgeInsets.only(
-                  left: 16 + MediaQuery.of(context).viewPadding.left,
-                  right: 16 + MediaQuery.of(context).viewPadding.right,
-                ),
-                child: title,
-              ),
-              SizedBox(
-                height: 136,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  primary: false,
-                  padding: EdgeInsets.only(
-                    left: 16 + MediaQuery.of(context).viewPadding.left,
-                    right: 16 + MediaQuery.of(context).viewPadding.right,
-                  ),
-                  itemBuilder: (context, index) {
-                    final suggestion = _suggestions[index];
-                    return _SuggestionCard(
-                      icon: suggestion.icon,
-                      label: suggestion.label,
-                      onTap: () => onSuggestionSelected(suggestion.label),
-                    );
-                  },
-                  separatorBuilder: (_, _) => const SizedBox(width: 12),
-                  itemCount: _suggestions.length,
-                ),
-              ),
-            ],
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(vertical: 32),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 16,
+        children: [
+          Padding(
+            padding: EdgeInsets.only(
+              left: 16 + MediaQuery.of(context).viewPadding.left,
+              right: 16 + MediaQuery.of(context).viewPadding.right,
+            ),
+            child: title,
           ),
-        );
-      },
+          SizedBox(
+            height: 136,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              primary: false,
+              padding: EdgeInsets.only(
+                left: 16 + MediaQuery.of(context).viewPadding.left,
+                right: 16 + MediaQuery.of(context).viewPadding.right,
+              ),
+              itemBuilder: (context, index) {
+                final suggestion = _suggestions[index];
+                return _SuggestionCard(
+                  icon: suggestion.icon,
+                  label: suggestion.label,
+                  onTap: () => onSuggestionSelected(suggestion.label),
+                );
+              },
+              separatorBuilder: (_, _) => const SizedBox(width: 12),
+              itemCount: _suggestions.length,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
