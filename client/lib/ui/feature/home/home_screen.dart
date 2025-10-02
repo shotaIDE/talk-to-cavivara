@@ -412,26 +412,33 @@ class _ChatSuggestions extends StatelessWidget {
             ? constraints.maxHeight
             : 0.0;
 
+        final title = Text(
+          '質問してみましょう',
+          style: Theme.of(context).textTheme.titleMedium,
+        );
+
         return SingleChildScrollView(
-          padding: EdgeInsets.only(
-            left: 16 + MediaQuery.of(context).viewPadding.left,
-            right: 16 + MediaQuery.of(context).viewPadding.right,
-            top: 32,
-            bottom: 32,
-          ),
+          padding: const EdgeInsets.symmetric(vertical: 32),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             spacing: 16,
             children: [
-              Text(
-                '質問してみましょう',
-                style: Theme.of(context).textTheme.titleMedium,
+              Padding(
+                padding: EdgeInsets.only(
+                  left: 16 + MediaQuery.of(context).viewPadding.left,
+                  right: 16 + MediaQuery.of(context).viewPadding.right,
+                ),
+                child: title,
               ),
               SizedBox(
                 height: 136,
                 child: ListView.separated(
-                  primary: false,
                   scrollDirection: Axis.horizontal,
+                  primary: false,
+                  padding: EdgeInsets.only(
+                    left: 16 + MediaQuery.of(context).viewPadding.left,
+                    right: 16 + MediaQuery.of(context).viewPadding.right,
+                  ),
                   itemBuilder: (context, index) {
                     final suggestion = _suggestions[index];
                     return _SuggestionCard(
