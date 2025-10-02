@@ -403,8 +403,6 @@ class _ChatSuggestions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return LayoutBuilder(
       builder: (context, constraints) {
         final minHeight = constraints.maxHeight.isFinite
@@ -422,15 +420,15 @@ class _ChatSuggestions extends StatelessWidget {
             constraints: BoxConstraints(minHeight: minHeight),
             child: Column(
               mainAxisAlignment: minHeight > 0
-                  ? MainAxisAlignment.center
+                  ? MainAxisAlignment.end
                   : MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 16,
               children: [
                 Text(
                   '質問してみましょう',
-                  style: theme.textTheme.titleMedium,
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
-                const SizedBox(height: 16),
                 SizedBox(
                   height: 136,
                   child: ListView.separated(
@@ -470,9 +468,6 @@ class _SuggestionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
     return SizedBox(
       width: 240,
       child: InkWell(
@@ -481,10 +476,14 @@ class _SuggestionCard extends StatelessWidget {
         child: Ink(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
-            borderRadius: BorderRadius.circular(20),
+            color: Theme.of(
+              context,
+            ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
+            borderRadius: BorderRadius.circular(2),
             border: Border.all(
-              color: colorScheme.outline.withValues(alpha: 0.4),
+              color: Theme.of(
+                context,
+              ).colorScheme.outline.withValues(alpha: 0.4),
             ),
           ),
           child: Column(
@@ -492,13 +491,13 @@ class _SuggestionCard extends StatelessWidget {
             children: [
               Icon(
                 icon,
-                color: colorScheme.primary,
+                color: Theme.of(context).colorScheme.primary,
               ),
               const Spacer(),
               Text(
                 label,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurface,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             ],
