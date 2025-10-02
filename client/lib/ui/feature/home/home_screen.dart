@@ -320,8 +320,11 @@ class _ChatMessageListState extends ConsumerState<_ChatMessageList> {
     _previousHasStreamingMessages = hasStreamingMessages;
 
     if (messages.isEmpty) {
-      return _ChatSuggestions(
-        onSuggestionSelected: _sendSuggestion,
+      return Align(
+        alignment: Alignment.bottomCenter,
+        child: _ChatSuggestions(
+          onSuggestionSelected: _sendSuggestion,
+        ),
       );
     }
 
@@ -416,38 +419,32 @@ class _ChatSuggestions extends StatelessWidget {
             top: 32,
             bottom: 32,
           ),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(minHeight: minHeight),
-            child: Column(
-              mainAxisAlignment: minHeight > 0
-                  ? MainAxisAlignment.end
-                  : MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 16,
-              children: [
-                Text(
-                  '質問してみましょう',
-                  style: Theme.of(context).textTheme.titleMedium,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 16,
+            children: [
+              Text(
+                '質問してみましょう',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              SizedBox(
+                height: 136,
+                child: ListView.separated(
+                  primary: false,
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (context, index) {
+                    final suggestion = _suggestions[index];
+                    return _SuggestionCard(
+                      icon: suggestion.icon,
+                      label: suggestion.label,
+                      onTap: () => onSuggestionSelected(suggestion.label),
+                    );
+                  },
+                  separatorBuilder: (_, _) => const SizedBox(width: 12),
+                  itemCount: _suggestions.length,
                 ),
-                SizedBox(
-                  height: 136,
-                  child: ListView.separated(
-                    primary: false,
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (context, index) {
-                      final suggestion = _suggestions[index];
-                      return _SuggestionCard(
-                        icon: suggestion.icon,
-                        label: suggestion.label,
-                        onTap: () => onSuggestionSelected(suggestion.label),
-                      );
-                    },
-                    separatorBuilder: (_, _) => const SizedBox(width: 12),
-                    itemCount: _suggestions.length,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         );
       },
@@ -468,39 +465,35 @@ class _SuggestionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final indicatorIcon = Icon(
+      icon,
+      color: Theme.of(context).colorScheme.primary,
+    );
+    final bodyText = Text(
+      label,
+      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+        color: Theme.of(context).colorScheme.onSurface,
+      ),
+    );
+
     return SizedBox(
       width: 240,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
-        child: Ink(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Theme.of(
-              context,
-            ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
-            borderRadius: BorderRadius.circular(2),
-            border: Border.all(
-              color: Theme.of(
-                context,
-              ).colorScheme.outline.withValues(alpha: 0.4),
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(2),
+        ),
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 16,
+              children: [
+                indicatorIcon,
+                bodyText,
+              ],
             ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(
-                icon,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              const Spacer(),
-              Text(
-                label,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-              ),
-            ],
           ),
         ),
       ),
