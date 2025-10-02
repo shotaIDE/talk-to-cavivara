@@ -525,9 +525,6 @@ class _UserChatBubble extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primaryContainer,
         borderRadius: BorderRadius.circular(2),
-        border: Border(
-          bottom: BorderSide(color: Theme.of(context).colorScheme.primary),
-        ),
       ),
       child: bodyText,
     );
@@ -617,9 +614,6 @@ class _AiChatBubble extends ConsumerWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(2),
-        border: Border(
-          bottom: BorderSide(color: Theme.of(context).colorScheme.primary),
-        ),
       ),
       child: bodyText,
     );
@@ -679,9 +673,6 @@ class _AppChatBubble extends ConsumerWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceContainer.withAlpha(100),
         borderRadius: BorderRadius.circular(2),
-        border: Border(
-          bottom: BorderSide(color: Theme.of(context).colorScheme.primary),
-        ),
       ),
       child: bodyText,
     );
