@@ -320,14 +320,8 @@ class _ChatMessageListState extends ConsumerState<_ChatMessageList> {
     _previousHasStreamingMessages = hasStreamingMessages;
 
     if (messages.isEmpty) {
-      return const Center(
-        child: Padding(
-          padding: EdgeInsets.all(16),
-          child: Text(
-            'AIとチャットを始めましょう！\n下のテキストフィールドにメッセージを入力してください。',
-            textAlign: TextAlign.center,
-          ),
-        ),
+      return _ChatSuggestions(
+        onSuggestionSelected: _sendSuggestion,
       );
     }
 
@@ -351,6 +345,13 @@ class _ChatMessageListState extends ConsumerState<_ChatMessageList> {
         );
       },
     );
+}
+
+  void _sendSuggestion(String message) {
+    ref
+        .read(chatMessagesProvider(widget.cavivaraId).notifier)
+        .sendMessage(message);
+    widget.onMessageSent();
   }
 }
 
@@ -375,6 +376,134 @@ class _ChatBubble extends ConsumerWidget {
         message: message,
       ),
     };
+  }
+}
+
+class _ChatSuggestions extends StatelessWidget {
+  const _ChatSuggestions({
+    required this.onSuggestionSelected,
+  });
+
+  final ValueChanged<String> onSuggestionSelected;
+
+  static const _suggestions = [
+    (
+      icon: Icons.queue_music,
+      label: 'マンドリンの演奏会の選曲会議で何を出すか迷っています',
+    ),
+    (
+      icon: Icons.group,
+      label: 'プレクトラム結社の最新の演奏会について教えて',
+    ),
+    (
+      icon: Icons.restaurant_menu,
+      label: '今晩の夜ご飯のレシピを考えて',
+    ),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final minHeight =
+            constraints.maxHeight.isFinite ? constraints.maxHeight : 0;
+
+        return SingleChildScrollView(
+          padding: EdgeInsets.only(
+            left: 16 + MediaQuery.of(context).viewPadding.left,
+            right: 16 + MediaQuery.of(context).viewPadding.right,
+            top: 32,
+            bottom: 32,
+          ),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: minHeight),
+            child: Column(
+              mainAxisAlignment:
+                  minHeight > 0 ? MainAxisAlignment.center : MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '質問してみましょう',
+                  style: theme.textTheme.titleMedium,
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  height: 136,
+                  child: ListView.separated(
+                    primary: false,
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (context, index) {
+                      final suggestion = _suggestions[index];
+                      return _SuggestionCard(
+                        icon: suggestion.icon,
+                        label: suggestion.label,
+                        onTap: () => onSuggestionSelected(suggestion.label),
+                      );
+                    },
+                    separatorBuilder: (_, __) => const SizedBox(width: 12),
+                    itemCount: _suggestions.length,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _SuggestionCard extends StatelessWidget {
+  const _SuggestionCard({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return SizedBox(
+      width: 240,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Ink(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: colorScheme.surfaceVariant.withOpacity(0.6),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: colorScheme.outline.withOpacity(0.4),
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(
+                icon,
+                color: colorScheme.primary,
+              ),
+              const Spacer(),
+              Text(
+                label,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurface,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 
