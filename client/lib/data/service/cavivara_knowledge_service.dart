@@ -13,7 +13,8 @@ class CavivaraKnowledgeBase {
 
   static final Logger _logger = Logger('CavivaraKnowledgeBase');
 
-  static const String _functionName = 'getPlectrumSocietyKnowledge';
+  static const String _knowledgeFunctionName = 'getPlectrumSocietyKnowledge';
+  static const String _currentDateTimeFunctionName = 'getCurrentDateTime';
 
   static const Map<String, _KnowledgeEntry> _entries = {
     'salary_policy': _KnowledgeEntry(
@@ -59,7 +60,10 @@ class CavivaraKnowledgeBase {
   };
 
   static final List<Tool> _knowledgeTools = List.unmodifiable([
-    Tool.functionDeclarations([_buildFunctionDeclaration()]),
+    Tool.functionDeclarations([
+      _buildKnowledgeFunctionDeclaration(),
+      _buildCurrentDateTimeFunctionDeclaration(),
+    ]),
   ]);
 
   List<Tool> get tools => _knowledgeTools;
@@ -68,16 +72,26 @@ class CavivaraKnowledgeBase {
     required String functionName,
     Map<String, dynamic> arguments = const <String, dynamic>{},
   }) async {
-    if (functionName != _functionName) {
-      _logger.warning('Unknown function call requested: $functionName');
-      return {
-        'found': false,
-        'message': '未対応の関数が指定されました。',
-        'requestedFunction': functionName,
-        'availableFunctions': [_functionName],
-      };
+    switch (functionName) {
+      case _knowledgeFunctionName:
+        return _getKnowledge(arguments);
+      case _currentDateTimeFunctionName:
+        return _getCurrentDateTime();
+      default:
+        _logger.warning('Unknown function call requested: $functionName');
+        return {
+          'found': false,
+          'message': '未対応の関数が指定されました。',
+          'requestedFunction': functionName,
+          'availableFunctions': const [
+            _knowledgeFunctionName,
+            _currentDateTimeFunctionName,
+          ],
+        };
     }
+  }
 
+  static Map<String, dynamic> _getKnowledge(Map<String, dynamic> arguments) {
     final resolvedTopic = _resolveTopic(
       topic: arguments['topic'],
       query: arguments['query'],
@@ -108,9 +122,17 @@ class CavivaraKnowledgeBase {
     };
   }
 
-  static FunctionDeclaration _buildFunctionDeclaration() {
+  static Map<String, dynamic> _getCurrentDateTime() {
+    final current = DateTime.now();
+    return {
+      'dateTime': current.toString(),
+      'epochMilliseconds': current.millisecondsSinceEpoch,
+    };
+  }
+
+  static FunctionDeclaration _buildKnowledgeFunctionDeclaration() {
     return FunctionDeclaration(
-      _functionName,
+      _knowledgeFunctionName,
       'プレクトラム結社に関する社内公式知識を取得します。',
       parameters: {
         'topic': Schema.string(
@@ -120,6 +142,14 @@ class CavivaraKnowledgeBase {
           description: '自然言語で記述された検索クエリ。例: "給料は？"',
         ),
       },
+    );
+  }
+
+  static FunctionDeclaration _buildCurrentDateTimeFunctionDeclaration() {
+    return FunctionDeclaration(
+      _currentDateTimeFunctionName,
+      '現在の日時情報を取得します。',
+      parameters: {},
     );
   }
 

@@ -58,5 +58,51 @@ void main() {
       expect(result['found'], isFalse);
       expect(result['availableTopics'], contains('salary_policy'));
     });
+
+    test(
+      'returns available functions when unknown function is requested',
+      () async {
+        final result = await knowledgeBase.execute(
+          functionName: 'unknownFunction',
+        );
+
+        expect(result['found'], isFalse);
+        expect(result['requestedFunction'], 'unknownFunction');
+        final availableFunctions = List<String>.from(
+          result['availableFunctions'] as List<dynamic>,
+        );
+        expect(
+          availableFunctions,
+          containsAll(<String>[
+            'getPlectrumSocietyKnowledge',
+            'getCurrentDateTime',
+          ]),
+        );
+      },
+    );
+
+    test('returns current date time information', () async {
+      final start = DateTime.now().toUtc();
+
+      final result = await knowledgeBase.execute(
+        functionName: 'getCurrentDateTime',
+      );
+
+      final end = DateTime.now().toUtc();
+
+      final dateTime = result['dateTime'] as String;
+      final parsed = DateTime.parse(dateTime);
+      expect(
+        parsed.isAfter(start.subtract(const Duration(seconds: 5))),
+        isTrue,
+      );
+      expect(
+        parsed.isBefore(end.add(const Duration(seconds: 5))),
+        isTrue,
+      );
+
+      final epochMilliseconds = result['epochMilliseconds'] as int;
+      expect(parsed.millisecondsSinceEpoch, epochMilliseconds);
+    });
   });
 }
