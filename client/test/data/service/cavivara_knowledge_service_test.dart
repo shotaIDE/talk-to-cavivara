@@ -59,20 +59,27 @@ void main() {
       expect(result['availableTopics'], contains('salary_policy'));
     });
 
-    test('returns available functions when unknown function is requested', () async {
-      final result = await knowledgeBase.execute(
-        functionName: 'unknownFunction',
-      );
+    test(
+      'returns available functions when unknown function is requested',
+      () async {
+        final result = await knowledgeBase.execute(
+          functionName: 'unknownFunction',
+        );
 
-      expect(result['found'], isFalse);
-      expect(result['requestedFunction'], 'unknownFunction');
-      final availableFunctions =
-          List<String>.from(result['availableFunctions'] as List<dynamic>);
-      expect(
-        availableFunctions,
-        containsAll(<String>['getPlectrumSocietyKnowledge', 'getCurrentDateTime']),
-      );
-    });
+        expect(result['found'], isFalse);
+        expect(result['requestedFunction'], 'unknownFunction');
+        final availableFunctions = List<String>.from(
+          result['availableFunctions'] as List<dynamic>,
+        );
+        expect(
+          availableFunctions,
+          containsAll(<String>[
+            'getPlectrumSocietyKnowledge',
+            'getCurrentDateTime',
+          ]),
+        );
+      },
+    );
 
     test('returns current date time information', () async {
       final start = DateTime.now().toUtc();

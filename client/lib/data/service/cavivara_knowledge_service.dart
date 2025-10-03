@@ -146,9 +146,10 @@ class CavivaraKnowledgeBase {
   }
 
   static FunctionDeclaration _buildCurrentDateTimeFunctionDeclaration() {
-    return const FunctionDeclaration(
+    return FunctionDeclaration(
       _currentDateTimeFunctionName,
       '現在のUTC日時情報を取得します。',
+      parameters: {},
     );
   }
 
