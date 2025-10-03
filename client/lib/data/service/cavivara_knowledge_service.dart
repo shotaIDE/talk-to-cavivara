@@ -123,10 +123,10 @@ class CavivaraKnowledgeBase {
   }
 
   static Map<String, dynamic> _getCurrentDateTime() {
-    final nowUtc = DateTime.now().toUtc();
+    final current = DateTime.now();
     return {
-      'utcDateTime': nowUtc.toIso8601String(),
-      'epochMilliseconds': nowUtc.millisecondsSinceEpoch,
+      'dateTime': current.toString(),
+      'epochMilliseconds': current.millisecondsSinceEpoch,
     };
   }
 
@@ -148,7 +148,7 @@ class CavivaraKnowledgeBase {
   static FunctionDeclaration _buildCurrentDateTimeFunctionDeclaration() {
     return FunctionDeclaration(
       _currentDateTimeFunctionName,
-      '現在のUTC日時情報を取得します。',
+      '現在の日時情報を取得します。',
       parameters: {},
     );
   }
