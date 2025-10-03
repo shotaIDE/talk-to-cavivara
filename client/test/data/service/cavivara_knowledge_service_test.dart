@@ -90,20 +90,19 @@ void main() {
 
       final end = DateTime.now().toUtc();
 
-      final utcDateTime = result['utcDateTime'] as String;
-      final parsedUtc = DateTime.parse(utcDateTime);
-      expect(parsedUtc.isUtc, isTrue);
+      final dateTime = result['dateTime'] as String;
+      final parsed = DateTime.parse(dateTime);
       expect(
-        parsedUtc.isAfter(start.subtract(const Duration(seconds: 5))),
+        parsed.isAfter(start.subtract(const Duration(seconds: 5))),
         isTrue,
       );
       expect(
-        parsedUtc.isBefore(end.add(const Duration(seconds: 5))),
+        parsed.isBefore(end.add(const Duration(seconds: 5))),
         isTrue,
       );
 
       final epochMilliseconds = result['epochMilliseconds'] as int;
-      expect(parsedUtc.millisecondsSinceEpoch, epochMilliseconds);
+      expect(parsed.millisecondsSinceEpoch, epochMilliseconds);
     });
   });
 }
