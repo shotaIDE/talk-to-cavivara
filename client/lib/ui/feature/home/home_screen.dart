@@ -780,17 +780,27 @@ class _BubblePointerPainter extends CustomPainter {
       ..color = color
       ..style = PaintingStyle.fill;
 
+    // The triangle pointer is drawn using three points:
+    // For left-pointing:
+    //   - Top point: (size.width, 0)
+    //   - Tip (middle left): (0, size.height / 2)
+    //   - Bottom point: (size.width, size.height)
+    // For right-pointing:
+    //   - Top point: (0, 0)
+    //   - Tip (middle right): (size.width, size.height / 2)
+    //   - Bottom point: (0, size.height)
+    // The conditional expressions below select the correct coordinates for each direction.
     final path = Path()
       ..moveTo(
-        direction == _BubblePointerDirection.left ? size.width : 0,
+        direction == _BubblePointerDirection.left ? size.width : 0, // Top point (left or right)
         0,
       )
       ..lineTo(
-        direction == _BubblePointerDirection.left ? 0 : size.width,
+        direction == _BubblePointerDirection.left ? 0 : size.width, // Tip of triangle (left or right)
         size.height / 2,
       )
       ..lineTo(
-        direction == _BubblePointerDirection.left ? size.width : 0,
+        direction == _BubblePointerDirection.left ? size.width : 0, // Bottom point (left or right)
         size.height,
       )
       ..close();
