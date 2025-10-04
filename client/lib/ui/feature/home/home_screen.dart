@@ -517,23 +517,40 @@ class _UserChatBubble extends StatelessWidget {
     );
     final timeText = _TimestampText(timestamp: message.timestamp);
 
+    final bubbleColor = Theme.of(context).colorScheme.primaryContainer;
+
     final bubble = Container(
       constraints: BoxConstraints(
         maxWidth: MediaQuery.of(context).size.width * 0.8,
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primaryContainer,
+        color: bubbleColor,
         borderRadius: BorderRadius.circular(2),
       ),
       child: bodyText,
+    );
+
+    final bubbleWithPointer = Stack(
+      clipBehavior: Clip.none,
+      children: [
+        bubble,
+        Positioned(
+          right: -4,
+          bottom: 12,
+          child: _BubblePointer(
+            color: bubbleColor,
+            direction: _BubblePointerDirection.right,
+          ),
+        ),
+      ],
     );
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.end,
       spacing: 4,
-      children: [timeText, bubble],
+      children: [timeText, bubbleWithPointer],
     );
   }
 }
@@ -606,16 +623,34 @@ class _AiChatBubble extends ConsumerWidget {
 
     final timeText = _TimestampText(timestamp: message.timestamp);
 
+    final bubbleColor =
+        Theme.of(context).colorScheme.surfaceContainerHighest;
+
     final bubble = Container(
       constraints: BoxConstraints(
         maxWidth: MediaQuery.of(context).size.width * 0.8,
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        color: bubbleColor,
         borderRadius: BorderRadius.circular(2),
       ),
       child: bodyText,
+    );
+
+    final bubbleWithPointer = Stack(
+      clipBehavior: Clip.none,
+      children: [
+        bubble,
+        Positioned(
+          left: -4,
+          bottom: 12,
+          child: _BubblePointer(
+            color: bubbleColor,
+            direction: _BubblePointerDirection.left,
+          ),
+        ),
+      ],
     );
 
     final avatar = CavivaraAvatar(
@@ -632,7 +667,7 @@ class _AiChatBubble extends ConsumerWidget {
         children: [
           avatar,
           const SizedBox(width: 8),
-          Flexible(child: bubble),
+          Flexible(child: bubbleWithPointer),
           if (!message.isStreaming || message.content.isNotEmpty) ...[
             const SizedBox(width: 4),
             Align(
@@ -705,5 +740,67 @@ class _TimestampText extends StatelessWidget {
         color: Theme.of(context).colorScheme.onSurface.withAlpha(100),
       ),
     );
+  }
+}
+
+enum _BubblePointerDirection { left, right }
+
+class _BubblePointer extends StatelessWidget {
+  const _BubblePointer({
+    required this.color,
+    required this.direction,
+  });
+
+  final Color color;
+  final _BubblePointerDirection direction;
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      painter: _BubblePointerPainter(
+        color: color,
+        direction: direction,
+      ),
+      size: const Size(8, 10),
+    );
+  }
+}
+
+class _BubblePointerPainter extends CustomPainter {
+  _BubblePointerPainter({
+    required this.color,
+    required this.direction,
+  });
+
+  final Color color;
+  final _BubblePointerDirection direction;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+
+    final path = Path()
+      ..moveTo(
+        direction == _BubblePointerDirection.left ? size.width : 0,
+        0,
+      )
+      ..lineTo(
+        direction == _BubblePointerDirection.left ? 0 : size.width,
+        size.height / 2,
+      )
+      ..lineTo(
+        direction == _BubblePointerDirection.left ? size.width : 0,
+        size.height,
+      )
+      ..close();
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _BubblePointerPainter oldDelegate) {
+    return oldDelegate.color != color || oldDelegate.direction != direction;
   }
 }
