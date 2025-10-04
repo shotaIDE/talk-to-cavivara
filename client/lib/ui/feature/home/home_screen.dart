@@ -536,8 +536,8 @@ class _UserChatBubble extends StatelessWidget {
       children: [
         bubble,
         Positioned(
-          right: -4,
-          bottom: 12,
+          right: -9,
+          top: 12,
           child: _BubblePointer(
             color: bubbleColor,
             direction: _BubblePointerDirection.right,
@@ -623,8 +623,7 @@ class _AiChatBubble extends ConsumerWidget {
 
     final timeText = _TimestampText(timestamp: message.timestamp);
 
-    final bubbleColor =
-        Theme.of(context).colorScheme.surfaceContainerHighest;
+    final bubbleColor = Theme.of(context).colorScheme.surfaceContainerHighest;
 
     final bubble = Container(
       constraints: BoxConstraints(
@@ -643,8 +642,8 @@ class _AiChatBubble extends ConsumerWidget {
       children: [
         bubble,
         Positioned(
-          left: -4,
-          bottom: 12,
+          left: -9,
+          top: 12,
           child: _BubblePointer(
             color: bubbleColor,
             direction: _BubblePointerDirection.left,
@@ -761,7 +760,7 @@ class _BubblePointer extends StatelessWidget {
         color: color,
         direction: direction,
       ),
-      size: const Size(8, 10),
+      size: const Size(18, 15),
     );
   }
 }
