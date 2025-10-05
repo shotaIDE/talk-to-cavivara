@@ -1,4 +1,3 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/data/model/app_session.dart';
 import 'package:house_worker/data/model/preference_key.dart';
 import 'package:house_worker/data/model/root_app_not_initialized.dart';
@@ -74,7 +73,7 @@ class CurrentAppSession extends _$CurrentAppSession {
   }
 
   Future<void> upgradeToPro() async {
-    final currentAppSession = state.valueOrNull;
+    final currentAppSession = state.value;
 
     if (currentAppSession case AppSessionSignedIn()) {
       final newState = currentAppSession.copyWith(isPro: true);

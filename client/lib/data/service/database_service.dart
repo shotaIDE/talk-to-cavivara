@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/data/model/app_session.dart';
 import 'package:house_worker/data/model/count.dart';
 import 'package:house_worker/data/model/no_counter_id_error.dart';
