@@ -1,4 +1,3 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/data/model/preference_key.dart';
 import 'package:house_worker/data/service/preference_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
