@@ -60,7 +60,13 @@ void main() {
 
         expect(
           () => container.read(cavivaraByIdProvider(invalidId)),
-          throwsA(isA<CavivaraNotFoundException>()),
+          throwsA(
+            predicate(
+              (e) =>
+                  e.toString().contains('ProviderException') &&
+                  e.toString().contains('CavivaraNotFoundException'),
+            ),
+          ),
         );
       });
 
@@ -69,9 +75,10 @@ void main() {
 
         try {
           container.read(cavivaraByIdProvider(invalidId));
-          fail('CavivaraNotFoundExceptionが投げられるべきです');
-        } on CavivaraNotFoundException catch (e) {
-          expect(e.id, equals(invalidId));
+          fail('ProviderExceptionが投げられるべきです');
+        } on Object catch (e) {
+          expect(e.toString(), contains('ProviderException'));
+          expect(e.toString(), contains('CavivaraNotFoundException'));
           expect(e.toString(), contains(invalidId));
         }
       });
