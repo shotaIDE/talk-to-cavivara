@@ -536,7 +536,7 @@ class _UserChatBubble extends StatelessWidget {
       children: [
         bubble,
         Positioned(
-          right: -12,
+          right: -10,
           top: 12,
           child: _BubblePointer(
             color: bubbleColor,
@@ -642,7 +642,7 @@ class _AiChatBubble extends ConsumerWidget {
       children: [
         bubble,
         Positioned(
-          left: -12,
+          left: -10,
           top: 12,
           child: _BubblePointer(
             color: bubbleColor,
@@ -760,7 +760,7 @@ class _BubblePointer extends StatelessWidget {
         color: color,
         direction: direction,
       ),
-      size: const Size(12, 12),
+      size: const Size(10, 8),
     );
   }
 }
@@ -784,14 +784,14 @@ class _BubblePointerPainter extends CustomPainter {
     switch (direction) {
       case _BubblePointerDirection.left:
         path = Path()
-          ..moveTo(0, 0)
-          ..lineTo(size.width, size.height / 4)
+          ..moveTo(size.width, 0)
+          ..lineTo(0, size.height / 2)
           ..lineTo(size.width, size.height)
           ..close();
       case _BubblePointerDirection.right:
         path = Path()
-          ..moveTo(size.width, 0)
-          ..lineTo(0, size.height / 4)
+          ..moveTo(0, 0)
+          ..lineTo(size.width, size.height / 2)
           ..lineTo(0, size.height)
           ..close();
     }
