@@ -537,7 +537,7 @@ class _UserChatBubble extends StatelessWidget {
         bubble,
         Positioned(
           right: -12,
-          top: 18,
+          top: 12,
           child: _BubblePointer(
             color: bubbleColor,
             direction: _BubblePointerDirection.right,
@@ -643,7 +643,7 @@ class _AiChatBubble extends ConsumerWidget {
         bubble,
         Positioned(
           left: -12,
-          top: 18,
+          top: 12,
           child: _BubblePointer(
             color: bubbleColor,
             direction: _BubblePointerDirection.left,
