@@ -12,6 +12,7 @@ import 'package:house_worker/ui/feature/home/home_presenter.dart';
 import 'package:house_worker/ui/feature/job_market/job_market_screen.dart';
 import 'package:house_worker/ui/feature/resume/resume_screen.dart';
 import 'package:house_worker/ui/feature/settings/settings_screen.dart';
+import 'package:house_worker/ui/feature/stats/user_statistics_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key, required this.cavivaraId});
@@ -125,6 +126,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       drawer: AppDrawer(
         isTalkSelected: true,
         isJobMarketSelected: false,
+        isAchievementSelected: false,
         onSelectTalk: () {
           Navigator.of(context).pushAndRemoveUntil(
             HomeScreen.route(widget.cavivaraId),
@@ -136,6 +138,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             JobMarketScreen.route(),
             (route) => false,
           );
+        },
+        onSelectAchievement: () {
+          Navigator.of(context).push(UserStatisticsScreen.route());
         },
         onSelectSettings: () {
           Navigator.of(context).push(SettingsScreen.route());
