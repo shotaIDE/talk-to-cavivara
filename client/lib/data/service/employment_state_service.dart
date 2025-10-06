@@ -64,8 +64,9 @@ class EmploymentState extends _$EmploymentState {
   }
 
   Future<void> _restoreState() async {
-    final storedIds = await _preferenceService
-        .getStringList(PreferenceKey.employedCavivaraIds);
+    final storedIds = await _preferenceService.getStringList(
+      PreferenceKey.employedCavivaraIds,
+    );
 
     if (storedIds == null) {
       state = _defaultEmployedState;

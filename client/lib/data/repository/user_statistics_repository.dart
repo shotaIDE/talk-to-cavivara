@@ -11,12 +11,17 @@ class UserStatisticsRepository extends _$UserStatisticsRepository {
   Future<UserStatistics> build() async {
     final preferenceService = ref.read(preferenceServiceProvider);
     final sentCharacters =
-        await preferenceService.getInt(PreferenceKey.totalSentChatCharacters) ?? 0;
-    final receivedCharacters = await preferenceService
-            .getInt(PreferenceKey.totalReceivedChatCharacters) ??
+        await preferenceService.getInt(PreferenceKey.totalSentChatCharacters) ??
         0;
-    final resumeViewingMilliseconds = await preferenceService
-            .getInt(PreferenceKey.resumeViewingMilliseconds) ??
+    final receivedCharacters =
+        await preferenceService.getInt(
+          PreferenceKey.totalReceivedChatCharacters,
+        ) ??
+        0;
+    final resumeViewingMilliseconds =
+        await preferenceService.getInt(
+          PreferenceKey.resumeViewingMilliseconds,
+        ) ??
         0;
 
     return UserStatistics(
@@ -32,8 +37,9 @@ class UserStatisticsRepository extends _$UserStatisticsRepository {
     }
 
     final current = await future;
-    final updated =
-        current.copyWith(sentCharacters: current.sentCharacters + characters);
+    final updated = current.copyWith(
+      sentCharacters: current.sentCharacters + characters,
+    );
     await _save(updated);
     state = AsyncValue.data(updated);
   }

@@ -117,13 +117,13 @@ class _StatisticsContent extends StatelessWidget {
     final buffer = <String>[];
 
     if (hours > 0) {
-      buffer.add('${hours}時間');
+      buffer.add('$hours時間');
     }
     if (minutes > 0) {
-      buffer.add('${minutes}分');
+      buffer.add('$minutes分');
     }
     if (seconds > 0 || buffer.isEmpty) {
-      buffer.add('${seconds}秒');
+      buffer.add('$seconds秒');
     }
 
     return buffer.join();

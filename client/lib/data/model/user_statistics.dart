@@ -6,9 +6,9 @@ class UserStatistics {
   });
 
   const UserStatistics.initial()
-      : sentCharacters = 0,
-        receivedCharacters = 0,
-        resumeViewingDuration = Duration.zero;
+    : sentCharacters = 0,
+      receivedCharacters = 0,
+      resumeViewingDuration = Duration.zero;
 
   final int sentCharacters;
   final int receivedCharacters;
