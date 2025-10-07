@@ -1,29 +1,18 @@
-class UserStatistics {
-  const UserStatistics({
-    required this.sentCharacters,
-    required this.receivedCharacters,
-    required this.resumeViewingDuration,
-  });
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  const UserStatistics.initial()
-    : sentCharacters = 0,
-      receivedCharacters = 0,
-      resumeViewingDuration = Duration.zero;
+part 'user_statistics.freezed.dart';
 
-  final int sentCharacters;
-  final int receivedCharacters;
-  final Duration resumeViewingDuration;
+@freezed
+sealed class UserStatistics with _$UserStatistics {
+  const factory UserStatistics({
+    required int sentCharacters,
+    required int receivedCharacters,
+    required Duration resumeViewingDuration,
+  }) = _UserStatistics;
 
-  UserStatistics copyWith({
-    int? sentCharacters,
-    int? receivedCharacters,
-    Duration? resumeViewingDuration,
-  }) {
-    return UserStatistics(
-      sentCharacters: sentCharacters ?? this.sentCharacters,
-      receivedCharacters: receivedCharacters ?? this.receivedCharacters,
-      resumeViewingDuration:
-          resumeViewingDuration ?? this.resumeViewingDuration,
-    );
-  }
+  factory UserStatistics.initial() => const UserStatistics(
+    sentCharacters: 0,
+    receivedCharacters: 0,
+    resumeViewingDuration: Duration.zero,
+  );
 }
