@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:house_worker/data/repository/user_statistics_repository.dart';
+import 'package:house_worker/data/repository/resume_viewing_duration_repository.dart';
 import 'package:house_worker/data/service/cavivara_directory_service.dart';
 import 'package:house_worker/data/service/employment_state_service.dart';
 import 'package:house_worker/ui/component/cavivara_avatar.dart';
@@ -43,9 +43,7 @@ class _ResumeScreenState extends ConsumerState<ResumeScreen> {
     final elapsed = _viewStopwatch.elapsed;
     if (elapsed > Duration.zero) {
       unawaited(
-        ref
-            .read(userStatisticsRepositoryProvider.notifier)
-            .addResumeViewingDuration(elapsed),
+        ref.read(resumeViewingDurationRepositoryProvider.notifier).add(elapsed),
       );
     }
     super.dispose();

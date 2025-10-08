@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:house_worker/data/model/user_statistics.dart';
-import 'package:house_worker/data/repository/user_statistics_repository.dart';
+import 'package:house_worker/data/repository/received_chat_string_count_repository.dart';
+import 'package:house_worker/data/repository/resume_viewing_duration_repository.dart';
+import 'package:house_worker/data/repository/sent_chat_string_count_repository.dart';
 import 'package:house_worker/data/service/employment_state_service.dart';
 import 'package:house_worker/ui/component/app_drawer.dart';
 import 'package:house_worker/ui/feature/home/home_screen.dart';
@@ -25,7 +26,9 @@ class UserStatisticsScreen extends ConsumerWidget {
     final defaultCavivaraId = employmentState.isNotEmpty
         ? employmentState.first
         : HomeScreen.defaultCavivaraId;
-    final statistics = ref.watch(userStatisticsRepositoryProvider);
+    final sentCount = ref.watch(sentChatStringCountRepositoryProvider);
+    final receivedCount = ref.watch(receivedChatStringCountRepositoryProvider);
+    final resumeDuration = ref.watch(resumeViewingDurationRepositoryProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -61,45 +64,62 @@ class UserStatisticsScreen extends ConsumerWidget {
           top: 24,
           bottom: 24 + MediaQuery.of(context).viewPadding.bottom,
         ),
-        child: statistics.when(
-          data: (data) => _StatisticsContent(statistics: data),
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, _) => Center(
-            child: Text(
-              'データの取得に失敗しました',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ),
+        child: _buildStatisticsContent(
+          context,
+          sentCount,
+          receivedCount,
+          resumeDuration,
         ),
       ),
     );
   }
-}
 
-class _StatisticsContent extends StatelessWidget {
-  const _StatisticsContent({required this.statistics});
+  Widget _buildStatisticsContent(
+    BuildContext context,
+    AsyncValue<int> sentCount,
+    AsyncValue<int> receivedCount,
+    AsyncValue<Duration> resumeDuration,
+  ) {
+    // すべてのデータが読み込まれているかチェック
+    if (sentCount.isLoading ||
+        receivedCount.isLoading ||
+        resumeDuration.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
-  final UserStatistics statistics;
+    // エラーがあるかチェック
+    if (sentCount.hasError ||
+        receivedCount.hasError ||
+        resumeDuration.hasError) {
+      return Center(
+        child: Text(
+          'データの取得に失敗しました',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+      );
+    }
 
-  @override
-  Widget build(BuildContext context) {
+    final sent = sentCount.value ?? 0;
+    final received = receivedCount.value ?? 0;
+    final duration = resumeDuration.value ?? Duration.zero;
+
     return ListView(
       children: [
         _StatisticsTile(
           title: 'チャットを送信した文字数',
-          value: '${statistics.sentStringCount}文字',
+          value: '$sent文字',
           icon: Icons.outgoing_mail,
         ),
         const SizedBox(height: 16),
         _StatisticsTile(
           title: 'カヴィヴァラさんたちから受信したチャットの文字数',
-          value: '${statistics.receivedStringCount}文字',
+          value: '$received文字',
           icon: Icons.inbox,
         ),
         const SizedBox(height: 16),
         _StatisticsTile(
           title: 'カヴィヴァラさんの履歴書を眺めていた時間',
-          value: _formatDuration(statistics.resumeViewingDuration),
+          value: _formatDuration(duration),
           icon: Icons.schedule,
         ),
       ],
