@@ -23,19 +23,15 @@ class ReceivedChatStringCountRepository
 
     final current = await future;
     final updated = current + stringCount;
-    await _save(updated);
+    final preferenceService = ref.read(preferenceServiceProvider);
+    await preferenceService.setInt(
+      PreferenceKey.totalReceivedChatStringCount,
+      value: updated,
+    );
 
     if (!ref.mounted) {
       return;
     }
     state = AsyncValue.data(updated);
-  }
-
-  Future<void> _save(int count) async {
-    final preferenceService = ref.read(preferenceServiceProvider);
-    await preferenceService.setInt(
-      PreferenceKey.totalReceivedChatStringCount,
-      value: count,
-    );
   }
 }

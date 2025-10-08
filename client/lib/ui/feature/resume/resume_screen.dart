@@ -30,22 +30,36 @@ class ResumeScreen extends ConsumerStatefulWidget {
 
 class _ResumeScreenState extends ConsumerState<ResumeScreen> {
   late final Stopwatch _viewStopwatch;
+  Timer? _durationTimer;
 
   @override
   void initState() {
     super.initState();
     _viewStopwatch = Stopwatch()..start();
+    _startDurationTimer();
+  }
+
+  void _startDurationTimer() {
+    _durationTimer = Timer.periodic(const Duration(seconds: 10), (timer) {
+      if (_viewStopwatch.isRunning) {
+        final elapsed = _viewStopwatch.elapsed;
+        _viewStopwatch
+          ..reset()
+          ..start();
+
+        if (elapsed > Duration.zero) {
+          ref
+              .read(resumeViewingDurationRepositoryProvider.notifier)
+              .add(elapsed);
+        }
+      }
+    });
   }
 
   @override
   void dispose() {
+    _durationTimer?.cancel();
     _viewStopwatch.stop();
-    final elapsed = _viewStopwatch.elapsed;
-    if (elapsed > Duration.zero) {
-      unawaited(
-        ref.read(resumeViewingDurationRepositoryProvider.notifier).add(elapsed),
-      );
-    }
     super.dispose();
   }
 

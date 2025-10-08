@@ -25,19 +25,15 @@ class ResumeViewingDurationRepository
 
     final current = await future;
     final updated = current + duration;
-    await _save(updated);
-
-    if (!ref.mounted) {
-      return;
-    }
-    state = AsyncValue.data(updated);
-  }
-
-  Future<void> _save(Duration duration) async {
     final preferenceService = ref.read(preferenceServiceProvider);
     await preferenceService.setInt(
       PreferenceKey.resumeViewingMilliseconds,
       value: duration.inMilliseconds,
     );
+
+    if (!ref.mounted) {
+      return;
+    }
+    state = AsyncValue.data(updated);
   }
 }
