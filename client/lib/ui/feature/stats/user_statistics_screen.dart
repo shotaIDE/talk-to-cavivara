@@ -87,13 +87,13 @@ class _StatisticsContent extends StatelessWidget {
       children: [
         _StatisticsTile(
           title: 'チャットを送信した文字数',
-          value: '${statistics.sentCharacters}文字',
+          value: '${statistics.sentStringCount}文字',
           icon: Icons.outgoing_mail,
         ),
         const SizedBox(height: 16),
         _StatisticsTile(
           title: 'カヴィヴァラさんたちから受信したチャットの文字数',
-          value: '${statistics.receivedCharacters}文字',
+          value: '${statistics.receivedStringCount}文字',
           icon: Icons.inbox,
         ),
         const SizedBox(height: 16),

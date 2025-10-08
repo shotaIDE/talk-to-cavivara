@@ -3,7 +3,7 @@ enum PreferenceKey {
   employedCavivaraIds,
   lastTalkedCavivaraId,
   skipClearChatConfirmation,
-  totalSentChatCharacters,
-  totalReceivedChatCharacters,
+  totalSentChatStringCount,
+  totalReceivedChatStringCount,
   resumeViewingMilliseconds,
 }

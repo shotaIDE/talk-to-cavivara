@@ -10,12 +10,14 @@ class UserStatisticsRepository extends _$UserStatisticsRepository {
   @override
   Future<UserStatistics> build() async {
     final preferenceService = ref.read(preferenceServiceProvider);
-    final sentCharacters =
-        await preferenceService.getInt(PreferenceKey.totalSentChatCharacters) ??
-        0;
-    final receivedCharacters =
+    final sentStringCount =
         await preferenceService.getInt(
-          PreferenceKey.totalReceivedChatCharacters,
+          PreferenceKey.totalSentChatStringCount,
+        ) ??
+        0;
+    final receivedStringCount =
+        await preferenceService.getInt(
+          PreferenceKey.totalReceivedChatStringCount,
         ) ??
         0;
     final resumeViewingMilliseconds =
@@ -25,33 +27,33 @@ class UserStatisticsRepository extends _$UserStatisticsRepository {
         0;
 
     return UserStatistics(
-      sentCharacters: sentCharacters,
-      receivedCharacters: receivedCharacters,
+      sentStringCount: sentStringCount,
+      receivedStringCount: receivedStringCount,
       resumeViewingDuration: Duration(milliseconds: resumeViewingMilliseconds),
     );
   }
 
-  Future<void> addSentCharacters(int characters) async {
-    if (characters <= 0) {
+  Future<void> addSentCharacters(int stringCount) async {
+    if (stringCount <= 0) {
       return;
     }
 
     final current = await future;
     final updated = current.copyWith(
-      sentCharacters: current.sentCharacters + characters,
+      sentStringCount: current.sentStringCount + stringCount,
     );
     await _save(updated);
     state = AsyncValue.data(updated);
   }
 
-  Future<void> addReceivedCharacters(int characters) async {
-    if (characters <= 0) {
+  Future<void> addReceivedCharacters(int stringCount) async {
+    if (stringCount <= 0) {
       return;
     }
 
     final current = await future;
     final updated = current.copyWith(
-      receivedCharacters: current.receivedCharacters + characters,
+      receivedStringCount: current.receivedStringCount + stringCount,
     );
     await _save(updated);
     state = AsyncValue.data(updated);
@@ -73,12 +75,12 @@ class UserStatisticsRepository extends _$UserStatisticsRepository {
   Future<void> _save(UserStatistics statistics) async {
     final preferenceService = ref.read(preferenceServiceProvider);
     await preferenceService.setInt(
-      PreferenceKey.totalSentChatCharacters,
-      value: statistics.sentCharacters,
+      PreferenceKey.totalSentChatStringCount,
+      value: statistics.sentStringCount,
     );
     await preferenceService.setInt(
-      PreferenceKey.totalReceivedChatCharacters,
-      value: statistics.receivedCharacters,
+      PreferenceKey.totalReceivedChatStringCount,
+      value: statistics.receivedStringCount,
     );
     await preferenceService.setInt(
       PreferenceKey.resumeViewingMilliseconds,
