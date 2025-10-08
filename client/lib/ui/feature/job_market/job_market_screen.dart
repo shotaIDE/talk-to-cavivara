@@ -7,6 +7,7 @@ import 'package:house_worker/ui/component/cavivara_avatar.dart';
 import 'package:house_worker/ui/feature/home/home_screen.dart';
 import 'package:house_worker/ui/feature/resume/resume_screen.dart';
 import 'package:house_worker/ui/feature/settings/settings_screen.dart';
+import 'package:house_worker/ui/feature/stats/user_statistics_screen.dart';
 
 class JobMarketScreen extends ConsumerWidget {
   const JobMarketScreen({super.key});
@@ -35,6 +36,7 @@ class JobMarketScreen extends ConsumerWidget {
       drawer: AppDrawer(
         isTalkSelected: false,
         isJobMarketSelected: true,
+        isAchievementSelected: false,
         onSelectTalk: () {
           Navigator.of(context).pushAndRemoveUntil(
             HomeScreen.route(defaultCavivaraId),
@@ -46,6 +48,9 @@ class JobMarketScreen extends ConsumerWidget {
             JobMarketScreen.route(),
             (route) => false,
           );
+        },
+        onSelectAchievement: () {
+          Navigator.of(context).push(UserStatisticsScreen.route());
         },
         onSelectSettings: () {
           Navigator.of(context).push(SettingsScreen.route());

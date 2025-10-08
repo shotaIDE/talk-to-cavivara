@@ -1,6 +1,11 @@
+import 'dart:async';
+
+import 'package:characters/characters.dart';
 import 'package:house_worker/data/model/chat_message.dart';
 import 'package:house_worker/data/model/send_message_exception.dart';
 import 'package:house_worker/data/repository/last_talked_cavivara_id_repository.dart';
+import 'package:house_worker/data/repository/received_chat_string_count_repository.dart';
+import 'package:house_worker/data/repository/sent_chat_string_count_repository.dart';
 import 'package:house_worker/data/service/ai_chat_service.dart';
 import 'package:house_worker/data/service/cavivara_directory_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -34,6 +39,12 @@ class ChatMessages extends _$ChatMessages {
 
     // ユーザーメッセージを追加
     state = [...state, userMessage];
+
+    unawaited(
+      ref
+          .read(sentChatStringCountRepositoryProvider.notifier)
+          .add(content.characters.length),
+    );
 
     final aiChatService = ref.read(aiChatServiceProvider);
 
@@ -70,13 +81,13 @@ class ChatMessages extends _$ChatMessages {
     }
 
     var hasError = false;
+    var buffer = '';
     try {
       final responseStream = aiChatService.sendMessageStream(
         content,
         systemPrompt: systemPrompt,
         conversationHistory: conversationHistory,
       );
-      var buffer = '';
 
       await for (final chunk in responseStream) {
         if (chunk.isEmpty) {
@@ -142,6 +153,14 @@ class ChatMessages extends _$ChatMessages {
           timestamp: DateTime.now(),
         ),
       );
+
+      if (buffer.isNotEmpty) {
+        unawaited(
+          ref
+              .read(receivedChatStringCountRepositoryProvider.notifier)
+              .add(buffer.characters.length),
+        );
+      }
     }
   }
 
