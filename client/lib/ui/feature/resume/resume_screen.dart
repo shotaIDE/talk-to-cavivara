@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:house_worker/data/repository/resume_viewing_duration_repository.dart';
 import 'package:house_worker/data/service/cavivara_directory_service.dart';
 import 'package:house_worker/data/service/employment_state_service.dart';
 import 'package:house_worker/ui/component/cavivara_avatar.dart';
@@ -26,6 +29,40 @@ class ResumeScreen extends ConsumerStatefulWidget {
 }
 
 class _ResumeScreenState extends ConsumerState<ResumeScreen> {
+  late final Stopwatch _viewStopwatch;
+  Timer? _durationTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _viewStopwatch = Stopwatch()..start();
+    _startDurationTimer();
+  }
+
+  void _startDurationTimer() {
+    _durationTimer = Timer.periodic(const Duration(seconds: 10), (timer) {
+      if (_viewStopwatch.isRunning) {
+        final elapsed = _viewStopwatch.elapsed;
+        _viewStopwatch
+          ..reset()
+          ..start();
+
+        if (elapsed > Duration.zero) {
+          ref
+              .read(resumeViewingDurationRepositoryProvider.notifier)
+              .add(elapsed);
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _durationTimer?.cancel();
+    _viewStopwatch.stop();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);

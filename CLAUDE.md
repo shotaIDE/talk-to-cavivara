@@ -34,11 +34,6 @@ dart fix --apply
 
 6. Think of an appropriate commit message and commit.
 
-### Git コミット
-
-コード修正した後は、必ずコミットする。
-コミットメッセージは修正内容を踏まえて簡潔に記述する。
-
 # Architecture
 
 This project is an iOS and Android application, including front-end and back-end code.
