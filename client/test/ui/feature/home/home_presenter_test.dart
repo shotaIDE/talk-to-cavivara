@@ -1,22 +1,44 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:house_worker/data/model/chat_message.dart';
+import 'package:house_worker/data/model/preference_key.dart';
 import 'package:house_worker/data/service/ai_chat_service.dart';
+import 'package:house_worker/data/service/preference_service.dart';
 import 'package:house_worker/ui/feature/home/home_presenter.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockAiChatService extends Mock implements AiChatService {}
 
+class MockPreferenceService extends Mock implements PreferenceService {}
+
 void main() {
+  setUpAll(() {
+    registerFallbackValue(PreferenceKey.currentHouseId);
+  });
+
   group('Home Presenter - Chat Messages', () {
     late MockAiChatService mockAiChatService;
+    late MockPreferenceService mockPreferenceService;
     late ProviderContainer container;
 
     setUp(() {
       mockAiChatService = MockAiChatService();
+      mockPreferenceService = MockPreferenceService();
+
+      // モックの設定 - UserStatisticsRepository用
+      when(
+        () => mockPreferenceService.getInt(any()),
+      ).thenAnswer((_) async => 0);
+      when(
+        () => mockPreferenceService.setInt(any(), value: any(named: 'value')),
+      ).thenAnswer((_) async {});
+
       container = ProviderContainer(
         overrides: [
           aiChatServiceProvider.overrideWith((ref) => mockAiChatService),
+          preferenceServiceProvider.overrideWith(
+            (ref) => mockPreferenceService,
+          ),
         ],
       );
     });
