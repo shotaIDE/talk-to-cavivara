@@ -1,8 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:house_worker/data/model/cavivara_profile.dart';
 import 'package:house_worker/data/model/chat_message.dart';
 import 'package:house_worker/data/model/preference_key.dart';
+import 'package:house_worker/data/repository/received_chat_string_count_repository.dart';
+import 'package:house_worker/data/repository/sent_chat_string_count_repository.dart';
 import 'package:house_worker/data/service/ai_chat_service.dart';
+import 'package:house_worker/data/service/cavivara_directory_service.dart';
 import 'package:house_worker/data/service/preference_service.dart';
 import 'package:house_worker/ui/feature/home/home_presenter.dart';
 import 'package:mocktail/mocktail.dart';
@@ -10,6 +14,28 @@ import 'package:mocktail/mocktail.dart';
 class MockAiChatService extends Mock implements AiChatService {}
 
 class MockPreferenceService extends Mock implements PreferenceService {}
+
+// 簡単な実装でテスト用のリポジトリを作成
+class TestReceivedChatStringCountRepository
+    extends ReceivedChatStringCountRepository {
+  @override
+  Future<int> build() async => 0;
+
+  @override
+  Future<void> add(int stringCount) async {
+    // テスト用の空実装
+  }
+}
+
+class TestSentChatStringCountRepository extends SentChatStringCountRepository {
+  @override
+  Future<int> build() async => 0;
+
+  @override
+  Future<void> add(int stringCount) async {
+    // テスト用の空実装
+  }
+}
 
 void main() {
   setUpAll(() {
@@ -19,11 +45,17 @@ void main() {
   group('Home Presenter - Chat Messages', () {
     late MockAiChatService mockAiChatService;
     late MockPreferenceService mockPreferenceService;
+    late TestReceivedChatStringCountRepository
+        testReceivedChatStringCountRepository;
+    late TestSentChatStringCountRepository testSentChatStringCountRepository;
     late ProviderContainer container;
 
     setUp(() {
       mockAiChatService = MockAiChatService();
       mockPreferenceService = MockPreferenceService();
+      testReceivedChatStringCountRepository =
+          TestReceivedChatStringCountRepository();
+      testSentChatStringCountRepository = TestSentChatStringCountRepository();
 
       // モックの設定 - UserStatisticsRepository用
       when(
@@ -33,11 +65,43 @@ void main() {
         () => mockPreferenceService.setInt(any(), value: any(named: 'value')),
       ).thenAnswer((_) async {});
 
+      // ChatStringCountRepository用のモックはテスト実装で対応
+
+      // テスト用のカヴィヴァラプロフィールを作成
+      const testCavivaraProfile1 = CavivaraProfile(
+        id: 'cavivara_default',
+        displayName: 'テストカヴィヴァラ1',
+        title: 'テスト用',
+        description: 'テスト用のカヴィヴァラです',
+        iconPath: 'test_icon.png',
+        aiPrompt: 'You are a helpful assistant.',
+        tags: ['test'],
+        resumeSections: [],
+      );
+      
+      const testCavivaraProfile2 = CavivaraProfile(
+        id: 'cavivara_mascot',
+        displayName: 'テストカヴィヴァラ2',
+        title: 'テスト用マスコット',
+        description: 'テスト用のマスコットカヴィヴァラです',
+        iconPath: 'test_mascot_icon.png',
+        aiPrompt: 'You are a mascot assistant.',
+        tags: ['test', 'mascot'],
+        resumeSections: [],
+      );
+
       container = ProviderContainer(
         overrides: [
           aiChatServiceProvider.overrideWith((ref) => mockAiChatService),
           preferenceServiceProvider.overrideWith(
             (ref) => mockPreferenceService,
+          ),
+          receivedChatStringCountRepositoryProvider
+              .overrideWith(() => testReceivedChatStringCountRepository),
+          sentChatStringCountRepositoryProvider
+              .overrideWith(() => testSentChatStringCountRepository),
+          cavivaraDirectoryProvider.overrideWith(
+            (ref) => [testCavivaraProfile1, testCavivaraProfile2],
           ),
         ],
       );
