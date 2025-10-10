@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/data/repository/received_chat_string_count_repository.dart';
@@ -8,15 +10,25 @@ import 'package:house_worker/ui/component/app_drawer.dart';
 import 'package:house_worker/ui/feature/home/home_screen.dart';
 import 'package:house_worker/ui/feature/job_market/job_market_screen.dart';
 import 'package:house_worker/ui/feature/settings/settings_screen.dart';
+import 'package:house_worker/ui/feature/stats/cavivara_title.dart';
 
 class UserStatisticsScreen extends ConsumerWidget {
-  const UserStatisticsScreen({super.key});
+  const UserStatisticsScreen({
+    super.key,
+    this.highlightedTitle,
+  });
 
   static const name = 'UserStatisticsScreen';
 
-  static MaterialPageRoute<UserStatisticsScreen> route() =>
+  final CavivaraTitle? highlightedTitle;
+
+  static MaterialPageRoute<UserStatisticsScreen> route({
+    CavivaraTitle? highlightedTitle,
+  }) =>
       MaterialPageRoute<UserStatisticsScreen>(
-        builder: (_) => const UserStatisticsScreen(),
+        builder: (_) => UserStatisticsScreen(
+          highlightedTitle: highlightedTitle,
+        ),
         settings: const RouteSettings(name: name),
       );
 
@@ -102,6 +114,7 @@ class UserStatisticsScreen extends ConsumerWidget {
     final sent = sentCount.value ?? 0;
     final received = receivedCount.value ?? 0;
     final duration = resumeDuration.value ?? Duration.zero;
+    final theme = Theme.of(context);
 
     return ListView(
       children: [
@@ -122,6 +135,20 @@ class UserStatisticsScreen extends ConsumerWidget {
           value: _formatDuration(duration),
           icon: Icons.schedule,
         ),
+        const SizedBox(height: 32),
+        Text(
+          '称号',
+          style: theme.textTheme.titleLarge,
+        ),
+        const SizedBox(height: 12),
+        for (final title in CavivaraTitle.values) ...[
+          _TitleTile(
+            cavivaraTitle: title,
+            isHighlighted: highlightedTitle == title,
+            receivedStringCount: received,
+          ),
+          if (title != CavivaraTitle.values.last) const SizedBox(height: 12),
+        ],
       ],
     );
   }
@@ -147,6 +174,100 @@ class UserStatisticsScreen extends ConsumerWidget {
     }
 
     return buffer.join();
+  }
+}
+
+class _TitleTile extends StatelessWidget {
+  const _TitleTile({
+    required this.cavivaraTitle,
+    required this.isHighlighted,
+    required this.receivedStringCount,
+  });
+
+  final CavivaraTitle cavivaraTitle;
+  final bool isHighlighted;
+  final int receivedStringCount;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isAchieved = cavivaraTitle.isAchieved(receivedStringCount);
+    final remaining = math.max(
+      cavivaraTitle.threshold - receivedStringCount,
+      0,
+    );
+    final backgroundColor = isHighlighted
+        ? theme.colorScheme.secondaryContainer.withOpacity(0.35)
+        : theme.colorScheme.surface;
+    final borderColor = isHighlighted
+        ? theme.colorScheme.secondary
+        : theme.colorScheme.outlineVariant;
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 250),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: borderColor,
+          width: isHighlighted ? 2 : 1,
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 12,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  isAchieved ? Icons.emoji_events : Icons.lock_outline,
+                  size: 32,
+                  color: isAchieved
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 4,
+                    children: [
+                      Text(
+                        cavivaraTitle.displayName,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        cavivaraTitle.conditionDescription,
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                isAchieved
+                    ? '獲得済み'
+                    : 'あと${remaining}文字で獲得できます',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: isAchieved
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
