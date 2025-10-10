@@ -6,4 +6,5 @@ enum PreferenceKey {
   totalSentChatStringCount,
   totalReceivedChatStringCount,
   resumeViewingMilliseconds,
+  maxReceivedChatTitleThresholdNotified,
 }
