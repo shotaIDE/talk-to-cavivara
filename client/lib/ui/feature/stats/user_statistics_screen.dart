@@ -24,13 +24,12 @@ class UserStatisticsScreen extends ConsumerWidget {
 
   static MaterialPageRoute<UserStatisticsScreen> route({
     CavivaraTitle? highlightedTitle,
-  }) =>
-      MaterialPageRoute<UserStatisticsScreen>(
-        builder: (_) => UserStatisticsScreen(
-          highlightedTitle: highlightedTitle,
-        ),
-        settings: const RouteSettings(name: name),
-      );
+  }) => MaterialPageRoute<UserStatisticsScreen>(
+    builder: (_) => UserStatisticsScreen(
+      highlightedTitle: highlightedTitle,
+    ),
+    settings: const RouteSettings(name: name),
+  );
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -197,7 +196,7 @@ class _TitleTile extends StatelessWidget {
       0,
     );
     final backgroundColor = isHighlighted
-        ? theme.colorScheme.secondaryContainer.withOpacity(0.35)
+        ? theme.colorScheme.secondaryContainer.withValues(alpha: 0.35)
         : theme.colorScheme.surface;
     final borderColor = isHighlighted
         ? theme.colorScheme.secondary
@@ -253,9 +252,7 @@ class _TitleTile extends StatelessWidget {
             Align(
               alignment: Alignment.centerRight,
               child: Text(
-                isAchieved
-                    ? '獲得済み'
-                    : 'あと$remaining文字で獲得できます',
+                isAchieved ? '獲得済み' : 'あと$remaining文字で獲得できます',
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: isAchieved
                       ? theme.colorScheme.primary
