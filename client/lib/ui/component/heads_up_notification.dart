@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'heads_up_notification.freezed.dart';
+part 'heads_up_notification.g.dart';
 
 @freezed
 sealed class HeadsUpNotificationData with _$HeadsUpNotificationData {
@@ -24,7 +26,8 @@ sealed class HeadsUpNotificationState with _$HeadsUpNotificationState {
   ) = _Visible;
 }
 
-class HeadsUpNotificationController extends Notifier<HeadsUpNotificationState> {
+@riverpod
+class HeadsUpNotificationController extends _$HeadsUpNotificationController {
   Timer? _dismissTimer;
 
   @override
@@ -55,11 +58,6 @@ class HeadsUpNotificationController extends Notifier<HeadsUpNotificationState> {
     );
   }
 }
-
-final headsUpNotificationControllerProvider =
-    NotifierProvider<HeadsUpNotificationController, HeadsUpNotificationState>(
-      HeadsUpNotificationController.new,
-    );
 
 class HeadsUpNotificationOverlay extends ConsumerWidget {
   const HeadsUpNotificationOverlay({
