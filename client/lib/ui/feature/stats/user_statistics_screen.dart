@@ -255,7 +255,7 @@ class _TitleTile extends StatelessWidget {
               child: Text(
                 isAchieved
                     ? '獲得済み'
-                    : 'あと${remaining}文字で獲得できます',
+                    : 'あと$remaining文字で獲得できます',
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: isAchieved
                       ? theme.colorScheme.primary

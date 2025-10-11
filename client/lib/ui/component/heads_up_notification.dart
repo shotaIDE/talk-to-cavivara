@@ -15,18 +15,13 @@ sealed class HeadsUpNotificationData with _$HeadsUpNotificationData {
   }) = _HeadsUpNotificationData;
 }
 
-class HeadsUpNotificationState {
-  const HeadsUpNotificationState._(this.notification);
+@freezed
+sealed class HeadsUpNotificationState with _$HeadsUpNotificationState {
+  const factory HeadsUpNotificationState.hidden() = _Hidden;
 
-  const HeadsUpNotificationState.hidden() : this._(null);
-
-  const HeadsUpNotificationState.visible(
+  const factory HeadsUpNotificationState.visible(
     HeadsUpNotificationData notification,
-  ) : this._(notification);
-
-  final HeadsUpNotificationData? notification;
-
-  bool get isVisible => notification != null;
+  ) = _Visible;
 }
 
 class HeadsUpNotificationController extends Notifier<HeadsUpNotificationState> {
@@ -52,13 +47,12 @@ class HeadsUpNotificationController extends Notifier<HeadsUpNotificationState> {
   }
 
   void handleTap() {
-    final notification = state.notification;
-    if (notification == null) {
-      return;
-    }
-
-    hide();
-    notification.onTap?.call();
+    state.whenOrNull(
+      visible: (notification) {
+        hide();
+        notification.onTap?.call();
+      },
+    );
   }
 }
 
@@ -78,7 +72,6 @@ class HeadsUpNotificationOverlay extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(headsUpNotificationControllerProvider);
-    final notification = state.notification;
 
     return Stack(
       children: [
@@ -103,9 +96,11 @@ class HeadsUpNotificationOverlay extends ConsumerWidget {
                     child: child,
                   ),
                 ),
-                child: notification == null
-                    ? const SizedBox.shrink()
-                    : _HeadsUpNotificationCard(notification: notification),
+                child: state.when(
+                  hidden: () => const SizedBox.shrink(),
+                  visible: (notification) =>
+                      _HeadsUpNotificationCard(notification: notification),
+                ),
               ),
             ),
           ),
