@@ -2,17 +2,17 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-class HeadsUpNotificationData {
-  const HeadsUpNotificationData({
-    required this.title,
-    required this.message,
-    this.onTap,
-  });
+part 'heads_up_notification.freezed.dart';
 
-  final String title;
-  final String message;
-  final VoidCallback? onTap;
+@freezed
+sealed class HeadsUpNotificationData with _$HeadsUpNotificationData {
+  const factory HeadsUpNotificationData({
+    required String title,
+    required String message,
+    VoidCallback? onTap,
+  }) = _HeadsUpNotificationData;
 }
 
 class HeadsUpNotificationState {
@@ -29,8 +29,7 @@ class HeadsUpNotificationState {
   bool get isVisible => notification != null;
 }
 
-class HeadsUpNotificationController
-    extends Notifier<HeadsUpNotificationState> {
+class HeadsUpNotificationController extends Notifier<HeadsUpNotificationState> {
   Timer? _dismissTimer;
 
   @override
@@ -65,8 +64,8 @@ class HeadsUpNotificationController
 
 final headsUpNotificationControllerProvider =
     NotifierProvider<HeadsUpNotificationController, HeadsUpNotificationState>(
-  HeadsUpNotificationController.new,
-);
+      HeadsUpNotificationController.new,
+    );
 
 class HeadsUpNotificationOverlay extends ConsumerWidget {
   const HeadsUpNotificationOverlay({
@@ -126,8 +125,7 @@ class _HeadsUpNotificationCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final controller =
-        ref.read(headsUpNotificationControllerProvider.notifier);
+    final controller = ref.read(headsUpNotificationControllerProvider.notifier);
 
     return Material(
       elevation: 6,
