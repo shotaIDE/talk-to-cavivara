@@ -125,9 +125,8 @@ class _RootAppState extends ConsumerState<RootApp> {
   }
 
   Widget _wrapByAppBanner(Widget? child) {
-    final content = child ?? const SizedBox.shrink();
     if (!showCustomAppBanner) {
-      return content;
+      return child!;
     }
 
     final message = flavor.name.toUpperCase();
@@ -146,7 +145,7 @@ class _RootAppState extends ConsumerState<RootApp> {
       message: message,
       location: BannerLocation.topEnd,
       color: color,
-      child: content,
+      child: child,
     );
   }
 
