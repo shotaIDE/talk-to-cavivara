@@ -14,8 +14,6 @@ import 'package:house_worker/ui/feature/job_market/job_market_screen.dart';
 import 'package:house_worker/ui/feature/update/update_app_screen.dart';
 import 'package:house_worker/ui/root_presenter.dart';
 
-final rootNavigatorKey = GlobalKey<NavigatorState>();
-
 class RootApp extends ConsumerStatefulWidget {
   const RootApp({super.key});
 
@@ -69,7 +67,6 @@ class _RootAppState extends ConsumerState<RootApp> {
     ];
 
     return MaterialApp(
-      navigatorKey: rootNavigatorKey,
       routes: {'/': (_) => const JobMarketScreen()},
       // `initialRoute` and `routes` are ineffective settings
       // that are set to avoid assertion errors.
