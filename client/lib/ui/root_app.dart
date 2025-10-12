@@ -12,7 +12,7 @@ import 'package:house_worker/data/service/preference_service.dart';
 import 'package:house_worker/data/service/remote_config_service.dart';
 import 'package:house_worker/ui/app_initial_route.dart';
 import 'package:house_worker/ui/component/app_theme.dart';
-import 'package:house_worker/ui/component/heads_up_notification.dart';
+import 'package:house_worker/ui/component/heads_up_notification_overlay.dart';
 import 'package:house_worker/ui/component/heads_up_notification_presenter.dart';
 import 'package:house_worker/ui/feature/auth/login_screen.dart';
 import 'package:house_worker/ui/feature/home/home_screen.dart';
@@ -32,8 +32,7 @@ class RootApp extends ConsumerStatefulWidget {
 }
 
 class _RootAppState extends ConsumerState<RootApp> {
-  ProviderSubscription<AsyncValue<int>>?
-      _receivedChatCountSubscription;
+  ProviderSubscription<AsyncValue<int>>? _receivedChatCountSubscription;
   bool _isTitleNotificationInitialized = false;
   int _maxNotifiedTitleThreshold = 0;
   int? _pendingReceivedCount;
@@ -153,7 +152,8 @@ class _RootAppState extends ConsumerState<RootApp> {
 
   Future<void> _initializeTitleNotificationThreshold() async {
     final preferenceService = ref.read(preferenceServiceProvider);
-    final stored = await preferenceService.getInt(
+    final stored =
+        await preferenceService.getInt(
           PreferenceKey.maxReceivedChatTitleThresholdNotified,
         ) ??
         0;
@@ -201,7 +201,9 @@ class _RootAppState extends ConsumerState<RootApp> {
     }
 
     _updateNotifiedThreshold(newThreshold);
-    ref.read(headsUpNotificationControllerProvider.notifier).show(
+    ref
+        .read(headsUpNotificationControllerProvider.notifier)
+        .show(
           HeadsUpNotificationData(
             title: '称号を獲得しました',
             message: '${newlyAchieved.displayName} を獲得しました',
