@@ -202,7 +202,7 @@ class _RootAppState extends ConsumerState<RootApp> {
 
     _updateNotifiedThreshold(newThreshold);
     ref
-        .read(headsUpNotificationControllerProvider.notifier)
+        .read(headsUpNotificationProvider.notifier)
         .show(
           HeadsUpNotificationData(
             title: '称号を獲得しました',

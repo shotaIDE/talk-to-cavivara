@@ -26,7 +26,7 @@ sealed class HeadsUpNotificationState with _$HeadsUpNotificationState {
 }
 
 @riverpod
-class HeadsUpNotificationController extends _$HeadsUpNotificationController {
+class HeadsUpNotification extends _$HeadsUpNotification {
   Timer? _dismissTimer;
 
   @override

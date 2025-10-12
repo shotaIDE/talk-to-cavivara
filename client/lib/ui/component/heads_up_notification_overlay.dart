@@ -12,7 +12,7 @@ class HeadsUpNotificationOverlay extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(headsUpNotificationControllerProvider);
+    final state = ref.watch(headsUpNotificationProvider);
 
     return Stack(
       children: [
@@ -61,7 +61,7 @@ class _HeadsUpNotificationCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final controller = ref.read(headsUpNotificationControllerProvider.notifier);
+    final controller = ref.read(headsUpNotificationProvider.notifier);
 
     return Material(
       elevation: 6,
