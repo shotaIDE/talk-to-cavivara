@@ -209,21 +209,29 @@ Future<void> updateLastTalkedCavivaraId(Ref ref, String cavivaraId) async {
 class RewardNotificationState {
   RewardNotificationState({
     required this.maxNotifiedThreshold,
+    required this.hasEarnedPartTimer,
+    required this.hasEarnedLeader,
     required this.isInitialized,
     this.unlockedReward,
   });
 
   final int maxNotifiedThreshold;
+  final bool hasEarnedPartTimer;
+  final bool hasEarnedLeader;
   final bool isInitialized;
   final CavivaraReward? unlockedReward;
 
   RewardNotificationState copyWith({
     int? maxNotifiedThreshold,
+    bool? hasEarnedPartTimer,
+    bool? hasEarnedLeader,
     bool? isInitialized,
     CavivaraReward? unlockedReward,
   }) {
     return RewardNotificationState(
       maxNotifiedThreshold: maxNotifiedThreshold ?? this.maxNotifiedThreshold,
+      hasEarnedPartTimer: hasEarnedPartTimer ?? this.hasEarnedPartTimer,
+      hasEarnedLeader: hasEarnedLeader ?? this.hasEarnedLeader,
       isInitialized: isInitialized ?? this.isInitialized,
       unlockedReward: unlockedReward,
     );
@@ -244,6 +252,8 @@ class RewardNotificationManager extends _$RewardNotificationManager {
 
     return RewardNotificationState(
       maxNotifiedThreshold: 0,
+      hasEarnedPartTimer: false,
+      hasEarnedLeader: false,
       isInitialized: false,
     );
   }
@@ -256,8 +266,22 @@ class RewardNotificationManager extends _$RewardNotificationManager {
         ) ??
         0;
 
+    final hasEarnedPartTimer =
+        await preferenceService.getBool(
+          PreferenceKey.hasEarnedPartTimerReward,
+        ) ??
+        false;
+
+    final hasEarnedLeader =
+        await preferenceService.getBool(
+          PreferenceKey.hasEarnedLeaderReward,
+        ) ??
+        false;
+
     state = state.copyWith(
       maxNotifiedThreshold: stored,
+      hasEarnedPartTimer: hasEarnedPartTimer,
+      hasEarnedLeader: hasEarnedLeader,
       isInitialized: true,
     );
 
@@ -301,10 +325,42 @@ class RewardNotificationManager extends _$RewardNotificationManager {
       return;
     }
 
+    // 称号ごとに獲得済みかどうかをチェック
+    final hasEarned = switch (newlyAchieved) {
+      CavivaraReward.partTimer => state.hasEarnedPartTimer,
+      CavivaraReward.leader => state.hasEarnedLeader,
+    };
+
     updateNotifiedThreshold(newThreshold);
 
-    // 称号獲得を通知
-    state = state.copyWith(unlockedReward: newlyAchieved);
+    // まだ獲得していない場合のみ、獲得をマークして通知
+    if (!hasEarned) {
+      _markRewardAsEarned(newlyAchieved);
+      state = state.copyWith(unlockedReward: newlyAchieved);
+    }
+  }
+
+  void _markRewardAsEarned(CavivaraReward reward) {
+    final preferenceService = ref.read(preferenceServiceProvider);
+
+    switch (reward) {
+      case CavivaraReward.partTimer:
+        state = state.copyWith(hasEarnedPartTimer: true);
+        unawaited(
+          preferenceService.setBool(
+            PreferenceKey.hasEarnedPartTimerReward,
+            value: true,
+          ),
+        );
+      case CavivaraReward.leader:
+        state = state.copyWith(hasEarnedLeader: true);
+        unawaited(
+          preferenceService.setBool(
+            PreferenceKey.hasEarnedLeaderReward,
+            value: true,
+          ),
+        );
+    }
   }
 
   void updateNotifiedThreshold(int threshold) {
