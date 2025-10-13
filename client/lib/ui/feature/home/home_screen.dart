@@ -3,11 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/data/model/chat_message.dart';
-import 'package:house_worker/data/model/preference_key.dart';
 import 'package:house_worker/data/repository/received_chat_string_count_repository.dart';
 import 'package:house_worker/data/repository/skip_clear_chat_confirmation_repository.dart';
 import 'package:house_worker/data/service/cavivara_directory_service.dart';
-import 'package:house_worker/data/service/preference_service.dart';
 import 'package:house_worker/ui/component/app_drawer.dart';
 import 'package:house_worker/ui/component/cavivara_avatar.dart';
 import 'package:house_worker/ui/component/clear_chat_confirmation_dialog.dart';
@@ -16,7 +14,6 @@ import 'package:house_worker/ui/feature/home/home_presenter.dart';
 import 'package:house_worker/ui/feature/job_market/job_market_screen.dart';
 import 'package:house_worker/ui/feature/resume/resume_screen.dart';
 import 'package:house_worker/ui/feature/settings/settings_screen.dart';
-import 'package:house_worker/ui/feature/stats/cavivara_title.dart';
 import 'package:house_worker/ui/feature/stats/user_statistics_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -43,10 +40,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   ProviderSubscription<AsyncValue<int>>? _receivedChatCountSubscription;
-  bool _isTitleNotificationInitialized = false;
-  int _maxNotifiedTitleThreshold = 0;
-  int? _pendingReceivedCount;
-  int? _pendingPreviousCount;
 
   @override
   void initState() {
@@ -56,18 +49,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ref.read(updateLastTalkedCavivaraIdProvider(widget.cavivaraId).future),
     );
 
+    // TitleNotificationManagerを初期化
+    ref.read(titleNotificationManagerProvider);
+
     _receivedChatCountSubscription = ref.listenManual(
       receivedChatStringCountRepositoryProvider,
       (previous, next) {
         final previousValue = previous?.whenOrNull(data: (value) => value);
         final currentValue = next.whenOrNull(data: (value) => value);
-        _handleReceivedChatCountUpdate(previousValue, currentValue);
+        ref
+            .read(titleNotificationManagerProvider.notifier)
+            .handleReceivedChatCountUpdate(previousValue, currentValue);
       },
     );
-
-    Future(() async {
-      await _initializeTitleNotificationThreshold();
-    });
   }
 
   @override
@@ -92,6 +86,31 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final cavivaraProfile = ref.watch(cavivaraByIdProvider(widget.cavivaraId));
+
+    // TitleNotificationManagerの状態を監視して、称号獲得通知を表示
+    ref.listen(
+      titleNotificationManagerProvider,
+      (previous, next) {
+        final unlockedTitle = next.unlockedTitle;
+        if (unlockedTitle != null) {
+          ref
+              .read(headsUpNotificationProvider.notifier)
+              .show(
+                HeadsUpNotificationData(
+                  title: '称号を獲得しました',
+                  message: '${unlockedTitle.displayName} を獲得しました',
+                  onTap: () {
+                    Navigator.of(context).push(
+                      UserStatisticsScreen.route(
+                        highlightedTitle: unlockedTitle,
+                      ),
+                    );
+                  },
+                ),
+              );
+        }
+      },
+    );
 
     final title = Row(
       children: [
@@ -263,85 +282,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             icon: const Icon(Icons.send),
           ),
         ],
-      ),
-    );
-  }
-
-  Future<void> _initializeTitleNotificationThreshold() async {
-    final preferenceService = ref.read(preferenceServiceProvider);
-    final stored =
-        await preferenceService.getInt(
-          PreferenceKey.maxReceivedChatTitleThresholdNotified,
-        ) ??
-        0;
-    _maxNotifiedTitleThreshold = stored;
-    _isTitleNotificationInitialized = true;
-
-    if (_pendingReceivedCount != null) {
-      _maybeNotifyTitleUnlocked(
-        _pendingPreviousCount,
-        _pendingReceivedCount!,
-      );
-      _pendingReceivedCount = null;
-      _pendingPreviousCount = null;
-    }
-  }
-
-  void _handleReceivedChatCountUpdate(int? previous, int? current) {
-    if (current == null) {
-      return;
-    }
-
-    if (!_isTitleNotificationInitialized) {
-      _pendingReceivedCount = current;
-      _pendingPreviousCount = previous;
-      return;
-    }
-
-    _maybeNotifyTitleUnlocked(previous, current);
-  }
-
-  void _maybeNotifyTitleUnlocked(int? previous, int current) {
-    final newlyAchieved = CavivaraTitle.highestAchieved(current);
-    if (newlyAchieved == null) {
-      return;
-    }
-
-    final newThreshold = newlyAchieved.threshold;
-    if (newThreshold <= _maxNotifiedTitleThreshold) {
-      return;
-    }
-
-    if (previous == null || previous >= newThreshold) {
-      _updateNotifiedThreshold(newThreshold);
-      return;
-    }
-
-    _updateNotifiedThreshold(newThreshold);
-    ref
-        .read(headsUpNotificationProvider.notifier)
-        .show(
-          HeadsUpNotificationData(
-            title: '称号を獲得しました',
-            message: '${newlyAchieved.displayName} を獲得しました',
-            onTap: () {
-              Navigator.of(context).push(
-                UserStatisticsScreen.route(
-                  highlightedTitle: newlyAchieved,
-                ),
-              );
-            },
-          ),
-        );
-  }
-
-  void _updateNotifiedThreshold(int threshold) {
-    _maxNotifiedTitleThreshold = threshold;
-    final preferenceService = ref.read(preferenceServiceProvider);
-    unawaited(
-      preferenceService.setInt(
-        PreferenceKey.maxReceivedChatTitleThresholdNotified,
-        value: threshold,
       ),
     );
   }

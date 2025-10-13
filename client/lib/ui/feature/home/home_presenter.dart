@@ -2,12 +2,15 @@ import 'dart:async';
 
 import 'package:characters/characters.dart';
 import 'package:house_worker/data/model/chat_message.dart';
+import 'package:house_worker/data/model/preference_key.dart';
 import 'package:house_worker/data/model/send_message_exception.dart';
 import 'package:house_worker/data/repository/last_talked_cavivara_id_repository.dart';
 import 'package:house_worker/data/repository/received_chat_string_count_repository.dart';
 import 'package:house_worker/data/repository/sent_chat_string_count_repository.dart';
 import 'package:house_worker/data/service/ai_chat_service.dart';
 import 'package:house_worker/data/service/cavivara_directory_service.dart';
+import 'package:house_worker/data/service/preference_service.dart';
+import 'package:house_worker/ui/feature/stats/cavivara_title.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'home_presenter.g.dart';
@@ -200,4 +203,118 @@ void clearAllChatMessages(Ref ref) {
 Future<void> updateLastTalkedCavivaraId(Ref ref, String cavivaraId) async {
   final notifier = ref.read(lastTalkedCavivaraIdProvider.notifier);
   await notifier.updateId(cavivaraId);
+}
+
+/// 称号獲得通知の状態を管理するデータクラス
+class TitleNotificationState {
+  TitleNotificationState({
+    required this.maxNotifiedThreshold,
+    required this.isInitialized,
+    this.unlockedTitle,
+  });
+
+  final int maxNotifiedThreshold;
+  final bool isInitialized;
+  final CavivaraTitle? unlockedTitle;
+
+  TitleNotificationState copyWith({
+    int? maxNotifiedThreshold,
+    bool? isInitialized,
+    CavivaraTitle? unlockedTitle,
+  }) {
+    return TitleNotificationState(
+      maxNotifiedThreshold: maxNotifiedThreshold ?? this.maxNotifiedThreshold,
+      isInitialized: isInitialized ?? this.isInitialized,
+      unlockedTitle: unlockedTitle,
+    );
+  }
+}
+
+/// 称号獲得通知を管理するProvider
+/// home_screenでlistenManualを行い、handleReceivedChatCountUpdateを呼び出す
+@riverpod
+class TitleNotificationManager extends _$TitleNotificationManager {
+  int? _pendingReceivedCount;
+  int? _pendingPreviousCount;
+
+  @override
+  TitleNotificationState build() {
+    // 初期化処理を開始
+    _initializeTitleNotificationThreshold();
+
+    return TitleNotificationState(
+      maxNotifiedThreshold: 0,
+      isInitialized: false,
+    );
+  }
+
+  Future<void> _initializeTitleNotificationThreshold() async {
+    final preferenceService = ref.read(preferenceServiceProvider);
+    final stored =
+        await preferenceService.getInt(
+          PreferenceKey.maxReceivedChatTitleThresholdNotified,
+        ) ??
+        0;
+
+    state = state.copyWith(
+      maxNotifiedThreshold: stored,
+      isInitialized: true,
+    );
+
+    if (_pendingReceivedCount != null) {
+      maybeNotifyTitleUnlocked(
+        _pendingPreviousCount,
+        _pendingReceivedCount!,
+      );
+      _pendingReceivedCount = null;
+      _pendingPreviousCount = null;
+    }
+  }
+
+  void handleReceivedChatCountUpdate(int? previous, int? current) {
+    if (current == null) {
+      return;
+    }
+
+    if (!state.isInitialized) {
+      _pendingReceivedCount = current;
+      _pendingPreviousCount = previous;
+      return;
+    }
+
+    maybeNotifyTitleUnlocked(previous, current);
+  }
+
+  void maybeNotifyTitleUnlocked(int? previous, int current) {
+    final newlyAchieved = CavivaraTitle.highestAchieved(current);
+    if (newlyAchieved == null) {
+      return;
+    }
+
+    final newThreshold = newlyAchieved.threshold;
+    if (newThreshold <= state.maxNotifiedThreshold) {
+      return;
+    }
+
+    if (previous == null || previous >= newThreshold) {
+      updateNotifiedThreshold(newThreshold);
+      return;
+    }
+
+    updateNotifiedThreshold(newThreshold);
+
+    // 称号獲得を通知
+    state = state.copyWith(unlockedTitle: newlyAchieved);
+  }
+
+  void updateNotifiedThreshold(int threshold) {
+    state = state.copyWith(maxNotifiedThreshold: threshold);
+    final preferenceService = ref.read(preferenceServiceProvider);
+    unawaited(
+      preferenceService.setInt(
+        PreferenceKey.maxReceivedChatTitleThresholdNotified,
+        value: threshold,
+      ),
+    );
+  }
 }
