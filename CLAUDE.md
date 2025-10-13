@@ -32,6 +32,8 @@ dart fix --apply
 
 5. If necessary, revise the documentation.
 
+- [doc/spec/](/doc/spec/): Functional specifications
+
 6. Think of an appropriate commit message and commit.
 
 # Architecture
