@@ -7,9 +7,12 @@ import 'package:house_worker/data/definition/flavor.dart';
 import 'package:house_worker/data/service/remote_config_service.dart';
 import 'package:house_worker/ui/app_initial_route.dart';
 import 'package:house_worker/ui/component/app_theme.dart';
+import 'package:house_worker/ui/component/heads_up_notification_overlay.dart';
 import 'package:house_worker/ui/feature/auth/login_screen.dart';
 import 'package:house_worker/ui/feature/home/home_screen.dart';
 import 'package:house_worker/ui/feature/job_market/job_market_screen.dart';
+import 'package:house_worker/ui/feature/stats/cavivara_reward.dart';
+import 'package:house_worker/ui/feature/stats/user_statistics_screen.dart';
 import 'package:house_worker/ui/feature/update/update_app_screen.dart';
 import 'package:house_worker/ui/root_presenter.dart';
 
@@ -21,6 +24,8 @@ class RootApp extends ConsumerStatefulWidget {
 }
 
 class _RootAppState extends ConsumerState<RootApp> {
+  final _navigatorKey = GlobalKey<NavigatorState>();
+
   @override
   void initState() {
     super.initState();
@@ -66,6 +71,7 @@ class _RootAppState extends ConsumerState<RootApp> {
     ];
 
     return MaterialApp(
+      navigatorKey: _navigatorKey,
       routes: {'/': (_) => const JobMarketScreen()},
       // `initialRoute` and `routes` are ineffective settings
       // that are set to avoid assertion errors.
@@ -73,7 +79,13 @@ class _RootAppState extends ConsumerState<RootApp> {
       onGenerateInitialRoutes: (_) => initialRoutes,
       navigatorObservers: navigatorObservers,
       title: 'カヴィヴァラチャット',
-      builder: (_, child) => _wrapByAppBanner(child),
+      builder: (_, child) {
+        final childWithOverlay = HeadsUpNotificationOverlay(
+          onTapNotification: _onTapNotification,
+          child: child,
+        );
+        return _wrapByAppBanner(childWithOverlay);
+      },
       darkTheme: getDarkTheme(),
       themeMode: ThemeMode.dark,
       localizationsDelegates: const [
@@ -87,6 +99,20 @@ class _RootAppState extends ConsumerState<RootApp> {
       // `_wrapByAppBanner` でオリジナルのバナーを表示するため、
       // デフォルトのデバッグバナーは無効化する
       debugShowCheckedModeBanner: false,
+    );
+  }
+
+  Future<void> _onTapNotification(CavivaraReward reward) async {
+    final navigator = _navigatorKey.currentState;
+    if (navigator == null) {
+      return;
+    }
+
+    await navigator.pushAndRemoveUntil(
+      UserStatisticsScreen.route(
+        highlightedReward: reward,
+      ),
+      (route) => false,
     );
   }
 

@@ -34,4 +34,30 @@ class ReceivedChatStringCountRepository
     }
     state = AsyncValue.data(updated);
   }
+
+  Future<void> resetForDebug() async {
+    final preferenceService = ref.read(preferenceServiceProvider);
+    await preferenceService.setInt(
+      PreferenceKey.totalReceivedChatStringCount,
+      value: 0,
+    );
+
+    if (!ref.mounted) {
+      return;
+    }
+    state = const AsyncValue.data(0);
+  }
+
+  Future<void> setForDebug(int value) async {
+    final preferenceService = ref.read(preferenceServiceProvider);
+    await preferenceService.setInt(
+      PreferenceKey.totalReceivedChatStringCount,
+      value: value,
+    );
+
+    if (!ref.mounted) {
+      return;
+    }
+    state = AsyncValue.data(value);
+  }
 }

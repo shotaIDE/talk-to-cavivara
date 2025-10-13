@@ -45,6 +45,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     unawaited(
       ref.read(updateLastTalkedCavivaraIdProvider(widget.cavivaraId).future),
     );
+
+    ref.listenManual(awardReceivedChatStringProvider, (_, _) {
+      // Providerの副作用のみを利用するため、何もしない
+    });
   }
 
   @override
