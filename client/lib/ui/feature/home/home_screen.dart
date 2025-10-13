@@ -8,7 +8,6 @@ import 'package:house_worker/data/service/cavivara_directory_service.dart';
 import 'package:house_worker/ui/component/app_drawer.dart';
 import 'package:house_worker/ui/component/cavivara_avatar.dart';
 import 'package:house_worker/ui/component/clear_chat_confirmation_dialog.dart';
-import 'package:house_worker/ui/component/heads_up_notification_presenter.dart';
 import 'package:house_worker/ui/feature/home/home_presenter.dart';
 import 'package:house_worker/ui/feature/job_market/job_market_screen.dart';
 import 'package:house_worker/ui/feature/resume/resume_screen.dart';
@@ -47,9 +46,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ref.read(updateLastTalkedCavivaraIdProvider(widget.cavivaraId).future),
     );
 
-    // RewardNotificationManagerを初期化
-    // このproviderは内部でreceivedChatStringCountRepositoryを直接subscribeする
-    ref.read(rewardNotificationManagerProvider);
+    ref.listenManual(rewardNotificationManagerProvider, (_, _) {
+      debugPrint('Reward');
+    });
   }
 
   @override
@@ -73,31 +72,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final cavivaraProfile = ref.watch(cavivaraByIdProvider(widget.cavivaraId));
-
-    // RewardNotificationManagerの状態を監視して、称号獲得通知を表示
-    ref.listen(
-      rewardNotificationManagerProvider,
-      (previous, next) {
-        final unlockedReward = next.unlockedReward;
-        if (unlockedReward != null) {
-          ref
-              .read(headsUpNotificationProvider.notifier)
-              .show(
-                HeadsUpNotificationData(
-                  title: '称号を獲得しました',
-                  message: '${unlockedReward.displayName} を獲得しました',
-                  onTap: () {
-                    Navigator.of(context).push(
-                      UserStatisticsScreen.route(
-                        highlightedReward: unlockedReward,
-                      ),
-                    );
-                  },
-                ),
-              );
-        }
-      },
-    );
 
     final title = Row(
       children: [

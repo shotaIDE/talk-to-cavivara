@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/ui/component/heads_up_notification_presenter.dart';
+import 'package:house_worker/ui/feature/stats/cavivara_reward.dart';
+import 'package:house_worker/ui/feature/stats/user_statistics_screen.dart';
 
 class HeadsUpNotificationOverlay extends ConsumerWidget {
   const HeadsUpNotificationOverlay({
@@ -40,7 +42,7 @@ class HeadsUpNotificationOverlay extends ConsumerWidget {
                 child: state.when(
                   hidden: () => const SizedBox.shrink(),
                   visible: (notification) =>
-                      _HeadsUpNotificationCard(notification: notification),
+                      _HeadsUpNotificationCard(reward: notification),
                 ),
               ),
             ),
@@ -53,22 +55,33 @@ class HeadsUpNotificationOverlay extends ConsumerWidget {
 
 class _HeadsUpNotificationCard extends ConsumerWidget {
   const _HeadsUpNotificationCard({
-    required this.notification,
+    required this.reward,
   });
 
-  final HeadsUpNotificationData notification;
+  final CavivaraReward reward;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    final controller = ref.read(headsUpNotificationProvider.notifier);
+    final title = Text(
+      '称号を獲得しました',
+      style: Theme.of(context).textTheme.titleMedium,
+    );
+
+    final message = Text(
+      '${reward.displayName} を獲得しました',
+      style: Theme.of(context).textTheme.bodyMedium,
+    );
 
     return Material(
       elevation: 6,
       borderRadius: BorderRadius.circular(16),
-      color: theme.colorScheme.surface,
+      color: Theme.of(context).colorScheme.surface,
       child: InkWell(
-        onTap: controller.handleTap,
+        onTap: () => Navigator.of(context).push(
+          UserStatisticsScreen.route(
+            highlightedReward: reward,
+          ),
+        ),
         borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -78,7 +91,7 @@ class _HeadsUpNotificationCard extends ConsumerWidget {
               Icon(
                 Icons.emoji_events,
                 size: 28,
-                color: theme.colorScheme.primary,
+                color: Theme.of(context).colorScheme.primary,
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -86,16 +99,8 @@ class _HeadsUpNotificationCard extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   spacing: 4,
                   children: [
-                    Text(
-                      notification.title,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      notification.message,
-                      style: theme.textTheme.bodyMedium,
-                    ),
+                    title,
+                    message,
                   ],
                 ),
               ),

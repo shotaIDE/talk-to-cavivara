@@ -10,6 +10,7 @@ import 'package:house_worker/data/repository/received_chat_string_count_reposito
 import 'package:house_worker/data/repository/sent_chat_string_count_repository.dart';
 import 'package:house_worker/data/service/ai_chat_service.dart';
 import 'package:house_worker/data/service/cavivara_directory_service.dart';
+import 'package:house_worker/ui/component/heads_up_notification_presenter.dart';
 import 'package:house_worker/ui/feature/stats/cavivara_reward.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -274,7 +275,8 @@ class RewardNotificationManager extends _$RewardNotificationManager {
     }
 
     await _markRewardAsEarned(newlyAchieved);
-    state = state.copyWith(unlockedReward: newlyAchieved);
+
+    ref.read(headsUpNotificationProvider.notifier).show(newlyAchieved);
   }
 
   Future<bool> _checkIfRewardEarned(CavivaraReward reward) async {

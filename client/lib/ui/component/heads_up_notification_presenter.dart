@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:house_worker/ui/feature/stats/cavivara_reward.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'heads_up_notification_presenter.freezed.dart';
@@ -21,7 +22,7 @@ sealed class HeadsUpNotificationState with _$HeadsUpNotificationState {
   const factory HeadsUpNotificationState.hidden() = _Hidden;
 
   const factory HeadsUpNotificationState.visible(
-    HeadsUpNotificationData notification,
+    CavivaraReward reward,
   ) = _Visible;
 }
 
@@ -37,23 +38,14 @@ class HeadsUpNotification extends _$HeadsUpNotification {
     return const HeadsUpNotificationState.hidden();
   }
 
-  void show(HeadsUpNotificationData notification) {
+  void show(CavivaraReward reward) {
     _dismissTimer?.cancel();
-    state = HeadsUpNotificationState.visible(notification);
+    state = HeadsUpNotificationState.visible(reward);
     _dismissTimer = Timer(const Duration(seconds: 5), hide);
   }
 
   void hide() {
     _dismissTimer?.cancel();
     state = const HeadsUpNotificationState.hidden();
-  }
-
-  void handleTap() {
-    state.whenOrNull(
-      visible: (notification) {
-        hide();
-        notification.onTap?.call();
-      },
-    );
   }
 }
