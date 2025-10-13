@@ -46,8 +46,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ref.read(updateLastTalkedCavivaraIdProvider(widget.cavivaraId).future),
     );
 
-    ref.listenManual(rewardNotificationManagerProvider, (_, _) {
-      debugPrint('Reward');
+    ref.listenManual(awardReceivedChatStringProvider, (_, _) {
+      // Providerの副作用のみを利用するため、何もしない
     });
   }
 

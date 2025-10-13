@@ -206,10 +206,8 @@ Future<void> updateLastTalkedCavivaraId(Ref ref, String cavivaraId) async {
   await notifier.updateId(cavivaraId);
 }
 
-/// 称号獲得通知を管理するProvider
-/// receivedChatStringCountRepositoryを直接subscribeし、値の変化に応じてreward付与と通知を行う
 @riverpod
-class RewardNotificationManager extends _$RewardNotificationManager {
+class AwardReceivedChatString extends _$AwardReceivedChatString {
   @override
   void build() {
     ref.listen(
