@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:characters/characters.dart';
 import 'package:house_worker/data/model/chat_message.dart';
-import 'package:house_worker/data/model/preference_key.dart';
 import 'package:house_worker/data/model/send_message_exception.dart';
 import 'package:house_worker/data/repository/has_earned_leader_reward_repository.dart';
 import 'package:house_worker/data/repository/has_earned_part_timer_reward_repository.dart';
@@ -11,7 +10,6 @@ import 'package:house_worker/data/repository/received_chat_string_count_reposito
 import 'package:house_worker/data/repository/sent_chat_string_count_repository.dart';
 import 'package:house_worker/data/service/ai_chat_service.dart';
 import 'package:house_worker/data/service/cavivara_directory_service.dart';
-import 'package:house_worker/data/service/preference_service.dart';
 import 'package:house_worker/ui/feature/stats/cavivara_reward.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -236,21 +234,21 @@ class RewardNotificationState {
 /// receivedChatStringCountRepositoryを直接subscribeし、値の変化に応じてreward付与と通知を行う
 @riverpod
 class RewardNotificationManager extends _$RewardNotificationManager {
-  int? _pendingReceivedCount;
-  int? _pendingPreviousCount;
-
   @override
   RewardNotificationState build() {
-    // 初期化処理を開始
-    _initializeRewardNotificationThreshold();
-
-    // receivedChatStringCountRepositoryを直接subscribe
     ref.listen(
       receivedChatStringCountRepositoryProvider,
       (previous, next) {
         final previousValue = previous?.whenOrNull(data: (value) => value);
         final currentValue = next.whenOrNull(data: (value) => value);
-        _handleReceivedChatCountUpdate(previousValue, currentValue);
+        if (currentValue == null) {
+          return;
+        }
+
+        _handleReceivedChatStringCountUpdate(
+          previous: previousValue,
+          current: currentValue,
+        );
       },
     );
 
@@ -260,78 +258,36 @@ class RewardNotificationManager extends _$RewardNotificationManager {
     );
   }
 
-  Future<void> _initializeRewardNotificationThreshold() async {
-    final preferenceService = ref.read(preferenceServiceProvider);
-    final stored =
-        await preferenceService.getInt(
-          PreferenceKey.maxReceivedChatRewardThresholdNotified,
-        ) ??
-        0;
-
-    state = state.copyWith(
-      maxNotifiedThreshold: stored,
-      isInitialized: true,
-    );
-
-    if (_pendingReceivedCount != null) {
-      await maybeNotifyRewardUnlocked(
-        _pendingPreviousCount,
-        _pendingReceivedCount!,
-      );
-      _pendingReceivedCount = null;
-      _pendingPreviousCount = null;
-    }
-  }
-
-  void _handleReceivedChatCountUpdate(int? previous, int? current) {
-    if (current == null) {
-      return;
-    }
-
-    if (!state.isInitialized) {
-      _pendingReceivedCount = current;
-      _pendingPreviousCount = previous;
-      return;
-    }
-
-    unawaited(maybeNotifyRewardUnlocked(previous, current));
-  }
-
-  Future<void> maybeNotifyRewardUnlocked(int? previous, int current) async {
+  Future<void> _handleReceivedChatStringCountUpdate({
+    required int? previous,
+    required int current,
+  }) async {
     final newlyAchieved = CavivaraReward.highestAchieved(current);
     if (newlyAchieved == null) {
       return;
     }
 
-    final newThreshold = newlyAchieved.threshold;
-    if (newThreshold <= state.maxNotifiedThreshold) {
-      return;
-    }
-
-    if (previous == null || previous >= newThreshold) {
-      updateNotifiedThreshold(newThreshold);
-      return;
-    }
-
-    // 称号ごとに獲得済みかどうかをリポジトリからチェック
     final hasEarned = await _checkIfRewardEarned(newlyAchieved);
 
-    updateNotifiedThreshold(newThreshold);
-
-    // まだ獲得していない場合のみ、獲得をマークして通知
-    if (!hasEarned) {
-      await _markRewardAsEarned(newlyAchieved);
-      state = state.copyWith(unlockedReward: newlyAchieved);
+    if (hasEarned) {
+      return;
     }
+
+    await _markRewardAsEarned(newlyAchieved);
+    state = state.copyWith(unlockedReward: newlyAchieved);
   }
 
   Future<bool> _checkIfRewardEarned(CavivaraReward reward) async {
     switch (reward) {
       case CavivaraReward.partTimer:
-        return ref.read(hasEarnedPartTimerRewardRepositoryProvider).value ??
-            false;
+        return await ref.read(
+          hasEarnedPartTimerRewardRepositoryProvider.future,
+        );
+
       case CavivaraReward.leader:
-        return ref.read(hasEarnedLeaderRewardRepositoryProvider).value ?? false;
+        return await ref.read(
+          hasEarnedLeaderRewardRepositoryProvider.future,
+        );
     }
   }
 
@@ -341,21 +297,11 @@ class RewardNotificationManager extends _$RewardNotificationManager {
         await ref
             .read(hasEarnedPartTimerRewardRepositoryProvider.notifier)
             .markAsEarned();
+
       case CavivaraReward.leader:
         await ref
             .read(hasEarnedLeaderRewardRepositoryProvider.notifier)
             .markAsEarned();
     }
-  }
-
-  void updateNotifiedThreshold(int threshold) {
-    state = state.copyWith(maxNotifiedThreshold: threshold);
-    final preferenceService = ref.read(preferenceServiceProvider);
-    unawaited(
-      preferenceService.setInt(
-        PreferenceKey.maxReceivedChatRewardThresholdNotified,
-        value: threshold,
-      ),
-    );
   }
 }
