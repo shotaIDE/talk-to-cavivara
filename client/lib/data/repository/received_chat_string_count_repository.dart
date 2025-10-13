@@ -48,7 +48,7 @@ class ReceivedChatStringCountRepository
     state = const AsyncValue.data(0);
   }
 
-  Future<void> set(int value) async {
+  Future<void> setForDebug(int value) async {
     final preferenceService = ref.read(preferenceServiceProvider);
     await preferenceService.setInt(
       PreferenceKey.totalReceivedChatStringCount,

@@ -108,7 +108,7 @@ class _SetReceivedChatCountTo999Tile extends ConsumerWidget {
       onTap: () async {
         await ref
             .read(receivedChatStringCountRepositoryProvider.notifier)
-            .set(999);
+            .setForDebug(999);
       },
     );
   }
@@ -124,7 +124,7 @@ class _SetReceivedChatCountTo9999Tile extends ConsumerWidget {
       onTap: () async {
         await ref
             .read(receivedChatStringCountRepositoryProvider.notifier)
-            .set(9999);
+            .setForDebug(9999);
       },
     );
   }
