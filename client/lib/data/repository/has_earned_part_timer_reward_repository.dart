@@ -25,4 +25,17 @@ class HasEarnedPartTimerRewardRepository
 
     state = const AsyncValue.data(true);
   }
+
+  Future<void> reset() async {
+    final preferenceService = ref.read(preferenceServiceProvider);
+    await preferenceService.setBool(
+      PreferenceKey.hasEarnedPartTimerReward,
+      value: false,
+    );
+
+    if (!ref.mounted) {
+      return;
+    }
+    state = const AsyncValue.data(false);
+  }
 }

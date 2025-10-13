@@ -25,4 +25,17 @@ class HasEarnedLeaderRewardRepository
 
     state = const AsyncValue.data(true);
   }
+
+  Future<void> reset() async {
+    final preferenceService = ref.read(preferenceServiceProvider);
+    await preferenceService.setBool(
+      PreferenceKey.hasEarnedLeaderReward,
+      value: false,
+    );
+
+    if (!ref.mounted) {
+      return;
+    }
+    state = const AsyncValue.data(false);
+  }
 }
