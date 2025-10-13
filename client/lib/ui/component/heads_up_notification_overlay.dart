@@ -42,9 +42,9 @@ class HeadsUpNotificationOverlay extends ConsumerWidget {
                 ),
                 child: state.when(
                   hidden: () => const SizedBox.shrink(),
-                  visible: (notification) => _HeadsUpNotificationCard(
+                  visible: (notification) => _HeadsUpNotificationBody(
                     reward: notification,
-                    onTapNotification: onTapNotification,
+                    onTap: onTapNotification,
                   ),
                 ),
               ),
@@ -56,14 +56,14 @@ class HeadsUpNotificationOverlay extends ConsumerWidget {
   }
 }
 
-class _HeadsUpNotificationCard extends ConsumerWidget {
-  const _HeadsUpNotificationCard({
+class _HeadsUpNotificationBody extends ConsumerWidget {
+  const _HeadsUpNotificationBody({
     required this.reward,
-    required this.onTapNotification,
+    required this.onTap,
   });
 
   final CavivaraReward reward;
-  final void Function(CavivaraReward reward) onTapNotification;
+  final void Function(CavivaraReward reward) onTap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -82,7 +82,7 @@ class _HeadsUpNotificationCard extends ConsumerWidget {
       borderRadius: BorderRadius.circular(16),
       color: Theme.of(context).colorScheme.surface,
       child: InkWell(
-        onTap: () => onTapNotification(reward),
+        onTap: () => onTap(reward),
         borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: const EdgeInsets.all(16),
