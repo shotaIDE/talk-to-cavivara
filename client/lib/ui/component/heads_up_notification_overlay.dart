@@ -56,7 +56,7 @@ class HeadsUpNotificationOverlay extends ConsumerWidget {
   }
 }
 
-class _HeadsUpNotificationBody extends ConsumerWidget {
+class _HeadsUpNotificationBody extends StatelessWidget {
   const _HeadsUpNotificationBody({
     required this.reward,
     required this.onTap,
@@ -66,7 +66,7 @@ class _HeadsUpNotificationBody extends ConsumerWidget {
   final void Function(CavivaraReward reward) onTap;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final title = Text(
       '称号を獲得しました',
       style: Theme.of(context).textTheme.titleMedium,
