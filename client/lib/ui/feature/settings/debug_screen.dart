@@ -86,13 +86,13 @@ class _ResetReceivedChatCountAndAchievementsTile extends ConsumerWidget {
       onTap: () async {
         await ref
             .read(receivedChatStringCountRepositoryProvider.notifier)
-            .reset();
+            .resetForDebug();
         await ref
             .read(hasEarnedPartTimeLeaderRewardRepositoryProvider.notifier)
-            .reset();
+            .resetForDebug();
         await ref
             .read(hasEarnedPartTimerRewardRepositoryProvider.notifier)
-            .reset();
+            .resetForDebug();
       },
     );
   }

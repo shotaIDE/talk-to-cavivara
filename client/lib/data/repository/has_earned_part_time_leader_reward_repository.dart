@@ -23,10 +23,13 @@ class HasEarnedPartTimeLeaderRewardRepository
       value: true,
     );
 
+    if (!ref.mounted) {
+      return;
+    }
     state = const AsyncValue.data(true);
   }
 
-  Future<void> reset() async {
+  Future<void> resetForDebug() async {
     final preferenceService = ref.read(preferenceServiceProvider);
     await preferenceService.setBool(
       PreferenceKey.hasEarnedPartTimeLeaderReward,
