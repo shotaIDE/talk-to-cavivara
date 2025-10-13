@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/data/model/chat_message.dart';
-import 'package:house_worker/data/repository/received_chat_string_count_repository.dart';
 import 'package:house_worker/data/repository/skip_clear_chat_confirmation_repository.dart';
 import 'package:house_worker/data/service/cavivara_directory_service.dart';
 import 'package:house_worker/ui/component/app_drawer.dart';
@@ -39,7 +38,6 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  ProviderSubscription<AsyncValue<int>>? _receivedChatCountSubscription;
 
   @override
   void initState() {
@@ -50,18 +48,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
 
     // RewardNotificationManagerを初期化
+    // このproviderは内部でreceivedChatStringCountRepositoryを直接subscribeする
     ref.read(rewardNotificationManagerProvider);
-
-    _receivedChatCountSubscription = ref.listenManual(
-      receivedChatStringCountRepositoryProvider,
-      (previous, next) {
-        final previousValue = previous?.whenOrNull(data: (value) => value);
-        final currentValue = next.whenOrNull(data: (value) => value);
-        ref
-            .read(rewardNotificationManagerProvider.notifier)
-            .handleReceivedChatCountUpdate(previousValue, currentValue);
-      },
-    );
   }
 
   @override
@@ -77,7 +65,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   void dispose() {
-    _receivedChatCountSubscription?.close();
     _messageController.dispose();
     _scrollController.dispose();
     super.dispose();

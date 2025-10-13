@@ -233,7 +233,7 @@ class RewardNotificationState {
 }
 
 /// 称号獲得通知を管理するProvider
-/// home_screenでlistenManualを行い、handleReceivedChatCountUpdateを呼び出す
+/// receivedChatStringCountRepositoryを直接subscribeし、値の変化に応じてreward付与と通知を行う
 @riverpod
 class RewardNotificationManager extends _$RewardNotificationManager {
   int? _pendingReceivedCount;
@@ -243,6 +243,16 @@ class RewardNotificationManager extends _$RewardNotificationManager {
   RewardNotificationState build() {
     // 初期化処理を開始
     _initializeRewardNotificationThreshold();
+
+    // receivedChatStringCountRepositoryを直接subscribe
+    ref.listen(
+      receivedChatStringCountRepositoryProvider,
+      (previous, next) {
+        final previousValue = previous?.whenOrNull(data: (value) => value);
+        final currentValue = next.whenOrNull(data: (value) => value);
+        _handleReceivedChatCountUpdate(previousValue, currentValue);
+      },
+    );
 
     return RewardNotificationState(
       maxNotifiedThreshold: 0,
@@ -273,7 +283,7 @@ class RewardNotificationManager extends _$RewardNotificationManager {
     }
   }
 
-  void handleReceivedChatCountUpdate(int? previous, int? current) {
+  void _handleReceivedChatCountUpdate(int? previous, int? current) {
     if (current == null) {
       return;
     }
