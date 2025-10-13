@@ -10,23 +10,23 @@ import 'package:house_worker/ui/component/app_drawer.dart';
 import 'package:house_worker/ui/feature/home/home_screen.dart';
 import 'package:house_worker/ui/feature/job_market/job_market_screen.dart';
 import 'package:house_worker/ui/feature/settings/settings_screen.dart';
-import 'package:house_worker/ui/feature/stats/cavivara_title.dart';
+import 'package:house_worker/ui/feature/stats/cavivara_reward.dart';
 
 class UserStatisticsScreen extends ConsumerWidget {
   const UserStatisticsScreen({
     super.key,
-    this.highlightedTitle,
+    this.highlightedReward,
   });
 
   static const name = 'UserStatisticsScreen';
 
-  final CavivaraTitle? highlightedTitle;
+  final CavivaraReward? highlightedReward;
 
   static MaterialPageRoute<UserStatisticsScreen> route({
-    CavivaraTitle? highlightedTitle,
+    CavivaraReward? highlightedReward,
   }) => MaterialPageRoute<UserStatisticsScreen>(
     builder: (_) => UserStatisticsScreen(
-      highlightedTitle: highlightedTitle,
+      highlightedReward: highlightedReward,
     ),
     settings: const RouteSettings(name: name),
   );
@@ -140,13 +140,13 @@ class UserStatisticsScreen extends ConsumerWidget {
           style: theme.textTheme.titleLarge,
         ),
         const SizedBox(height: 12),
-        for (final title in CavivaraTitle.values) ...[
-          _TitleTile(
-            cavivaraTitle: title,
-            isHighlighted: highlightedTitle == title,
+        for (final reward in CavivaraReward.values) ...[
+          _RewardTile(
+            cavivaraReward: reward,
+            isHighlighted: highlightedReward == reward,
             receivedStringCount: received,
           ),
-          if (title != CavivaraTitle.values.last) const SizedBox(height: 12),
+          if (reward != CavivaraReward.values.last) const SizedBox(height: 12),
         ],
       ],
     );
@@ -176,23 +176,23 @@ class UserStatisticsScreen extends ConsumerWidget {
   }
 }
 
-class _TitleTile extends StatelessWidget {
-  const _TitleTile({
-    required this.cavivaraTitle,
+class _RewardTile extends StatelessWidget {
+  const _RewardTile({
+    required this.cavivaraReward,
     required this.isHighlighted,
     required this.receivedStringCount,
   });
 
-  final CavivaraTitle cavivaraTitle;
+  final CavivaraReward cavivaraReward;
   final bool isHighlighted;
   final int receivedStringCount;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isAchieved = cavivaraTitle.isAchieved(receivedStringCount);
+    final isAchieved = cavivaraReward.isAchieved(receivedStringCount);
     final remaining = math.max(
-      cavivaraTitle.threshold - receivedStringCount,
+      cavivaraReward.threshold - receivedStringCount,
       0,
     );
     final backgroundColor = isHighlighted
@@ -235,13 +235,13 @@ class _TitleTile extends StatelessWidget {
                     spacing: 4,
                     children: [
                       Text(
-                        cavivaraTitle.displayName,
+                        cavivaraReward.displayName,
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       Text(
-                        cavivaraTitle.conditionDescription,
+                        cavivaraReward.conditionDescription,
                         style: theme.textTheme.bodyMedium,
                       ),
                     ],

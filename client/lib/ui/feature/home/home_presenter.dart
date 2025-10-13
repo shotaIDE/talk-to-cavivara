@@ -10,7 +10,7 @@ import 'package:house_worker/data/repository/sent_chat_string_count_repository.d
 import 'package:house_worker/data/service/ai_chat_service.dart';
 import 'package:house_worker/data/service/cavivara_directory_service.dart';
 import 'package:house_worker/data/service/preference_service.dart';
-import 'package:house_worker/ui/feature/stats/cavivara_title.dart';
+import 'package:house_worker/ui/feature/stats/cavivara_reward.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'home_presenter.g.dart';
@@ -206,26 +206,26 @@ Future<void> updateLastTalkedCavivaraId(Ref ref, String cavivaraId) async {
 }
 
 /// 称号獲得通知の状態を管理するデータクラス
-class TitleNotificationState {
-  TitleNotificationState({
+class RewardNotificationState {
+  RewardNotificationState({
     required this.maxNotifiedThreshold,
     required this.isInitialized,
-    this.unlockedTitle,
+    this.unlockedReward,
   });
 
   final int maxNotifiedThreshold;
   final bool isInitialized;
-  final CavivaraTitle? unlockedTitle;
+  final CavivaraReward? unlockedReward;
 
-  TitleNotificationState copyWith({
+  RewardNotificationState copyWith({
     int? maxNotifiedThreshold,
     bool? isInitialized,
-    CavivaraTitle? unlockedTitle,
+    CavivaraReward? unlockedReward,
   }) {
-    return TitleNotificationState(
+    return RewardNotificationState(
       maxNotifiedThreshold: maxNotifiedThreshold ?? this.maxNotifiedThreshold,
       isInitialized: isInitialized ?? this.isInitialized,
-      unlockedTitle: unlockedTitle,
+      unlockedReward: unlockedReward,
     );
   }
 }
@@ -233,26 +233,26 @@ class TitleNotificationState {
 /// 称号獲得通知を管理するProvider
 /// home_screenでlistenManualを行い、handleReceivedChatCountUpdateを呼び出す
 @riverpod
-class TitleNotificationManager extends _$TitleNotificationManager {
+class RewardNotificationManager extends _$RewardNotificationManager {
   int? _pendingReceivedCount;
   int? _pendingPreviousCount;
 
   @override
-  TitleNotificationState build() {
+  RewardNotificationState build() {
     // 初期化処理を開始
-    _initializeTitleNotificationThreshold();
+    _initializeRewardNotificationThreshold();
 
-    return TitleNotificationState(
+    return RewardNotificationState(
       maxNotifiedThreshold: 0,
       isInitialized: false,
     );
   }
 
-  Future<void> _initializeTitleNotificationThreshold() async {
+  Future<void> _initializeRewardNotificationThreshold() async {
     final preferenceService = ref.read(preferenceServiceProvider);
     final stored =
         await preferenceService.getInt(
-          PreferenceKey.maxReceivedChatTitleThresholdNotified,
+          PreferenceKey.maxReceivedChatRewardThresholdNotified,
         ) ??
         0;
 
@@ -262,7 +262,7 @@ class TitleNotificationManager extends _$TitleNotificationManager {
     );
 
     if (_pendingReceivedCount != null) {
-      maybeNotifyTitleUnlocked(
+      maybeNotifyRewardUnlocked(
         _pendingPreviousCount,
         _pendingReceivedCount!,
       );
@@ -282,11 +282,11 @@ class TitleNotificationManager extends _$TitleNotificationManager {
       return;
     }
 
-    maybeNotifyTitleUnlocked(previous, current);
+    maybeNotifyRewardUnlocked(previous, current);
   }
 
-  void maybeNotifyTitleUnlocked(int? previous, int current) {
-    final newlyAchieved = CavivaraTitle.highestAchieved(current);
+  void maybeNotifyRewardUnlocked(int? previous, int current) {
+    final newlyAchieved = CavivaraReward.highestAchieved(current);
     if (newlyAchieved == null) {
       return;
     }
@@ -304,7 +304,7 @@ class TitleNotificationManager extends _$TitleNotificationManager {
     updateNotifiedThreshold(newThreshold);
 
     // 称号獲得を通知
-    state = state.copyWith(unlockedTitle: newlyAchieved);
+    state = state.copyWith(unlockedReward: newlyAchieved);
   }
 
   void updateNotifiedThreshold(int threshold) {
@@ -312,7 +312,7 @@ class TitleNotificationManager extends _$TitleNotificationManager {
     final preferenceService = ref.read(preferenceServiceProvider);
     unawaited(
       preferenceService.setInt(
-        PreferenceKey.maxReceivedChatTitleThresholdNotified,
+        PreferenceKey.maxReceivedChatRewardThresholdNotified,
         value: threshold,
       ),
     );

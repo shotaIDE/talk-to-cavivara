@@ -1,4 +1,4 @@
-enum CavivaraTitle {
+enum CavivaraReward {
   partTimer(
     threshold: 1000,
     displayName: 'プレクトラム結社アルバイト',
@@ -10,7 +10,7 @@ enum CavivaraTitle {
     conditionDescription: 'カヴィヴァラさんたちから受信したチャットの文字数が10000文字を超えた',
   );
 
-  const CavivaraTitle({
+  const CavivaraReward({
     required this.threshold,
     required this.displayName,
     required this.conditionDescription,
@@ -20,13 +20,12 @@ enum CavivaraTitle {
   final String displayName;
   final String conditionDescription;
 
-  bool isAchieved(int receivedStringCount) =>
-      receivedStringCount >= threshold;
+  bool isAchieved(int receivedStringCount) => receivedStringCount >= threshold;
 
-  static CavivaraTitle? highestAchieved(int receivedStringCount) {
-    for (final title in values.reversed) {
-      if (title.isAchieved(receivedStringCount)) {
-        return title;
+  static CavivaraReward? highestAchieved(int receivedStringCount) {
+    for (final reward in values.reversed) {
+      if (reward.isAchieved(receivedStringCount)) {
+        return reward;
       }
     }
     return null;

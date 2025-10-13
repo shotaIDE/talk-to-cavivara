@@ -49,8 +49,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ref.read(updateLastTalkedCavivaraIdProvider(widget.cavivaraId).future),
     );
 
-    // TitleNotificationManagerを初期化
-    ref.read(titleNotificationManagerProvider);
+    // RewardNotificationManagerを初期化
+    ref.read(rewardNotificationManagerProvider);
 
     _receivedChatCountSubscription = ref.listenManual(
       receivedChatStringCountRepositoryProvider,
@@ -58,7 +58,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         final previousValue = previous?.whenOrNull(data: (value) => value);
         final currentValue = next.whenOrNull(data: (value) => value);
         ref
-            .read(titleNotificationManagerProvider.notifier)
+            .read(rewardNotificationManagerProvider.notifier)
             .handleReceivedChatCountUpdate(previousValue, currentValue);
       },
     );
@@ -87,22 +87,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     final cavivaraProfile = ref.watch(cavivaraByIdProvider(widget.cavivaraId));
 
-    // TitleNotificationManagerの状態を監視して、称号獲得通知を表示
+    // RewardNotificationManagerの状態を監視して、称号獲得通知を表示
     ref.listen(
-      titleNotificationManagerProvider,
+      rewardNotificationManagerProvider,
       (previous, next) {
-        final unlockedTitle = next.unlockedTitle;
-        if (unlockedTitle != null) {
+        final unlockedReward = next.unlockedReward;
+        if (unlockedReward != null) {
           ref
               .read(headsUpNotificationProvider.notifier)
               .show(
                 HeadsUpNotificationData(
                   title: '称号を獲得しました',
-                  message: '${unlockedTitle.displayName} を獲得しました',
+                  message: '${unlockedReward.displayName} を獲得しました',
                   onTap: () {
                     Navigator.of(context).push(
                       UserStatisticsScreen.route(
-                        highlightedTitle: unlockedTitle,
+                        highlightedReward: unlockedReward,
                       ),
                     );
                   },
