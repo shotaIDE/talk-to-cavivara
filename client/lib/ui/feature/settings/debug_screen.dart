@@ -31,6 +31,9 @@ class DebugScreen extends ConsumerWidget {
           _ResetConfirmationSettingsTile(),
           SectionHeader(title: '統計リセット'),
           _ResetReceivedChatCountAndAchievementsTile(),
+          SectionHeader(title: '統計設定'),
+          _SetReceivedChatCountTo999Tile(),
+          _SetReceivedChatCountTo9999Tile(),
         ],
       ),
     );
@@ -91,6 +94,38 @@ class _ResetReceivedChatCountAndAchievementsTile extends ConsumerWidget {
         await ref
             .read(hasEarnedPartTimerRewardRepositoryProvider.notifier)
             .reset();
+      },
+    );
+  }
+}
+
+class _SetReceivedChatCountTo999Tile extends ConsumerWidget {
+  const _SetReceivedChatCountTo999Tile();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ListTile(
+      title: const Text('受信チャット文字数を999にする'),
+      onTap: () async {
+        await ref
+            .read(receivedChatStringCountRepositoryProvider.notifier)
+            .set(999);
+      },
+    );
+  }
+}
+
+class _SetReceivedChatCountTo9999Tile extends ConsumerWidget {
+  const _SetReceivedChatCountTo9999Tile();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ListTile(
+      title: const Text('受信チャット文字数を9999にする'),
+      onTap: () async {
+        await ref
+            .read(receivedChatStringCountRepositoryProvider.notifier)
+            .set(9999);
       },
     );
   }
