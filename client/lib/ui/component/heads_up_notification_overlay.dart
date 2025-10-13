@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/ui/component/heads_up_notification_presenter.dart';
 import 'package:house_worker/ui/feature/stats/cavivara_reward.dart';
-import 'package:house_worker/ui/feature/stats/user_statistics_screen.dart';
 
 class HeadsUpNotificationOverlay extends ConsumerWidget {
   const HeadsUpNotificationOverlay({
     super.key,
+    required this.onTapNotification,
     required this.child,
   });
 
+  final void Function(CavivaraReward reward) onTapNotification;
   final Widget? child;
 
   @override
@@ -41,8 +42,10 @@ class HeadsUpNotificationOverlay extends ConsumerWidget {
                 ),
                 child: state.when(
                   hidden: () => const SizedBox.shrink(),
-                  visible: (notification) =>
-                      _HeadsUpNotificationCard(reward: notification),
+                  visible: (notification) => _HeadsUpNotificationCard(
+                    reward: notification,
+                    onTapNotification: onTapNotification,
+                  ),
                 ),
               ),
             ),
@@ -56,9 +59,11 @@ class HeadsUpNotificationOverlay extends ConsumerWidget {
 class _HeadsUpNotificationCard extends ConsumerWidget {
   const _HeadsUpNotificationCard({
     required this.reward,
+    required this.onTapNotification,
   });
 
   final CavivaraReward reward;
+  final void Function(CavivaraReward reward) onTapNotification;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -77,11 +82,7 @@ class _HeadsUpNotificationCard extends ConsumerWidget {
       borderRadius: BorderRadius.circular(16),
       color: Theme.of(context).colorScheme.surface,
       child: InkWell(
-        onTap: () => Navigator.of(context).push(
-          UserStatisticsScreen.route(
-            highlightedReward: reward,
-          ),
-        ),
+        onTap: () => onTapNotification(reward),
         borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: const EdgeInsets.all(16),
