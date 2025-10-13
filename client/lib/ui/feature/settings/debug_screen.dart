@@ -1,7 +1,7 @@
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:house_worker/data/repository/has_earned_leader_reward_repository.dart';
+import 'package:house_worker/data/repository/has_earned_part_time_leader_reward_repository.dart';
 import 'package:house_worker/data/repository/has_earned_part_timer_reward_repository.dart';
 import 'package:house_worker/data/repository/received_chat_string_count_repository.dart';
 import 'package:house_worker/data/repository/skip_clear_chat_confirmation_repository.dart';
@@ -88,7 +88,7 @@ class _ResetReceivedChatCountAndAchievementsTile extends ConsumerWidget {
             .read(receivedChatStringCountRepositoryProvider.notifier)
             .reset();
         await ref
-            .read(hasEarnedLeaderRewardRepositoryProvider.notifier)
+            .read(hasEarnedPartTimeLeaderRewardRepositoryProvider.notifier)
             .reset();
         await ref
             .read(hasEarnedPartTimerRewardRepositoryProvider.notifier)

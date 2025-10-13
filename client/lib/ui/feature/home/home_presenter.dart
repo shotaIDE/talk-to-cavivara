@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:characters/characters.dart';
 import 'package:house_worker/data/model/chat_message.dart';
 import 'package:house_worker/data/model/send_message_exception.dart';
-import 'package:house_worker/data/repository/has_earned_leader_reward_repository.dart';
+import 'package:house_worker/data/repository/has_earned_part_time_leader_reward_repository.dart';
 import 'package:house_worker/data/repository/has_earned_part_timer_reward_repository.dart';
 import 'package:house_worker/data/repository/last_talked_cavivara_id_repository.dart';
 import 'package:house_worker/data/repository/received_chat_string_count_repository.dart';
@@ -288,7 +288,7 @@ class RewardNotificationManager extends _$RewardNotificationManager {
 
       case CavivaraReward.leader:
         return await ref.read(
-          hasEarnedLeaderRewardRepositoryProvider.future,
+          hasEarnedPartTimeLeaderRewardRepositoryProvider.future,
         );
     }
   }
@@ -302,7 +302,7 @@ class RewardNotificationManager extends _$RewardNotificationManager {
 
       case CavivaraReward.leader:
         await ref
-            .read(hasEarnedLeaderRewardRepositoryProvider.notifier)
+            .read(hasEarnedPartTimeLeaderRewardRepositoryProvider.notifier)
             .markAsEarned();
     }
   }

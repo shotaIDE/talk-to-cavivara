@@ -2,16 +2,16 @@ import 'package:house_worker/data/model/preference_key.dart';
 import 'package:house_worker/data/service/preference_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'has_earned_leader_reward_repository.g.dart';
+part 'has_earned_part_time_leader_reward_repository.g.dart';
 
 @riverpod
-class HasEarnedLeaderRewardRepository
-    extends _$HasEarnedLeaderRewardRepository {
+class HasEarnedPartTimeLeaderRewardRepository
+    extends _$HasEarnedPartTimeLeaderRewardRepository {
   @override
   Future<bool> build() async {
     final preferenceService = ref.read(preferenceServiceProvider);
     final value = await preferenceService.getBool(
-      PreferenceKey.hasEarnedLeaderReward,
+      PreferenceKey.hasEarnedPartTimeLeaderReward,
     );
     return value ?? false;
   }
@@ -19,7 +19,7 @@ class HasEarnedLeaderRewardRepository
   Future<void> markAsEarned() async {
     final preferenceService = ref.read(preferenceServiceProvider);
     await preferenceService.setBool(
-      PreferenceKey.hasEarnedLeaderReward,
+      PreferenceKey.hasEarnedPartTimeLeaderReward,
       value: true,
     );
 
@@ -29,7 +29,7 @@ class HasEarnedLeaderRewardRepository
   Future<void> reset() async {
     final preferenceService = ref.read(preferenceServiceProvider);
     await preferenceService.setBool(
-      PreferenceKey.hasEarnedLeaderReward,
+      PreferenceKey.hasEarnedPartTimeLeaderReward,
       value: false,
     );
 

@@ -6,7 +6,7 @@ enum CavivaraReward {
   ),
   leader(
     threshold: 10000,
-    displayName: 'プレクトラム結社バイトリーダー',
+    displayName: 'プレクトラム結社partTimeLeader',
     conditionDescription: 'カヴィヴァラさんたちから受信したチャットの文字数が10000文字を超えた',
   );
 
