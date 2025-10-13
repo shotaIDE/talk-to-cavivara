@@ -206,37 +206,12 @@ Future<void> updateLastTalkedCavivaraId(Ref ref, String cavivaraId) async {
   await notifier.updateId(cavivaraId);
 }
 
-/// 称号獲得通知の状態を管理するデータクラス
-class RewardNotificationState {
-  RewardNotificationState({
-    required this.maxNotifiedThreshold,
-    required this.isInitialized,
-    this.unlockedReward,
-  });
-
-  final int maxNotifiedThreshold;
-  final bool isInitialized;
-  final CavivaraReward? unlockedReward;
-
-  RewardNotificationState copyWith({
-    int? maxNotifiedThreshold,
-    bool? isInitialized,
-    CavivaraReward? unlockedReward,
-  }) {
-    return RewardNotificationState(
-      maxNotifiedThreshold: maxNotifiedThreshold ?? this.maxNotifiedThreshold,
-      isInitialized: isInitialized ?? this.isInitialized,
-      unlockedReward: unlockedReward,
-    );
-  }
-}
-
 /// 称号獲得通知を管理するProvider
 /// receivedChatStringCountRepositoryを直接subscribeし、値の変化に応じてreward付与と通知を行う
 @riverpod
 class RewardNotificationManager extends _$RewardNotificationManager {
   @override
-  RewardNotificationState build() {
+  void build() {
     ref.listen(
       receivedChatStringCountRepositoryProvider,
       (previous, next) {
@@ -251,11 +226,6 @@ class RewardNotificationManager extends _$RewardNotificationManager {
           current: currentValue,
         );
       },
-    );
-
-    return RewardNotificationState(
-      maxNotifiedThreshold: 0,
-      isInitialized: false,
     );
   }
 
