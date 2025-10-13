@@ -75,8 +75,8 @@ class _RootAppState extends ConsumerState<RootApp> {
       navigatorObservers: navigatorObservers,
       title: 'カヴィヴァラチャット',
       builder: (_, child) {
-        final wrappedChild = HeadsUpNotificationOverlay(child: child);
-        return _wrapByAppBanner(wrappedChild);
+        final childWithOverlay = HeadsUpNotificationOverlay(child: child);
+        return _wrapByAppBanner(childWithOverlay);
       },
       darkTheme: getDarkTheme(),
       themeMode: ThemeMode.dark,
