@@ -1,21 +1,11 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:house_worker/ui/feature/stats/cavivara_reward.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'heads_up_notification_presenter.freezed.dart';
 part 'heads_up_notification_presenter.g.dart';
-
-@freezed
-sealed class HeadsUpNotificationData with _$HeadsUpNotificationData {
-  const factory HeadsUpNotificationData({
-    required String title,
-    required String message,
-    VoidCallback? onTap,
-  }) = _HeadsUpNotificationData;
-}
 
 @freezed
 sealed class HeadsUpNotificationState with _$HeadsUpNotificationState {
