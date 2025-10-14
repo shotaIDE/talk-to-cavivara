@@ -27,11 +27,12 @@ class Notification with _$Notification {
 ```
 
 プロパティ:
+
 - `id`: 通知の一意識別子
 - `title`: 通知タイトル
 - `body`: 通知本文(プレーンテキスト)
 - `publishedAt`: 公開日時
-- `detailUrl`: 詳細URL(オプション)
+- `detailUrl`: 詳細 URL(オプション)
 
 ### NotificationService ([notification_service.dart](../../client/lib/data/service/notification_service.dart))
 
@@ -59,11 +60,13 @@ class Notifications extends _$Notifications {
 ```
 
 主要機能:
-- Remote Config の `notifications` キーからJSON配列を取得
+
+- Remote Config の `notifications` キーから JSON 配列を取得
 - 通知リストを `Notification` オブジェクトに変換
 - 公開日時の降順でソート
 
 Firebase Remote Config の設定例:
+
 ```json
 [
   {
@@ -84,7 +87,7 @@ Firebase Remote Config の設定例:
 
 ### ReadNotificationIdsRepository ([read_notification_ids_repository.dart](../../client/lib/data/repository/read_notification_ids_repository.dart))
 
-既読通知IDのリストを SharedPreferences で永続化するリポジトリ。
+既読通知 ID のリストを SharedPreferences で永続化するリポジトリ。
 
 ```dart
 @riverpod
@@ -127,7 +130,8 @@ class ReadNotificationIds extends _$ReadNotificationIds {
 ```
 
 主要メソッド:
-- `markAsRead(String notificationId)`: 指定されたIDを既読としてマーク
+
+- `markAsRead(String notificationId)`: 指定された ID を既読としてマーク
 - `resetForDebug()`: デバッグ用のリセット機能
 
 ### UnreadNotificationCountProvider ([notification_presenter.dart](../../client/lib/ui/feature/notification/notification_presenter.dart))
@@ -145,7 +149,8 @@ Future<int> unreadNotificationCount(Ref ref) async {
 ```
 
 主要機能:
-- 全通知リストと既読IDリストを比較
+
+- 全通知リストと既読 ID リストを比較
 - 未読通知の件数を計算
 
 ### NotificationListScreen ([notification_list_screen.dart](../../client/lib/ui/feature/notification/notification_list_screen.dart))
@@ -163,12 +168,14 @@ static MaterialPageRoute<NotificationListScreen> route() =>
 ```
 
 表示内容:
+
 - 通知リストを公開日時の降順で表示
 - 未読通知にはバッジまたは背景色で視覚的に区別
 - タップすると詳細ダイアログを表示し、自動的に既読としてマーク
 - 通知がない場合は「お知らせはありません」と表示
 
-UI構成:
+UI 構成:
+
 ```
 AppBar
   title: "お知らせ"
@@ -186,9 +193,10 @@ ListView
 通知の詳細を表示するダイアログ。
 
 表示内容:
+
 - タイトル
 - 本文(プレーンテキスト)
-- 詳細URLがある場合は「詳しく見る」ボタンを表示
+- 詳細 URL がある場合は「詳しく見る」ボタンを表示
 - 「閉じる」ボタン
 
 ```dart
@@ -206,20 +214,23 @@ static Future<void> show(
 ```
 
 動作:
+
 - ダイアログ表示時に自動的に既読としてマーク
-- 詳細URLがある場合、「詳しく見る」ボタンタップで外部ブラウザを起動
+- 詳細 URL がある場合、「詳しく見る」ボタンタップで外部ブラウザを起動
 
 ### AppDrawer の拡張
 
 [AppDrawer](../../client/lib/ui/component/app_drawer.dart) に「お知らせ」項目を追加し、未読バッジを表示する。
 
 追加するプロパティ:
+
 ```dart
 final bool isNotificationSelected;
 final VoidCallback onSelectNotification;
 ```
 
 追加する ListTile:
+
 ```dart
 Widget _buildNotificationTile(BuildContext context) {
   final unreadCountAsync = ref.watch(unreadNotificationCountProvider);
@@ -250,6 +261,7 @@ Widget _buildNotificationTile(BuildContext context) {
 ```
 
 挿入位置:
+
 ```dart
 _buildTalkTile(context),
 _buildJobMarketTile(context),
@@ -298,14 +310,14 @@ Widget build(BuildContext context) {
 ### 通知取得時
 
 1. アプリ起動時、`NotificationService` が Firebase Remote Config から通知リストを取得
-2. JSON文字列をパースして `Notification` オブジェクトのリストに変換
+2. JSON 文字列をパースして `Notification` オブジェクトのリストに変換
 3. 公開日時の降順でソート
-4. `ReadNotificationIdsRepository` から既読IDリストを取得
+4. `ReadNotificationIdsRepository` から既読 ID リストを取得
 5. `UnreadNotificationCountProvider` が未読通知数を計算
 
 ### お知らせ一覧画面表示時
 
-1. `NotificationListScreen` が通知リストと既読IDリストを取得
+1. `NotificationListScreen` が通知リストと既読 ID リストを取得
 2. 各通知の既読状態を判定し、未読の場合はバッジまたは背景色を表示
 3. タップすると `NotificationDetailDialog` を表示
 4. ダイアログ表示時に `ReadNotificationIdsRepository.markAsRead()` を呼び出し、既読としてマーク
@@ -313,7 +325,7 @@ Widget build(BuildContext context) {
 
 ### 未読バッジ更新時
 
-1. `UnreadNotificationCountProvider` が通知リストまたは既読IDリストの変更を監視
+1. `UnreadNotificationCountProvider` が通知リストまたは既読 ID リストの変更を監視
 2. 変更があった場合、未読通知数を再計算
 3. `AppDrawer` と `HomeScreen` の AppBar が自動的に更新される
 
@@ -329,7 +341,8 @@ enum PreferenceKey {
 ```
 
 SharedPreferences に保存:
-- `readNotificationIds`: 既読通知IDのリスト (List\<String\>)
+
+- `readNotificationIds`: 既読通知 ID のリスト (List\<String\>)
 
 ## エラーハンドリング
 
@@ -341,18 +354,18 @@ SharedPreferences に保存:
 
 ### JSON パースエラー時
 
-- 不正なJSON形式の場合、ログに記録し、空のリストを返す
+- 不正な JSON 形式の場合、ログに記録し、空のリストを返す
 - ユーザーには「お知らせはありません」と表示
 
-### 外部URL起動失敗時
+### 外部 URL 起動失敗時
 
-- `url_launcher` で外部URLを開けない場合、SnackBar でエラーメッセージを表示
-- 例: 「URLを開けませんでした」
+- `url_launcher` で外部 URL を開けない場合、SnackBar でエラーメッセージを表示
+- 例: 「URL を開けませんでした」
 
 ## 設計ポイント
 
 - **スケーラビリティ**: Remote Config を使用することで、アプリ更新なしで通知を追加・更新可能
-- **シンプルな既読管理**: 既読IDリストのみをローカルに保存することで、実装をシンプルに保つ
+- **シンプルな既読管理**: 既読 ID リストのみをローカルに保存することで、実装をシンプルに保つ
 - **自動的なバッジ更新**: Riverpod の `ref.watch` を使用して、既読状態の変更を自動的に UI に反映
 - **Reward 機能との一貫性**: 既存の Reward 機能と同様のアーキテクチャを採用し、コードベースの一貫性を保つ
 - **アクセシビリティ**: バッジとテキストで未読状態を明示し、視覚的にわかりやすい UI を提供
@@ -375,11 +388,11 @@ SharedPreferences に保存:
 - 通知がない場合、中央に「お知らせはありません」と表示
 - アイコンとテキストで視覚的にわかりやすくする
 
-### 詳細URL の取り扱い
+### 詳細 URL の取り扱い
 
-- 詳細URLがある場合のみ「詳しく見る」ボタンを表示
+- 詳細 URL がある場合のみ「詳しく見る」ボタンを表示
 - ボタンタップで外部ブラウザを起動
-- URL起動失敗時はエラーメッセージを表示
+- URL 起動失敗時はエラーメッセージを表示
 
 ## テスト計画
 
@@ -425,7 +438,7 @@ ListTile(
 ### プッシュ通知との連携
 
 - 現在はアプリ内通知のみだが、将来的に Firebase Cloud Messaging と連携可能
-- 通知IDをキーとして、プッシュ通知とアプリ内通知を紐づける
+- 通知 ID をキーとして、プッシュ通知とアプリ内通知を紐づける
 
 ### 通知のカテゴリ分け
 
@@ -448,7 +461,7 @@ ListTile(
 
 - [client/lib/data/model/notification.dart](../../client/lib/data/model/notification.dart): 通知のドメインモデル
 - [client/lib/data/service/notification_service.dart](../../client/lib/data/service/notification_service.dart): 通知取得サービス
-- [client/lib/data/repository/read_notification_ids_repository.dart](../../client/lib/data/repository/read_notification_ids_repository.dart): 既読通知IDリポジトリ
+- [client/lib/data/repository/read_notification_ids_repository.dart](../../client/lib/data/repository/read_notification_ids_repository.dart): 既読通知 ID リポジトリ
 - [client/lib/ui/feature/notification/notification_presenter.dart](../../client/lib/ui/feature/notification/notification_presenter.dart): 通知プレゼンテーション層
 - [client/lib/ui/feature/notification/notification_list_screen.dart](../../client/lib/ui/feature/notification/notification_list_screen.dart): 通知一覧画面
 - [client/lib/ui/feature/notification/notification_detail_dialog.dart](../../client/lib/ui/feature/notification/notification_detail_dialog.dart): 通知詳細ダイアログ
