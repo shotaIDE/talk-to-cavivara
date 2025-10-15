@@ -31,10 +31,10 @@ Firebase Remote Config から取得したお知らせ情報をアプリ内で表
 
 **確認項目**:
 
-- [ ] `Notification` クラスが正しく定義されている
-- [ ] `freezed` の `@freezed` アノテーションが適用されている
-- [ ] `fromJson` / `toJson` メソッドが生成されている
-- [ ] すべてのフィールドが `required` または Optional として適切に定義されている
+- [x] `Notification` クラスが正しく定義されている
+- [x] `freezed` の `@freezed` アノテーションが適用されている
+- [x] `fromJson` / `toJson` メソッドが生成されている
+- [x] すべてのフィールドが `required` または Optional として適切に定義されている
 
 ---
 
