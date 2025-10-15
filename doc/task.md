@@ -56,7 +56,7 @@ Firebase Remote Config から取得したお知らせ情報をアプリ内で表
 
 **確認項目**:
 
-- [ ] `PreferenceKey` enum に `readNotificationIds` が追加されている
+- [x] `PreferenceKey` enum に `readNotificationIds` が追加されている
 
 ---
 
