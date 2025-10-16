@@ -1,113 +1,691 @@
-# タスクリスト
+# タスクリスト - 通知機能実装
 
-## ✅ 1. カヴィヴァラのドメインモデル定義（完了）
+## 概要
 
-- ✅ `client/lib/data/model/` にカヴィヴァラ固有情報を保持する `CavivaraProfile`（ID、表示名、肩書き、紹介文、アイコンパス、AI 用プロンプト、タグ、履歴書セクションなど）と履歴書セクション用のデータクラスを追加する。
-- ✅ 既存の履歴書画面の内容を 1 人目のカヴィヴァラのデータとして移植し、2 人目のカヴィヴァラのプロフィールと履歴書・プロンプトの文面を設計する。
-- ✅ 今後の拡張に備えて不変データとして扱えるよう `freezed` で実装し、生成ファイルを含めて管理する。
-- 依存関係: なし
-- **完了日**: 2025-09-19
-- **実装ファイル**: `cavivara_profile.dart`, `resume_section.dart`, `cavivara_profiles_data.dart`
+Firebase Remote Config から取得したお知らせ情報をアプリ内で表示する機能を実装する。既読管理をローカルに保存し、未読通知がある場合はドロワーメニューとハンバーガーアイコンにバッジを表示する。
 
-## ✅ 2. カヴィヴァラアイコンコンポーネントの拡張（完了）
+詳細な設計は [doc/spec/notification-feature.md](./spec/notification-feature.md) を参照。
 
-- ✅ `client/lib/ui/component/cavivara_avatar.dart` を改修し、呼び出し側からアセットパスや背景色を指定できるようにする（後方互換のためデフォルト値は既存の `cavivara.png` を使用）。
-- ✅ 今後複数キャラクターの表示に対応できるよう、Hero タグや Semantics 情報を ID ベースで付与できる仕組みが必要であれば追加検討する。
-- 依存関係: タスク 1
-- **完了日**: 2025-09-19
-- **実装内容**: assetPath, backgroundColor, cavivaraId, semanticsLabel パラメーターを追加。Hero タグによるアニメーション対応、ID ベースの Semantics 対応を実装。
+---
 
-## ✅ 3. カヴィヴァラ一覧プロバイダーの実装（完了）
+## 1. ドメインモデルの実装
 
-- ✅ タスク 1 で作成したプロフィール定義を返す `Provider`/`@riverpod`（例: `cavivaraDirectoryProvider`）を `client/lib/data/service/` 配下に追加し、アプリ全体で参照できるようにする。
-- ✅ ID からプロフィールを取得するヘルパー（`cavivaraByIdProvider` など）を用意し、例外時の扱いを決める。
-- ✅ プロバイダーのユニットテストを `client/test/` に追加し、2 名分のデータが期待通り取得できることを確認する。
-- 依存関係: タスク 1
-- **完了日**: 2025-09-19
-- **実装ファイル**: `cavivara_directory_service.dart`, `cavivara_directory_service_test.dart`
+**目的**: 通知情報を表すドメインモデルを定義する
 
-## ✅ 4. 雇用状態管理ロジックの追加（完了）
+**実装内容**:
 
-- ✅ カヴィヴァラごとの雇用状態を保持する `StateNotifier`（または `@riverpod` の `Notifier`）を `client/lib/data/service/` に実装し、`hire`/`fire`/`isEmployed` を提供する。
-- ✅ 初期状態（全員未雇用 or 特定メンバー雇用済み）を定義し、永続化が不要であることを明示するコメントを追加する。
-- ✅ 雇用状態変更のテストを作成し、通知が正しく行われることを検証する。
-- 依存関係: タスク 3
-- **完了日**: 2025-09-19
-- **実装ファイル**: `employment_state_service.dart`, `employment_state_service_test.dart`
+- `client/lib/data/model/notification.dart` を作成
+- `freezed` を使用して `Notification` クラスを定義
+- `id`, `title`, `body`, `publishedAt`, `detailUrl` のフィールドを含める
+- JSON シリアライズ/デシリアライズ機能を追加
 
-## ✅ 5. AI チャットサービスのプロンプト対応改修（完了）
+**成果物**:
 
-- ✅ `client/lib/data/service/ai_chat_service.dart` の `sendMessage`/`sendMessageStream` を拡張し、カヴィヴァラごとの `systemPrompt` と（必要なら）会話履歴を受け取れるようにする。
-- ✅ 既存の呼び出し側をすべて更新し、新しいシグネチャでもストリーミング挙動とエラーハンドリングが維持されることを確認する。
-- 依存関係: タスク 1
-- **完了日**: 2025-09-19
-- **実装内容**: sendMessageStreamメソッドにsystemPromptとconversationHistoryの任意パラメーターを追加。チャットセッションをsystemPromptごとにキャッシュする仕組みを実装。既存のAPIとの後方互換性を維持。
+- `client/lib/data/model/notification.dart`
+- `client/lib/data/model/notification.freezed.dart` (生成)
+- `client/lib/data/model/notification.g.dart` (生成)
 
-## ✅ 6. チャットメッセージプロバイダーの多キャラクター対応（完了）
+**依存関係**: なし
 
-- ✅ `client/lib/ui/feature/home/home_presenter.dart` の `ChatMessages` を Provider family 化し、`chatMessagesProvider(cavivaraId)` の形で個別の履歴を保持するよう変更する。
-- ✅ タスク 5 で拡張した AI サービスを利用してメッセージを送信し、ストリーミング更新やエラー処理のロジックを ID ごとに動作させる。
-- ✅ チャット履歴クリア処理を ID 単位で行えるようにし、必要なら全消去のユーティリティも用意する。
-- 依存関係: タスク 3, タスク 5
-- **完了日**: 2025-09-19
-- **実装内容**: ChatMessages を Provider family に変更、cavivaraId をパラメーターとして受け取るように実装。各キャラクター固有の AI プロンプトと会話履歴を使用してメッセージを送信。ID 単位でのクリア機能と全体クリア機能を追加。
+**作業時間見積もり**: 30 分
 
-## ✅ 7. チャット画面のカヴィヴァラ切り替え対応（完了）
+**確認項目**:
 
-- ✅ 既存の `HomeScreen` を、特定のカヴィヴァラ ID を受け取って表示するチャット画面に改修する（必要であれば `ChatScreen` へのリネームを含む）。
-- ✅ AppBar 表示、アバタータップ時の履歴書遷移、メッセージ送受信・クリア処理などを `chatMessagesProvider(cavivaraId)` と雇用状態に連動させる。
-- ✅ 画面間遷移で利用する `route` メソッドの引数を更新し、既存の呼び出し箇所をすべて追従させる。
-- 依存関係: タスク 2, タスク 3, タスク 6
-- **完了日**: 2025-09-19
-- **実装内容**: HomeScreen を cavivaraId パラメーターを受け取るように変更。AppBar タイトルに選択されたカヴィヴァラの名前とアバターを表示。チャットメッセージリストを cavivaraId 固有のプロバイダーを使用するように更新。クリア機能とメッセージ送信機能を特定のカヴィヴァラに対応。アバターとチャットバブルで特定のカヴィヴァラの情報を表示。
+- [x] `Notification` クラスが正しく定義されている
+- [x] `freezed` の `@freezed` アノテーションが適用されている
+- [x] `fromJson` / `toJson` メソッドが生成されている
+- [x] すべてのフィールドが `required` または Optional として適切に定義されている
 
-## ✅ 8. 履歴書画面の動的化と雇用アクション（完了）
+---
 
-- ✅ `client/lib/ui/feature/resume/resume_screen.dart` を `ConsumerWidget` 化し、タスク 1 で定義したプロフィールデータを元に内容を描画するようリファクタリングする。
-- ✅ 雇用状態に応じて「雇用する」/「解雇する」ボタンを出し分け、`hire` 実行時は対象カヴィヴァラのチャット画面へ遷移、`fire` 実行時は転職市場一覧へ戻るフローを実装する。
-- ✅ ボタンタップ時にスナックバー等のフィードバックが必要か検討し、不要なら戻り値で十分であることをコメントする。
-- 依存関係: タスク 2, タスク 3, タスク 4, タスク 7
-- **完了日**: 2025-09-20
-- **実装内容**: ResumeScreenをConsumerWidgetに変更し、cavivaraIdパラメーターを受け取るように実装。動的にCavivaraProfileのデータから履歴書を構築。雇用状態に応じた雇用・解雇ボタンと相談ボタンを実装。雇用時はチャット画面に遷移、解雇時は前の画面に戻る（転職市場未実装のため）機能を追加。
+## 2. PreferenceKey の拡張
 
-## ✅ 9. 転職市場一覧画面の新規実装（完了）
+**目的**: 既読通知 ID のリストを保存するためのキーを追加する
 
-- ✅ `client/lib/ui/feature/` 配下に転職市場画面（例: `job_market/job_market_screen.dart`）を追加し、2 名のカヴィヴァラをアイコン・名称・肩書き付きで一覧表示する。
-- ✅ 各リストアイテムのタップで履歴書画面を開くようにし、雇用中メンバーには「相談する」ボタンを表示してチャット画面へ遷移できるようにする。
-- ✅ 雇用状態の変化に応じて UI が即時反映されることを確認するため、`ConsumerWidget` もしくは `ConsumerStatefulWidget` で実装する。
-- 依存関係: タスク 2, タスク 3, タスク 4, タスク 8, タスク 7
-- **完了日**: 2025-09-20
-- **実装ファイル**: `job_market_screen.dart`, `job_market_screen_test.dart`
-- **実装内容**: 転職市場画面をConsumerWidgetで実装。カヴィヴァラのアイコン・名称・肩書きを一覧表示。雇用状態に応じて「雇用中」バッジと「相談する」ボタンを表示。履歴書画面とチャット画面への遷移機能を実装。ウィジェットテストを追加。
+**実装内容**:
 
-## ✅ 10. ナビゲーションとルート初期化の調整（完了）
+- `client/lib/data/model/preference_key.dart` に `readNotificationIds` を追加
 
-- ✅ `client/lib/ui/root_app.dart` や関連ルート設定を更新し、サインイン済みユーザーの初期画面が転職市場一覧になるよう変更する。
-- ✅ MaterialApp の `routes` / `onGenerateInitialRoutes` / `Navigator` 操作を見直し、新規画面間の戻る遷移が自然になるようスタック構成を整理する。
-- ✅ 必要に応じて `AppInitialRoute` の enum や関連テストを更新する。
-- 依存関係: タスク 7, タスク 8, タスク 9
-- **完了日**: 2025-09-20
-- **実装内容**: `AppInitialRoute` enumに `jobMarket` を追加。`appInitialRoute` providerでサインイン済みユーザーに対して `jobMarket` を返すように変更。`root_app.dart` で `JobMarketScreen` のimportとルート設定を追加し、初期画面を転職市場一覧に設定。
+**成果物**:
 
-## ✅ 11. プロバイダー・画面ロジックのテスト追加（完了）
+- `client/lib/data/model/preference_key.dart` (更新)
 
-- ✅ 雇用状態管理、カヴィヴァラ取得、チャットメッセージ保持のユニットテストを作成し、主要なメソッドの挙動を検証する（AI サービス利用箇所はモック化）。
-- ✅ 転職市場画面と履歴書画面について、雇用状態に応じたボタン表示・遷移を確認するウィジェットテストを追加する。
-- 依存関係: タスク 4, タスク 6, タスク 8, タスク 9, タスク 10
-- **完了日**: 2025-09-20
-- **実装ファイル**: `home_presenter_test.dart`, `job_market_screen_test.dart`（拡張）, `resume_screen_test.dart`
-- **実装内容**: チャットメッセージプロバイダーのユニットテスト（AI サービスモック化、ストリーミング処理、エラーハンドリング、独立性確認）。転職市場画面と履歴書画面のウィジェットテスト（雇用状態に応じたUI表示切り替え、リアルタイム更新、ボタンインタラクション）を追加。全テストパス確認済み。
+**依存関係**: なし
 
-## ✅ 12. コード生成・フォーマット・テスト実行（完了）
+**作業時間見積もり**: 5 分
 
-- ✅ `dart run build_runner build --delete-conflicting-outputs` を実行し、`freezed` や `riverpod` の生成コードを更新する。
-- ✅ `dart format .`、`dart fix --apply`、`flutter test` を実行し、フォーマットと Lint、テストを全てパスさせる。
-- 依存関係: タスク 1〜11
-- **完了日**: 2025-09-20
-- **実行結果**: ビルドランナー実行済み（567出力、1145アクション）、フォーマット適用済み（83ファイル中3ファイル更新）、lint修正なし、全テストパス（39テスト成功）
+**確認項目**:
 
-## 13. ドキュメントと変更点の整理
+- [x] `PreferenceKey` enum に `readNotificationIds` が追加されている
 
-- 新しい画面やカヴィヴァラ管理の仕様を `README` や必要なドキュメント（例: `ARCHITECTURE.md`）に追記し、開発者が構成を理解できるようにする。
-- PR 用の概要文を用意し、主要変更点とテスト結果をまとめる。
-- 依存関係: タスク 1〜12
+---
+
+## 3. 通知サービスの実装
+
+**目的**: Firebase Remote Config から通知情報を取得するサービスを実装する
+
+**実装内容**:
+
+- `client/lib/data/service/notification_service.dart` を作成
+- `@riverpod` を使用して `Notifications` プロバイダーを定義
+- Remote Config の `notifications` キーから JSON 配列を取得
+- JSON を `Notification` オブジェクトのリストに変換
+- 公開日時の降順でソート
+
+**成果物**:
+
+- `client/lib/data/service/notification_service.dart`
+- `client/lib/data/service/notification_service.g.dart` (生成)
+
+**依存関係**: タスク 1
+
+**作業時間見積もり**: 45 分
+
+**確認項目**:
+
+- [x] `Notifications` プロバイダーが正しく定義されている
+- [x] Remote Config から JSON 文字列を取得している
+- [x] JSON パースエラーを適切にハンドリングしている
+- [x] 通知リストが公開日時の降順でソートされている
+- [x] 空の JSON 文字列の場合、空リストを返す
+
+---
+
+## 4. 既読通知リポジトリの実装
+
+**目的**: 既読通知 ID のリストを SharedPreferences で管理するリポジトリを実装する
+
+**実装内容**:
+
+- `client/lib/data/repository/read_notification_ids_repository.dart` を作成
+- `@riverpod` を使用して `ReadNotificationIds` Notifier を定義
+- `markAsRead(String notificationId)` メソッドを実装
+- `resetForDebug()` メソッドを実装
+- SharedPreferences からの読み書きを行う
+
+**成果物**:
+
+- `client/lib/data/repository/read_notification_ids_repository.dart`
+- `client/lib/data/repository/read_notification_ids_repository.g.dart` (生成)
+
+**依存関係**: タスク 2
+
+**作業時間見積もり**: 45 分
+
+**確認項目**:
+
+- [ ] `ReadNotificationIds` Notifier が正しく定義されている
+- [ ] `markAsRead` メソッドで既読 ID を追加している
+- [ ] 既に既読の場合は重複追加しない
+- [ ] `resetForDebug` メソッドで既読リストをクリアできる
+- [ ] 状態更新時に `state` を更新している
+
+---
+
+## 5. 通知プレゼンテーション層の実装
+
+**目的**: 未読通知数を計算するプロバイダーを実装する
+
+**実装内容**:
+
+- `client/lib/ui/feature/notification/notification_presenter.dart` を作成
+- `@riverpod` を使用して `unreadNotificationCount` プロバイダーを定義
+- 通知リストと既読 ID リストを比較して未読数を計算
+
+**成果物**:
+
+- `client/lib/ui/feature/notification/notification_presenter.dart`
+- `client/lib/ui/feature/notification/notification_presenter.g.dart` (生成)
+
+**依存関係**: タスク 3, タスク 4
+
+**作業時間見積もり**: 30 分
+
+**確認項目**:
+
+- [ ] `unreadNotificationCount` プロバイダーが正しく定義されている
+- [ ] 通知リストと既読 ID リストを監視している
+- [ ] 未読通知数を正しく計算している
+
+---
+
+## 6. 通知詳細ダイアログの実装
+
+**目的**: 通知の詳細を表示するダイアログを実装する
+
+**実装内容**:
+
+- `client/lib/ui/feature/notification/notification_detail_dialog.dart` を作成
+- タイトル、本文、詳細 URL を表示
+- 詳細 URL がある場合は「詳しく見る」ボタンを表示
+- 「閉じる」ボタンを表示
+- 外部 URL 起動のエラーハンドリング
+
+**成果物**:
+
+- `client/lib/ui/feature/notification/notification_detail_dialog.dart`
+
+**依存関係**: タスク 1
+
+**作業時間見積もり**: 45 分
+
+**確認項目**:
+
+- [ ] ダイアログが正しく表示される
+- [ ] タイトルと本文が表示される
+- [ ] 詳細 URL がある場合のみ「詳しく見る」ボタンが表示される
+- [ ] 「詳しく見る」ボタンで外部ブラウザが起動する
+- [ ] URL 起動失敗時に SnackBar でエラーメッセージを表示する
+- [ ] 「閉じる」ボタンでダイアログが閉じる
+
+---
+
+## 7. 通知一覧画面の実装
+
+**目的**: 通知一覧を表示する画面を実装する
+
+**実装内容**:
+
+- `client/lib/ui/feature/notification/notification_list_screen.dart` を作成
+- 通知リストを公開日時の降順で表示
+- 未読通知を視覚的に区別(背景色や太字)
+- タップで詳細ダイアログを表示し、既読としてマーク
+- 通知がない場合は「お知らせはありません」と表示
+- ローディング状態とエラー状態の処理
+
+**成果物**:
+
+- `client/lib/ui/feature/notification/notification_list_screen.dart`
+
+**依存関係**: タスク 3, タスク 4, タスク 5, タスク 6
+
+**作業時間見積もり**: 1 時間 30 分
+
+**確認項目**:
+
+- [ ] 通知リストが正しく表示される
+- [ ] 未読通知が視覚的に区別される
+- [ ] タップで詳細ダイアログが開く
+- [ ] 詳細ダイアログ表示時に既読としてマークされる
+- [ ] 通知がない場合の空状態が表示される
+- [ ] ローディング中は `CircularProgressIndicator` を表示
+- [ ] エラー時はエラーメッセージを表示
+- [ ] `MaterialPageRoute` の静的メソッドが定義されている
+
+---
+
+## 8. AppDrawer に「お知らせ」項目を追加
+
+**目的**: ドロワーメニューに「お知らせ」項目を追加し、未読バッジを表示する
+
+**実装内容**:
+
+- `client/lib/ui/component/app_drawer.dart` を更新
+- `isNotificationSelected` と `onSelectNotification` パラメーターを追加
+- `_buildNotificationTile` メソッドを実装
+- 未読数を取得して `Badge` ウィジェットを表示
+- タップで通知一覧画面に遷移
+
+**成果物**:
+
+- `client/lib/ui/component/app_drawer.dart` (更新)
+
+**依存関係**: タスク 5, タスク 7
+
+**作業時間見積もり**: 45 分
+
+**確認項目**:
+
+- [ ] `AppDrawer` に新しいパラメーターが追加されている
+- [ ] 「お知らせ」項目が正しい位置に表示される
+- [ ] 未読通知がある場合にバッジが表示される
+- [ ] バッジに未読数が表示される
+- [ ] タップでドロワーが閉じて通知一覧画面に遷移する
+- [ ] 選択状態が正しく反映される
+
+---
+
+## 9. HomeScreen のハンバーガーアイコンにバッジを追加
+
+**目的**: ホーム画面のハンバーガーアイコンに未読バッジを表示する
+
+**実装内容**:
+
+- `client/lib/ui/feature/home/home_screen.dart` を更新
+- AppBar の `leading` プロパティをカスタマイズ
+- 未読通知数を監視し、未読がある場合はバッジ付きハンバーガーアイコンを表示
+- AppDrawer に新しいパラメーターを渡す
+- 通知一覧画面への遷移処理を追加
+
+**成果物**:
+
+- `client/lib/ui/feature/home/home_screen.dart` (更新)
+
+**依存関係**: タスク 5, タスク 7, タスク 8
+
+**作業時間見積もり**: 45 分
+
+**確認項目**:
+
+- [ ] 未読通知がある場合にハンバーガーアイコンにバッジが表示される
+- [ ] バッジに未読数が表示される
+- [ ] バッジがない場合はデフォルトのハンバーガーアイコンが表示される
+- [ ] AppDrawer に正しいパラメーターが渡されている
+- [ ] 通知一覧画面への遷移が機能する
+
+---
+
+## 10. JobMarketScreen のハンバーガーアイコンにバッジを追加
+
+**目的**: 転職市場画面のハンバーガーアイコンに未読バッジを表示する
+
+**実装内容**:
+
+- `client/lib/ui/feature/job_market/job_market_screen.dart` を更新
+- HomeScreen と同様に AppBar の `leading` をカスタマイズ
+- AppDrawer に新しいパラメーターを渡す
+- 通知一覧画面への遷移処理を追加
+
+**成果物**:
+
+- `client/lib/ui/feature/job_market/job_market_screen.dart` (更新)
+
+**依存関係**: タスク 5, タスク 7, タスク 8
+
+**作業時間見積もり**: 45 分
+
+**確認項目**:
+
+- [ ] 未読通知がある場合にハンバーガーアイコンにバッジが表示される
+- [ ] バッジに未読数が表示される
+- [ ] AppDrawer に正しいパラメーターが渡されている
+- [ ] 通知一覧画面への遷移が機能する
+
+---
+
+## 11. デバッグ画面に既読リセット機能を追加
+
+**目的**: デバッグ画面に既読通知をリセットする機能を追加する
+
+**実装内容**:
+
+- `client/lib/ui/feature/settings/debug_screen.dart` を更新
+- 既読通知をリセットする ListTile を追加
+- `ReadNotificationIds.resetForDebug()` を呼び出す
+- 成功時に SnackBar でフィードバックを表示
+
+**成果物**:
+
+- `client/lib/ui/feature/settings/debug_screen.dart` (更新)
+
+**依存関係**: タスク 4
+
+**作業時間見積もり**: 20 分
+
+**確認項目**:
+
+- [ ] デバッグ画面に「既読通知をリセット」項目が追加されている
+- [ ] タップで既読リストがクリアされる
+- [ ] 成功時に SnackBar が表示される
+
+---
+
+## 12. ユニットテストの実装
+
+**目的**: ドメインモデル、リポジトリ、プロバイダーのユニットテストを作成する
+
+**実装内容**:
+
+- `client/test/data/model/notification_test.dart` を作成
+  - `Notification.fromJson()` のテスト
+  - 各フィールドが正しく変換されることを確認
+- `client/test/data/repository/read_notification_ids_repository_test.dart` を作成
+  - `markAsRead()` のテスト
+  - `resetForDebug()` のテスト
+  - 重複追加のテスト
+- `client/test/ui/feature/notification/notification_presenter_test.dart` を作成
+  - `unreadNotificationCount` プロバイダーのテスト
+  - 未読数計算ロジックのテスト
+
+**成果物**:
+
+- `client/test/data/model/notification_test.dart`
+- `client/test/data/repository/read_notification_ids_repository_test.dart`
+- `client/test/ui/feature/notification/notification_presenter_test.dart`
+
+**依存関係**: タスク 1, タスク 4, タスク 5
+
+**作業時間見積もり**: 2 時間
+
+**確認項目**:
+
+- [ ] 全てのテストファイルが作成されている
+- [ ] `Notification.fromJson()` のテストがパスする
+- [ ] リポジトリのテストがパスする
+- [ ] プロバイダーのテストがパスする
+- [ ] モックを適切に使用している
+
+---
+
+## 13. ウィジェットテストの実装
+
+**目的**: 通知一覧画面と詳細ダイアログのウィジェットテストを作成する
+
+**実装内容**:
+
+- `client/test/ui/feature/notification/notification_list_screen_test.dart` を作成
+  - 通知リスト表示のテスト
+  - 未読/既読の視覚的区別のテスト
+  - 空状態の表示テスト
+  - タップ時のダイアログ表示テスト
+- `client/test/ui/feature/notification/notification_detail_dialog_test.dart` を作成
+  - ダイアログ表示のテスト
+  - 詳細 URL ありなしの表示切り替えテスト
+  - ボタンタップのテスト
+
+**成果物**:
+
+- `client/test/ui/feature/notification/notification_list_screen_test.dart`
+- `client/test/ui/feature/notification/notification_detail_dialog_test.dart`
+
+**依存関係**: タスク 6, タスク 7
+
+**作業時間見積もり**: 2 時間
+
+**確認項目**:
+
+- [ ] 全てのテストファイルが作成されている
+- [ ] 通知一覧画面のテストがパスする
+- [ ] 詳細ダイアログのテストがパスする
+- [ ] プロバイダーのオーバーライドを適切に使用している
+
+---
+
+## 14. コード生成・フォーマット・Lint 修正
+
+**目的**: コード生成を実行し、フォーマットと Lint を適用する
+
+**実施内容**:
+
+1. コード生成を実行
+
+   ```bash
+   cd client
+   dart run build_runner build --delete-conflicting-outputs
+   ```
+
+2. フォーマットを適用
+
+   ```bash
+   dart format .
+   ```
+
+3. Lint 自動修正を適用
+
+   ```bash
+   dart fix --apply
+   ```
+
+4. Lint 警告を確認
+   ```bash
+   flutter analyze
+   ```
+
+**依存関係**: タスク 1〜13
+
+**作業時間見積もり**: 30 分
+
+**確認項目**:
+
+- [ ] コード生成が正常に完了している
+- [ ] フォーマットが適用されている
+- [ ] Lint 警告がゼロである
+- [ ] 生成ファイルがすべてコミットされている
+
+---
+
+## 15. テスト実行と検証
+
+**目的**: 全てのテストを実行し、正常に動作することを確認する
+
+**実施内容**:
+
+1. ユニットテストとウィジェットテストを実行
+
+   ```bash
+   cd client
+   flutter test
+   ```
+
+2. 失敗したテストがあれば修正
+
+3. カバレッジを確認(オプション)
+   ```bash
+   flutter test --coverage
+   ```
+
+**依存関係**: タスク 12, タスク 13, タスク 14
+
+**作業時間見積もり**: 30 分
+
+**確認項目**:
+
+- [ ] 全てのテストがパスしている
+- [ ] 新規追加したテストがすべて含まれている
+- [ ] テストカバレッジが適切である(オプション)
+
+---
+
+## 16. Firebase Remote Config の設定
+
+**目的**: Firebase コンソールで Remote Config に通知データを設定する
+
+**実施内容**:
+
+1. Firebase コンソールにアクセス
+2. Remote Config セクションを開く
+3. `notifications` キーを追加
+4. JSON 配列形式でサンプル通知を設定
+5. 変更を公開
+
+**サンプル JSON**:
+
+```json
+[
+  {
+    "id": "notification_001",
+    "title": "通知機能リリースのお知らせ",
+    "body": "お知らせ機能がリリースされました。ドロワーメニューの「お知らせ」からご確認ください。",
+    "publishedAt": "2025-10-14T10:00:00Z",
+    "detailUrl": "https://example.com/news/001"
+  }
+]
+```
+
+**依存関係**: タスク 3
+
+**作業時間見積もり**: 15 分
+
+**確認項目**:
+
+- [ ] Remote Config に `notifications` キーが設定されている
+- [ ] JSON 形式が正しい
+- [ ] 変更が公開されている
+- [ ] アプリから取得できることを確認
+
+---
+
+## 17. 動作確認とデバッグ
+
+**目的**: 実機またはシミュレーターで動作を確認し、問題があれば修正する
+
+**確認内容**:
+
+1. **通知一覧画面**
+
+   - [ ] ドロワーメニューから「お知らせ」をタップして画面遷移
+   - [ ] 通知リストが正しく表示される
+   - [ ] 未読通知が視覚的に区別される
+   - [ ] 通知がない場合の空状態が表示される
+
+2. **通知詳細ダイアログ**
+
+   - [ ] 通知をタップして詳細ダイアログが開く
+   - [ ] タイトルと本文が表示される
+   - [ ] 詳細 URL がある場合のみ「詳しく見る」ボタンが表示される
+   - [ ] 「詳しく見る」ボタンで外部ブラウザが起動する
+   - [ ] 「閉じる」ボタンでダイアログが閉じる
+
+3. **既読管理**
+
+   - [ ] 詳細ダイアログを開くと既読になる
+   - [ ] 既読通知は視覚的に区別される
+   - [ ] アプリを再起動しても既読状態が保持される
+
+4. **未読バッジ**
+
+   - [ ] 未読通知がある場合、ハンバーガーアイコンにバッジが表示される
+   - [ ] 未読通知がある場合、ドロワーメニューの「お知らせ」にバッジが表示される
+   - [ ] バッジに正しい未読数が表示される
+   - [ ] 既読にすると即座にバッジが更新される
+   - [ ] 全て既読にするとバッジが消える
+
+5. **エラーハンドリング**
+
+   - [ ] ネットワークエラー時に適切なエラーメッセージが表示される
+   - [ ] 不正な JSON 形式の場合、アプリがクラッシュしない
+   - [ ] URL 起動失敗時にエラーメッセージが表示される
+
+6. **デバッグ機能**
+   - [ ] デバッグ画面から既読通知をリセットできる
+   - [ ] リセット後、全ての通知が未読になる
+
+**依存関係**: タスク 1〜16
+
+**作業時間見積もり**: 1 時間
+
+---
+
+## 18. ドキュメントの更新
+
+**目的**: 関連ドキュメントを更新し、通知機能の説明を追加する
+
+**実施内容**:
+
+- [ ] `ARCHITECTURE.md` に通知機能のアーキテクチャを追記
+- [ ] `README.md` に通知機能の概要を追記(必要に応じて)
+- [ ] コード内のコメントを確認し、不足があれば追加
+
+**依存関係**: タスク 1〜17
+
+**作業時間見積もり**: 30 分
+
+**確認項目**:
+
+- [ ] ドキュメントが更新されている
+- [ ] 新機能の説明が十分である
+- [ ] コード内のコメントが適切である
+
+---
+
+## 19. PR の作成
+
+**目的**: 実装内容をレビュー用の Pull Request にまとめる
+
+**実施内容**:
+
+1. 変更内容をコミット
+
+   ```bash
+   git add .
+   git commit -m "feat: 通知機能を実装"
+   ```
+
+2. ブランチをプッシュ
+
+   ```bash
+   git push origin notifications
+   ```
+
+3. GitHub で Pull Request を作成
+
+4. PR 説明文を記述
+   - 実装内容の概要
+   - 主要な変更点
+   - テスト結果
+   - スクリーンショット(オプション)
+
+**依存関係**: タスク 1〜18
+
+**作業時間見積もり**: 30 分
+
+**確認項目**:
+
+- [ ] 全ての変更がコミットされている
+- [ ] PR が作成されている
+- [ ] PR 説明文が十分である
+- [ ] レビュアーが指定されている(必要に応じて)
+
+---
+
+## 総作業時間見積もり
+
+- タスク 1〜11: 約 8 時間
+- タスク 12〜13: 約 4 時間
+- タスク 14〜19: 約 3 時間
+
+**合計**: 約 15 時間
+
+---
+
+## 優先順位
+
+### Phase 1: コア機能実装 (タスク 1〜7)
+
+通知の取得、表示、既読管理の基本機能を実装
+
+### Phase 2: UI 統合 (タスク 8〜11)
+
+既存の UI に通知機能を統合し、バッジを表示
+
+### Phase 3: テストとデバッグ (タスク 12〜17)
+
+テストを作成し、動作確認を行う
+
+### Phase 4: リリース準備 (タスク 18〜19)
+
+ドキュメントを整備し、PR を作成
+
+---
+
+## 注意事項
+
+1. **コーディング規約の遵守**
+
+   - [doc/coding-rule/general-coding-rules_ja.md](./coding-rule/general-coding-rules_ja.md) に従う
+   - 早期リターンを使用し、ネストを減らす
+   - 関数型プログラミングを活用する
+
+2. **既存機能との一貫性**
+
+   - Reward 機能と同様のアーキテクチャを採用
+   - 既存のコンポーネントやパターンを参考にする
+
+3. **テストの重要性**
+
+   - 全ての新規コードにテストを追加
+   - モックを適切に使用する
+
+4. **エラーハンドリング**
+
+   - ネットワークエラー、JSON パースエラーなどを適切に処理
+   - ユーザーにわかりやすいエラーメッセージを表示
+
+5. **アクセシビリティ**
+
+   - Semantics を適切に設定
+   - 色だけでなくテキストでも情報を伝える
+
+6. **パフォーマンス**
+   - 不要な再ビルドを避ける
+   - プロバイダーの依存関係を適切に管理
