@@ -32,7 +32,8 @@ dart fix --apply
 
 5. If necessary, revise the documentation.
 
-- [doc/spec/](/doc/spec/): Functional specifications
+- [doc/requirement/](/doc/requirement/): Requirement definition document
+- [doc/design/](/doc/design/): Technical design document
 
 6. Think of an appropriate commit message and commit.
 
