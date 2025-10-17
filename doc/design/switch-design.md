@@ -1,846 +1,345 @@
-# チャット吹き出しデザイン切り替え機能 技術設計書
+# チャット吹き出しデザイン切り替え機能 概要設計書
 
-## 概要
+## 目的
 
-チャット画面の吹き出し形状を動的に変更する機能の技術的な実装設計。
+チャット画面の吹き出し形状を「四角」と「角削り」から選択できる機能の技術的な設計概要を示す。
 
 ## アーキテクチャ
 
 ### レイヤー構成
 
-```
-┌─────────────────────────────────────┐
-│ UI Layer                            │
-│ - HomeScreen (吹き出しウィジェット)  │
-│ - SettingsScreen (設定UI)           │
-│ - ChatBubbleDesignSelectionDialog   │
-└─────────────────────────────────────┘
-              ↓ ref.watch
-┌─────────────────────────────────────┐
-│ Repository Layer                    │
-│ - ChatBubbleDesignRepository        │
-└─────────────────────────────────────┘
-              ↓ read/write
-┌─────────────────────────────────────┐
-│ Data Layer                          │
-│ - SharedPreferences                 │
-└─────────────────────────────────────┘
-```
+本機能は以下の3層アーキテクチャで実装する：
+
+1. **UI Layer** - ユーザーインターフェース
+   - 吹き出しウィジェット（HomeScreen内）
+   - 設定画面（SettingsScreen）
+   - デザイン選択ダイアログ
+
+2. **Repository Layer** - データ永続化
+   - ChatBubbleDesignRepository
+
+3. **Data Layer** - ストレージ
+   - SharedPreferences
+
+データフローは、UI Layer → Repository Layer → Data Layer の順で、Riverpodの状態管理により双方向に連携する。
 
 ## 主要コンポーネント
 
-### 1. ChatBubbleDesign (Model)
+### 1. ChatBubbleDesign（ドメインモデル）
 
-**ファイル**: `client/lib/data/model/chat_bubble_design.dart`
+**配置**: `client/lib/data/model/chat_bubble_design.dart`
 
-```dart
-enum ChatBubbleDesign {
-  square,   // 四角デザイン
-  rounded;  // 角削りデザイン
+**役割**: デザインタイプを表すenum
 
-  BorderRadius get borderRadius {
-    return switch (this) {
-      ChatBubbleDesign.square => BorderRadius.circular(2),
-      ChatBubbleDesign.rounded => BorderRadius.circular(16),
-    };
-  }
+**内容**:
+- `square`: 四角デザイン
+- `rounded`: 角削りデザイン
 
-  String get displayName {
-    return switch (this) {
-      ChatBubbleDesign.square => '四角',
-      ChatBubbleDesign.rounded => '角削り',
-    };
-  }
-}
-```
+**特徴**:
+- UIに依存しない純粋なドメインモデル
+- borderRadiusやdisplayNameなどのUI関連プロパティは持たない
+- Dart標準のenumのみを使用
 
-**責務**:
+### 2. ChatBubbleDesignExtension（UI拡張）
 
-- デザインタイプの定義
-- 各デザインに対応する `BorderRadius` を提供
-- UI 表示用の名前を提供
+**配置**: `client/lib/ui/component/chat_bubble_design_extension.dart`
 
-### 2. ChatBubbleDesignRepository (Repository)
+**役割**: ChatBubbleDesignにUI関連の機能を拡張
 
-**ファイル**: `client/lib/data/repository/chat_bubble_design_repository.dart`
+**提供機能**:
+- `borderRadius`: 各デザインに対応するBorderRadiusを返す
+  - square → BorderRadius.circular(2)
+  - rounded → BorderRadius.circular(16)
+- `displayName`: UI表示用の日本語名を返す
+  - square → "四角"
+  - rounded → "角削り"
 
-```dart
-@riverpod
-class ChatBubbleDesignRepository extends _$ChatBubbleDesignRepository {
-  @override
-  Future<ChatBubbleDesign> build() async {
-    final prefs = await SharedPreferences.getInstance();
-    final savedValue = prefs.getString(PreferenceKey.chatBubbleDesign.name);
+**設計意図**:
+- 関心の分離：データモデルとUIロジックを分離
+- 依存関係の明確化：data/modelはFlutter UIに依存しない
+- テスタビリティ：モデル層のテストがUI非依存
+- 再利用性：同じモデルを異なるUI実装で使用可能
 
-    if (savedValue == null) {
-      return ChatBubbleDesign.square;  // デフォルト
-    }
+### 3. ChatBubbleDesignRepository（永続化）
 
-    return ChatBubbleDesign.values.firstWhere(
-      (e) => e.name == savedValue,
-      orElse: () => ChatBubbleDesign.square,
-    );
-  }
+**配置**: `client/lib/data/repository/chat_bubble_design_repository.dart`
 
-  Future<void> save(ChatBubbleDesign design) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(PreferenceKey.chatBubbleDesign.name, design.name);
-    state = AsyncValue.data(design);
-  }
-}
-```
+**役割**: デザイン設定の読み込みと保存
 
-**責務**:
+**主要機能**:
+- `build()`: SharedPreferencesから設定を読み込み、デフォルトはsquare
+- `save(design)`: 選択されたデザインをSharedPreferencesに保存
 
-- SharedPreferences からデザイン設定を読み込み
-- デザイン設定を保存
-- Riverpod を通じて UI に状態を提供
+**実装方式**:
+- Riverpodの@riverpodアノテーション
+- AsyncValueで非同期状態を管理
+- enum.nameを文字列として保存
 
-### 3. PreferenceKey の拡張
+### 4. PreferenceKey拡張
 
-**ファイル**: `client/lib/data/model/preference_key.dart`
+**配置**: `client/lib/data/model/preference_key.dart`
 
-```dart
-enum PreferenceKey {
-  // ... 既存のキー
-  chatBubbleDesign,  // 追加
-}
-```
+**変更内容**: enumに`chatBubbleDesign`を追加
 
 **保存形式**:
+- キー: "chatBubbleDesign"
+- 値: "square" または "rounded"（enum.name）
 
-- キー: `"chatBubbleDesign"`
-- 値: `"square"` または `"rounded"` (enum の name)
+### 5. 吹き出しウィジェット更新
 
-### 4. HomeScreen の吹き出しウィジェット
+**配置**: `client/lib/ui/feature/home/home_screen.dart`
 
-**ファイル**: `client/lib/ui/feature/home/home_screen.dart`
+**変更対象**:
+- `_UserChatBubble`: ユーザーの送信メッセージ吹き出し
+- `_AiChatBubble`: AIの返信メッセージ吹き出し
+- `_AppChatBubble`: アプリからのシステムメッセージ吹き出し
 
-#### 変更箇所
+**実装方法**:
+- ref.watchでChatBubbleDesignRepositoryを監視
+- design.borderRadiusをBoxDecorationに適用
+- 固定値BorderRadius.circular(2)を動的な値に変更
 
-##### \_UserChatBubble (538 行目付近)
+### 6. デザイン選択ダイアログ
 
-```dart
-@override
-Widget build(BuildContext context) {
-  final design = ref.watch(chatBubbleDesignRepositoryProvider).valueOrNull
-    ?? ChatBubbleDesign.square;
+**配置**: `client/lib/ui/feature/settings/chat_bubble_design_selection_dialog.dart`
 
-  // ... 既存のコード ...
+**機能**:
+- 2つのデザインをRadioListTileで表示
+- 各デザインのプレビューを表示
+- OK/キャンセルボタン
 
-  final bubble = Container(
-    // ... 既存のコード ...
-    decoration: BoxDecoration(
-      color: bubbleColor,
-      borderRadius: design.borderRadius,  // 動的に変更
-    ),
-    child: bodyText,
-  );
+**動作**:
+- 初期値として現在のデザインを表示
+- OKタップでRepositoryに保存
+- キャンセルタップで変更を破棄
 
-  // ... 既存のコード ...
-}
-```
+### 7. 設定画面の更新
 
-##### \_AiChatBubble (644 行目付近)
+**配置**: `client/lib/ui/feature/settings/settings_screen.dart`
 
-```dart
-@override
-Widget build(BuildContext context, WidgetRef ref) {
-  final design = ref.watch(chatBubbleDesignRepositoryProvider).valueOrNull
-    ?? ChatBubbleDesign.square;
-
-  // ... 既存のコード ...
-
-  final bubble = Container(
-    // ... 既存のコード ...
-    decoration: BoxDecoration(
-      color: bubbleColor,
-      borderRadius: design.borderRadius,  // 動的に変更
-    ),
-    child: bodyText,
-  );
-
-  // ... 既存のコード ...
-}
-```
-
-##### \_AppChatBubble (719 行目付近)
-
-```dart
-@override
-Widget build(BuildContext context, WidgetRef ref) {
-  final design = ref.watch(chatBubbleDesignRepositoryProvider).valueOrNull
-    ?? ChatBubbleDesign.square;
-
-  // ... 既存のコード ...
-
-  final bubble = Container(
-    // ... 既存のコード ...
-    decoration: BoxDecoration(
-      color: Theme.of(context).colorScheme.surfaceContainer.withAlpha(100),
-      borderRadius: design.borderRadius,  // 動的に変更
-    ),
-    child: bodyText,
-  );
-
-  // ... 既存のコード ...
-}
-```
-
-### 5. ChatBubbleDesignSelectionDialog
-
-**ファイル**: `client/lib/ui/feature/settings/chat_bubble_design_selection_dialog.dart`
-
-```dart
-class ChatBubbleDesignSelectionDialog extends ConsumerStatefulWidget {
-  const ChatBubbleDesignSelectionDialog({super.key});
-
-  @override
-  ConsumerState<ChatBubbleDesignSelectionDialog> createState() =>
-      _ChatBubbleDesignSelectionDialogState();
-}
-
-class _ChatBubbleDesignSelectionDialogState
-    extends ConsumerState<ChatBubbleDesignSelectionDialog> {
-  ChatBubbleDesign? _selectedDesign;
-
-  @override
-  void initState() {
-    super.initState();
-    _selectedDesign = ref.read(chatBubbleDesignRepositoryProvider).valueOrNull;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('吹き出しデザインの選択'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          for (final design in ChatBubbleDesign.values)
-            RadioListTile<ChatBubbleDesign>(
-              title: Text(design.displayName),
-              subtitle: _buildPreview(design),
-              value: design,
-              groupValue: _selectedDesign,
-              onChanged: (value) {
-                setState(() {
-                  _selectedDesign = value;
-                });
-              },
-            ),
-        ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('キャンセル'),
-        ),
-        TextButton(
-          onPressed: () async {
-            if (_selectedDesign != null) {
-              await ref
-                  .read(chatBubbleDesignRepositoryProvider.notifier)
-                  .save(_selectedDesign!);
-            }
-            if (context.mounted) {
-              Navigator.pop(context);
-            }
-          },
-          child: const Text('OK'),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPreview(ChatBubbleDesign design) {
-    return Container(
-      margin: const EdgeInsets.only(top: 8),
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primaryContainer,
-        borderRadius: design.borderRadius,
-      ),
-      child: Text(
-        'サンプル',
-        style: TextStyle(
-          color: Theme.of(context).colorScheme.onPrimaryContainer,
-        ),
-      ),
-    );
-  }
-}
-```
-
-### 6. SettingsScreen の更新
-
-**ファイル**: `client/lib/ui/feature/settings/settings_screen.dart`
-
-```dart
-// ListView の children に追加
-const SectionHeader(title: '表示設定'),
-_buildChatBubbleDesignTile(context, ref),
-const Divider(),
-
-// メソッドを追加
-Widget _buildChatBubbleDesignTile(BuildContext context, WidgetRef ref) {
-  final designAsync = ref.watch(chatBubbleDesignRepositoryProvider);
-  final design = designAsync.valueOrNull ?? ChatBubbleDesign.square;
-
-  return ListTile(
-    leading: const Icon(Icons.chat_bubble_outline),
-    title: const Text('吹き出しデザイン'),
-    subtitle: Text(design.displayName),
-    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-    onTap: () {
-      showDialog<void>(
-        context: context,
-        builder: (_) => const ChatBubbleDesignSelectionDialog(),
-      );
-    },
-  );
-}
-```
+**追加内容**:
+- "表示設定"セクションを追加
+- "吹き出しデザイン"ListTileを追加
+  - アイコン: Icons.chat_bubble_outline
+  - サブタイトルに現在のデザイン名を表示
+  - タップでデザイン選択ダイアログを表示
 
 ## データフロー
 
-### 起動時のフロー
+### アプリ起動時
 
-```
-1. アプリ起動
-   ↓
-2. ChatBubbleDesignRepository.build() が呼ばれる
-   ↓
-3. SharedPreferences から値を読み込み
-   ↓
-4. 値が存在しない → ChatBubbleDesign.square を返す
-   値が存在する → 対応する enum 値を返す
-   ↓
-5. HomeScreen の各吹き出しウィジェットが ref.watch で値を取得
-   ↓
-6. design.borderRadius を BoxDecoration に適用
-```
+1. ChatBubbleDesignRepositoryがbuildされる
+2. SharedPreferencesから保存値を読み込み
+3. 値が存在しない場合はsquareをデフォルトとして返す
+4. 吹き出しウィジェットがref.watchで値を取得
+5. design.borderRadiusをBoxDecorationに適用
 
-### デザイン変更時のフロー
+### デザイン変更時
 
-```
 1. ユーザーが設定画面の「吹き出しデザイン」をタップ
-   ↓
-2. ChatBubbleDesignSelectionDialog を表示
-   ↓
+2. デザイン選択ダイアログを表示
 3. ユーザーがデザインを選択して「OK」をタップ
-   ↓
-4. ChatBubbleDesignRepository.save(design) を呼び出し
-   ↓
-5. SharedPreferences に値を保存
-   ↓
-6. state を更新 (AsyncValue.data(design))
-   ↓
-7. ref.watch している全ウィジェットが自動的に再ビルド
-   ↓
-8. 新しい borderRadius が適用される
-```
+4. Repository.save()でSharedPreferencesに保存
+5. Riverpodのstateを更新
+6. ref.watchしている全ウィジェットが自動的に再ビルド
+7. 新しいborderRadiusが適用される
 
 ## 影響範囲
 
-### 新規作成ファイル
+### 新規作成ファイル（4ファイル）
 
-- `client/lib/data/model/chat_bubble_design.dart`
-- `client/lib/data/repository/chat_bubble_design_repository.dart`
-- `client/lib/ui/feature/settings/chat_bubble_design_selection_dialog.dart`
+1. `client/lib/data/model/chat_bubble_design.dart` - デザインタイプenum
+2. `client/lib/ui/component/chat_bubble_design_extension.dart` - UI拡張
+3. `client/lib/data/repository/chat_bubble_design_repository.dart` - 永続化
+4. `client/lib/ui/feature/settings/chat_bubble_design_selection_dialog.dart` - 選択UI
 
-### 変更ファイル
+### 変更ファイル（3ファイル）
 
-- `client/lib/data/model/preference_key.dart` (enum に 1 行追加)
-- `client/lib/ui/feature/home/home_screen.dart` (3 箇所の吹き出しウィジェット)
-- `client/lib/ui/feature/settings/settings_screen.dart` (UI 追加)
+1. `client/lib/data/model/preference_key.dart` - enumに1行追加
+2. `client/lib/ui/feature/home/home_screen.dart` - 3箇所の吹き出し更新
+3. `client/lib/ui/feature/settings/settings_screen.dart` - UI追加
 
-### 変更対象のウィジェット
+### 変更内容詳細
 
-| ウィジェット      | 行番号 | 変更内容                                           |
-| ----------------- | ------ | -------------------------------------------------- |
-| `_UserChatBubble` | 538    | `BorderRadius.circular(2)` → `design.borderRadius` |
-| `_AiChatBubble`   | 644    | `BorderRadius.circular(2)` → `design.borderRadius` |
-| `_AppChatBubble`  | 719    | `BorderRadius.circular(2)` → `design.borderRadius` |
+| コンポーネント | 変更内容 |
+|------------|---------|
+| _UserChatBubble | BorderRadius.circular(2) → design.borderRadius |
+| _AiChatBubble | BorderRadius.circular(2) → design.borderRadius |
+| _AppChatBubble | BorderRadius.circular(2) → design.borderRadius |
 
 ## 実装手順
 
-### Phase 1: モデルとリポジトリ
+### Phase 1: モデル層（UI非依存）
 
-1. `ChatBubbleDesign` enum を作成
-2. `PreferenceKey` に `chatBubbleDesign` を追加
-3. `ChatBubbleDesignRepository` を実装
+1. ChatBubbleDesign enumを作成（squareとroundedのみ）
+2. PreferenceKeyにchatBubbleDesignを追加
+3. ChatBubbleDesignRepositoryを実装
 4. リポジトリの単体テストを作成
 
-### Phase 2: UI 実装
+### Phase 2: UI層の拡張
 
-5. `ChatBubbleDesignSelectionDialog` を実装
-6. `SettingsScreen` に UI を追加
-7. ダイアログのウィジェットテストを作成
+5. ChatBubbleDesignExtensionを作成
+   - borderRadiusプロパティを実装
+   - displayNameプロパティを実装
+6. 拡張のテストを作成
 
-### Phase 3: チャット画面の更新
+### Phase 3: 設定画面
 
-8. `_UserChatBubble` を更新
-9. `_AiChatBubble` を更新
-10. `_AppChatBubble` を更新
+7. デザイン選択ダイアログを実装
+   - displayNameを使用
+   - borderRadiusでプレビュー表示
+8. SettingsScreenにUIを追加
+9. ダイアログのウィジェットテストを作成
 
-### Phase 4: テストと仕上げ
+### Phase 4: チャット画面
 
-11. `dart format` でフォーマット
-12. `dart fix --apply` で linter 自動修正
-13. 全テストの実行と確認
-14. 手動での動作確認
+10. _UserChatBubbleを更新（design.borderRadiusを使用）
+11. _AiChatBubbleを更新
+12. _AppChatBubbleを更新
 
-## 非機能要件の実装方針
+### Phase 5: テストと仕上げ
 
-### NFR-1: パフォーマンス - 即座の反映
+13. dart formatでフォーマット
+14. dart fix --applyでlinter自動修正
+15. 全テストの実行と確認
+16. 手動での動作確認
 
-**要件定義書の要求:**
-- デザイン変更から画面反映まで1秒以内
-- 100件のメッセージがある状態でも同様のパフォーマンス維持
+## 非機能要件への対応
 
-**実装方針:**
+### NFR-1: パフォーマンス（1秒以内の反映）
 
-#### リビルドの最適化
-- `ref.watch` により、デザイン変更時のみウィジェットが再ビルドされる
-- Riverpod の状態管理により、関連するウィジェットのみが効率的に更新される
-- `BorderRadius` オブジェクトは軽量で、毎回生成してもパフォーマンス影響は最小限
+**実現方法**:
+- SharedPreferencesの読み書き: 10-50ms
+- Riverpodのstate更新: 数ms（同期的）
+- ウィジェット再ビルド: 16ms（1フレーム）
+- 合計: 約100ms以内で実現
 
-#### パフォーマンス目標の達成
-- SharedPreferences の読み書きは非同期だが、高速（通常10-50ms）
-- Riverpod の `state` 更新は同期的で即座に反映（数ms）
-- ウィジェットの再ビルドはフレーム単位（16ms）で完了
-- **合計: 設定保存から画面反映まで約100ms以内を実現**
+**最適化**:
+- ref.watchにより必要な部分のみ再ビルド
+- BorderRadiusは軽量オブジェクト
 
-#### メモリ使用量
-- `SharedPreferences` は1つの文字列値のみを保存（約10バイト）
-- メモリへの影響は無視できる程度
+### NFR-2: 一貫性（全吹き出しで統一）
 
-### NFR-2: 一貫性 - 統一されたデザイン
+**実現方法**:
+- 単一の真実の源（ChatBubbleDesignRepository）
+- 全ウィジェットが同じプロバイダーを監視
+- design.borderRadiusで一貫した値を保証
 
-**要件定義書の要求:**
-- 全ての吹き出しに同じデザインルールが適用される
-- 他のデザイン要素（色、サイズ）には影響しない
+**制御範囲**:
+- borderRadiusプロパティのみを動的変更
+- color、padding等の他要素は既存のまま
 
-**実装方針:**
+### NFR-3: 拡張性（3ファイル以内、50行以内）
 
-#### 単一の真実の源
-- `ChatBubbleDesignRepository` が唯一のデザイン状態を管理
-- 全ての吹き出しウィジェットが同じプロバイダーを監視
-- `design.borderRadius` プロパティを使用することで、一貫した値を保証
+**実現方法**:
+- enumベースの設計
+- ChatBubbleDesign.valuesで自動対応
 
-#### 影響範囲の限定
-- `borderRadius` プロパティのみを動的に変更
-- `color`、`padding`、`margin` などの他のプロパティは既存のまま
-- `BoxDecoration` の他のパラメータには手を加えない
-
-### NFR-3: 拡張性 - 将来の機能追加
-
-**要件定義書の要求:**
-- 新しいデザインタイプの追加は3ファイル以内、50行以内
-- 他の設定機能と独立して動作
-
-**実装方針:**
-
-#### enum ベースの設計
-```dart
-// 新しいデザインタイプの追加例
-enum ChatBubbleDesign {
-  square,
-  rounded,
-  extraRounded,  // 追加: 1行
-
-  BorderRadius get borderRadius {
-    return switch (this) {
-      // ... 既存のケース
-      ChatBubbleDesign.extraRounded => BorderRadius.circular(24),  // 追加: 1行
-    };
-  }
-
-  String get displayName {
-    return switch (this) {
-      // ... 既存のケース
-      ChatBubbleDesign.extraRounded => '超角削り',  // 追加: 1行
-    };
-  }
-}
-```
-
-**必要な変更:**
-- ファイル数: 1ファイル（`chat_bubble_design.dart`）
-- 行数: 約3行
-- ダイアログとプレビューは自動的に対応（`ChatBubbleDesign.values` を使用）
-
-#### 独立性の確保
-- `ChatBubbleDesignRepository` は他のリポジトリに依存しない
-- SharedPreferences のキーは独立（`chatBubbleDesign`）
-- 将来的なテーマ機能との衝突を避ける設計
+**新デザイン追加時の変更**:
+- モデル層: enum値を1行追加
+- UI層: switch caseに2行追加（borderRadius、displayName）
+- 合計: 2ファイル、3行のみ
 
 ## テスト戦略
 
 ### 単体テスト
 
-#### ChatBubbleDesignRepository のテスト
-
-**テスト対象:** リポジトリの基本機能
-
-```dart
-test('デフォルト値がsquareであること', () async {
-  // SharedPreferencesに何も保存されていない状態
-  final repository = ChatBubbleDesignRepository();
-  final design = await repository.build();
-  expect(design, ChatBubbleDesign.square);
-});
-
-test('保存・読み込みが正しく動作すること', () async {
-  final repository = ChatBubbleDesignRepository();
-  await repository.save(ChatBubbleDesign.rounded);
-  final design = await repository.build();
-  expect(design, ChatBubbleDesign.rounded);
-});
-
-test('不正な値の場合にsquareにフォールバックすること', () async {
-  // SharedPreferencesに不正な値を直接保存
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.setString('chatBubbleDesign', 'invalid_value');
-
-  final repository = ChatBubbleDesignRepository();
-  final design = await repository.build();
-  expect(design, ChatBubbleDesign.square);
-});
-```
+**ChatBubbleDesignRepositoryのテスト**:
+- デフォルト値がsquareであることを確認
+- 保存・読み込みが正しく動作することを確認
+- 不正な値の場合にsquareにフォールバックすることを確認
 
 ### ウィジェットテスト
 
-#### ChatBubbleDesignSelectionDialog のテスト
+**デザイン選択ダイアログのテスト**:
+- 2つの選択肢が表示されること
+- ラジオボタンの選択が正しく動作すること
+- OK/キャンセルボタンの動作を確認
 
-**テスト対象:** ダイアログUI と操作
-
-```dart
-testWidgets('2つの選択肢が表示されること', (tester) async {
-  await tester.pumpWidget(
-    MaterialApp(home: ChatBubbleDesignSelectionDialog()),
-  );
-
-  expect(find.text('四角'), findsOneWidget);
-  expect(find.text('角削り'), findsOneWidget);
-});
-
-testWidgets('ラジオボタンの選択が正しく動作すること', (tester) async {
-  await tester.pumpWidget(
-    MaterialApp(home: ChatBubbleDesignSelectionDialog()),
-  );
-
-  // 角削りを選択
-  await tester.tap(find.text('角削り'));
-  await tester.pump();
-
-  // 角削りが選択されていることを確認
-  // (RadioListTileの状態を確認)
-});
-
-testWidgets('OK/キャンセルボタンの動作を確認', (tester) async {
-  // キャンセルボタンでダイアログが閉じる
-  // OKボタンで保存されてダイアログが閉じる
-});
-```
-
-#### 吹き出しウィジェットのテスト
-
-**テスト対象:** デザインの適用
-
-```dart
-testWidgets('ユーザー吹き出しにデザインが適用されること', (tester) async {
-  // ChatBubbleDesignRepositoryをモック
-  // squareデザインで吹き出しを表示
-  // borderRadiusがBorderRadius.circular(2)であることを確認
-
-  // roundedデザインに変更
-  // borderRadiusがBorderRadius.circular(16)であることを確認
-});
-```
+**吹き出しウィジェットのテスト**:
+- デザインが正しく適用されること
+- デザイン変更時に再ビルドされること
 
 ### 統合テスト
 
-#### NFR-1の検証: パフォーマンス
+**パフォーマンス検証（NFR-1）**:
+- デザイン変更から画面反映までの時間を計測
+- 1秒以内に反映されることを確認
+- 100件のメッセージがあっても同様のパフォーマンスを維持
 
-**テスト内容:** デザイン変更から画面反映までの時間を計測
+**一貫性検証（NFR-2）**:
+- 全ての吹き出しに同じデザインが適用されること
+- 他のデザイン要素（色、サイズ）に影響がないこと
 
-```dart
-testWidgets('デザイン変更が1秒以内に反映されること', (tester) async {
-  await tester.pumpWidget(MyApp());
+**拡張性検証（NFR-3）**:
+- 新しいデザインタイプの追加が容易であること
+- 変更ファイル数と変更行数を確認
 
-  // チャット画面に移動
-  await tester.tap(find.byIcon(Icons.chat));
-  await tester.pumpAndSettle();
-
-  // 設定画面を開く
-  await tester.tap(find.byIcon(Icons.settings));
-  await tester.pumpAndSettle();
-
-  final startTime = DateTime.now();
-
-  // デザインを変更
-  await tester.tap(find.text('吹き出しデザイン'));
-  await tester.pumpAndSettle();
-  await tester.tap(find.text('角削り'));
-  await tester.tap(find.text('OK'));
-  await tester.pumpAndSettle();
-
-  // チャット画面に戻る
-  await tester.tap(find.byIcon(Icons.arrow_back));
-  await tester.pumpAndSettle();
-
-  final endTime = DateTime.now();
-  final duration = endTime.difference(startTime);
-
-  expect(duration.inMilliseconds, lessThan(1000));
-});
-
-testWidgets('100件のメッセージがあってもパフォーマンスが維持されること', (tester) async {
-  // 100件のメッセージを作成
-  // デザイン変更の時間を計測
-  // 1秒以内に反映されることを確認
-});
-```
-
-#### NFR-2の検証: 一貫性
-
-**テスト内容:** 全ての吹き出しに統一して適用されること
-
-```dart
-testWidgets('全ての吹き出しに同じデザインが適用されること', (tester) async {
-  await tester.pumpWidget(MyApp());
-
-  // チャット画面に移動
-  // ユーザー、AI、システムの各メッセージを表示
-
-  // デザインをroundedに変更
-  // 全ての吹き出しがBorderRadius.circular(16)であることを確認
-
-  // デザインをsquareに変更
-  // 全ての吹き出しがBorderRadius.circular(2)であることを確認
-});
-```
-
-#### NFR-3の検証: 拡張性
-
-**テスト内容:** 新しいデザインタイプの追加が容易であること
-
-```dart
-test('新しいデザインタイプを追加できること', () {
-  // ChatBubbleDesign enumに新しい値を追加
-  // borderRadius getterに新しいケースを追加
-  // displayName getterに新しいケースを追加
-  // 変更ファイル数を確認（1ファイルのみ）
-  // 変更行数を確認（3行のみ）
-});
-```
-
-#### 永続化のテスト
-
-**テスト内容:** アプリ再起動後も設定が保持されること
-
-```dart
-testWidgets('アプリ再起動後も設定が保持されること', (tester) async {
-  // デザインをroundedに変更
-  // アプリを再起動（WidgetTesterで再構築）
-  // roundedデザインが適用されていることを確認
-});
-```
+**永続化検証**:
+- アプリ再起動後も設定が保持されること
 
 ## エラーハンドリング
 
-### SharedPreferences 読み込みエラー
+### SharedPreferences読み込みエラー
 
-- 読み込みに失敗した場合は `ChatBubbleDesign.square` をデフォルトとして使用
-- エラーログを出力するが、アプリは正常に動作する
+**対応**: デフォルト値（square）を使用し、エラーログを出力するがアプリは正常動作
 
 ### 不正な保存値
 
-- enum に存在しない値が保存されている場合は `orElse` でデフォルト値を返す
+**対応**: enum.valuesから検索し、見つからない場合はorElseでデフォルト値を返す
 
 ## 現状の制限事項への対応方針
 
-要件定義書に記載された制限事項に対する将来の対応方針を示します。
+### 対象範囲の制限
 
-### 対象範囲の制限への対応
+**制限**: ポインター（矢印）と提案カードは対象外
 
-**制限事項:**
-- 吹き出しのポインター（矢印）は角の形状変更の対象外
-- 提案カードのデザインは変更の対象外
+**将来の対応**:
+- ポインター: designパラメータを追加し、角削り時は曲線描画
+- 提案カード: ConsumerWidgetに変更し、design.borderRadiusを使用
 
-**将来の対応方針:**
+### デザインタイプの制限
 
-#### ポインターの丸み対応
+**制限**: 2種類のみ
 
-```dart
-class _BubblePointerPainter extends CustomPainter {
-  final ChatBubbleDesign design;  // 追加
+**将来の拡張**:
+- extraRounded（超角削り）: BorderRadius.circular(24)
+- pill（ピル型）: BorderRadius.circular(999)
+- asymmetric（非対称）: BorderRadius.only指定
 
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.fill;
+### UI/UXの制限
 
-    final Path path;
-    if (design == ChatBubbleDesign.rounded) {
-      // 角削りデザインの場合、ポインターにも丸みを持たせる
-      path = Path()
-        ..moveTo(size.width, 0)
-        ..quadraticBezierTo(0, size.height / 2, 0, size.height / 2)  // 曲線
-        ..quadraticBezierTo(0, size.height / 2, size.width, size.height)
-        ..close();
-    } else {
-      // 既存の三角形ロジック
-    }
+**制限**: アニメーションなし
 
-    canvas.drawPath(path, paint);
-  }
-}
-```
+**将来の対応**:
+- ContainerをAnimatedContainerに変更
+- duration: 300ms、curve: Curves.easeInOut
+- 変更: 3箇所、各2行（計6行）
 
-**必要な変更:**
-- `_BubblePointer` に `design` パラメータを追加
-- `_BubblePointerPainter` で `design` に応じた描画処理を実装
-- 変更ファイル数: 1ファイル（`home_screen.dart`）
-- 変更行数: 約20行
+### 機能の制限
 
-#### 提案カードの統一
+**制限**: 色、サイズ等のカスタマイズ不可
 
-```dart
-class _SuggestionCard extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final design = ref.watch(chatBubbleDesignRepositoryProvider).valueOrNull
-      ?? ChatBubbleDesign.square;
+**将来の対応**:
+- ChatBubbleStyleクラスを導入
+- 別リポジトリで管理
+- デザイン設定と独立して動作
 
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: design.borderRadius,  // 吹き出しと統一
-      ),
-      // ...
-    );
-  }
-}
-```
+## セキュリティとプライバシー
 
-**必要な変更:**
-- `_SuggestionCard` を `ConsumerWidget` に変更
-- `ref.watch` で `ChatBubbleDesignRepository` を監視
-- 変更ファイル数: 1ファイル（`home_screen.dart`）
-- 変更行数: 約5行
-
-### デザインタイプの制限への対応
-
-**制限事項:** 選択可能なデザインタイプは「四角」と「角削り」の2種類のみ
-
-**将来の拡張方法:**
-
-```dart
-enum ChatBubbleDesign {
-  square,
-  rounded,
-  extraRounded,    // 追加: 超角削り
-  pill,            // 追加: ピル型（完全な楕円）
-  asymmetric,      // 追加: 非対称（LINE風）
-
-  BorderRadius get borderRadius {
-    return switch (this) {
-      ChatBubbleDesign.square => BorderRadius.circular(2),
-      ChatBubbleDesign.rounded => BorderRadius.circular(16),
-      ChatBubbleDesign.extraRounded => BorderRadius.circular(24),
-      ChatBubbleDesign.pill => BorderRadius.circular(999),
-      ChatBubbleDesign.asymmetric => const BorderRadius.only(
-        topLeft: Radius.circular(16),
-        topRight: Radius.circular(16),
-        bottomLeft: Radius.circular(16),
-        bottomRight: Radius.circular(4),
-      ),
-    };
-  }
-
-  String get displayName {
-    return switch (this) {
-      ChatBubbleDesign.square => '四角',
-      ChatBubbleDesign.rounded => '角削り',
-      ChatBubbleDesign.extraRounded => '超角削り',
-      ChatBubbleDesign.pill => 'ピル型',
-      ChatBubbleDesign.asymmetric => '非対称',
-    };
-  }
-}
-```
-
-### UI/UXの制限への対応
-
-**制限事項:** デザイン切り替え時のアニメーションなし
-
-**アニメーション対応方法:**
-
-```dart
-// Container を AnimatedContainer に変更
-AnimatedContainer(
-  duration: const Duration(milliseconds: 300),
-  curve: Curves.easeInOut,
-  decoration: BoxDecoration(
-    color: bubbleColor,
-    borderRadius: design.borderRadius,  // アニメーションで滑らかに変化
-  ),
-  child: bodyText,
-)
-```
-
-**必要な変更:**
-- 3つの吹き出しウィジェットで `Container` → `AnimatedContainer` に変更
-- `duration` と `curve` パラメータを追加
-- 変更ファイル数: 1ファイル（`home_screen.dart`）
-- 変更行数: 約6行（各ウィジェット2行×3箇所）
-
-**効果:**
-- デザイン変更時に300msかけて滑らかに角の形状が変化
-- 視覚的な連続性が向上
-- ユーザー体験の向上
-
-### 機能の制限への対応
-
-**制限事項:** 色、サイズ、配置などの他の視覚要素のカスタマイズは不可
-
-**将来の拡張案:**
-
-```dart
-class ChatBubbleStyle {
-  final ChatBubbleDesign design;
-  final Color? userBubbleColor;     // ユーザー吹き出しの色
-  final Color? aiBubbleColor;        // AI吹き出しの色
-  final double? fontSize;            // フォントサイズ
-  final EdgeInsets? padding;         // 内側の余白
-
-  // ...
-}
-```
-
-**実装方針:**
-- `ChatBubbleDesign` とは独立した設定として実装
-- 別のリポジトリ（`ChatBubbleStyleRepository`）で管理
-- 設定画面に「吹き出しスタイル」セクションを追加
-- デザイン設定との組み合わせを許可
-
-## セキュリティ考慮事項
-
-- SharedPreferences に保存される値は端末内のみで、外部に送信されない
-- enum の `name` プロパティを使用することで、型安全性を確保
-- ユーザーデータは含まれず、プライバシーへの影響はない
+- SharedPreferencesに保存される値は端末内のみ
+- enum.nameを使用し型安全性を確保
+- ユーザーデータは含まれず、プライバシーへの影響なし
 
 ## アクセシビリティ
 
-- デザイン変更は視覚的な変更のみで、スクリーンリーダーの読み上げには影響しない
+- デザイン変更は視覚的変更のみ
+- スクリーンリーダーの読み上げに影響なし
 - コントラスト比は変更前後で同じ
-- タップ領域のサイズは変わらない
+- タップ領域のサイズは不変
 
 ## 関連ドキュメント
 
-- [機能仕様書: チャット吹き出しデザイン切り替え](../spec/switch-design-feature.md)
-- [Reward 機能仕様書](../spec/reward-feature.md) (SharedPreferences 使用の参考例)
-- [SharedPreferences 使用時の設計方法](../how-to-design-when-using-shared-preferences.md)
+- [要件定義書: チャット吹き出しデザイン切り替え](../spec/switch-design-feature.md)
+- [SharedPreferences使用時の設計方法](../how-to-design-when-using-shared-preferences.md)
+- [Reward機能仕様書](../spec/reward-feature.md) - SharedPreferences使用の参考例
