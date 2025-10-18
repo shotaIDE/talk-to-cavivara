@@ -31,24 +31,19 @@ class _ChatBubbleDesignSelectionDialogState
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: ChatBubbleDesign.values.map((design) {
-          return ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: Radio<ChatBubbleDesign>(
-              value: design,
-              groupValue: _selectedDesign,
-              onChanged: (value) {
-                setState(() {
-                  _selectedDesign = value;
-                });
-              },
-            ),
-            title: Text(design.displayName),
-            subtitle: _DesignPreview(design: design),
-            onTap: () {
+          return RadioListTile<ChatBubbleDesign>(
+            value: design,
+            // ignore: deprecated_member_use
+            groupValue: _selectedDesign,
+            // ignore: deprecated_member_use
+            onChanged: (value) {
               setState(() {
-                _selectedDesign = design;
+                _selectedDesign = value;
               });
             },
+            title: Text(design.displayName),
+            subtitle: _DesignPreview(design: design),
+            contentPadding: EdgeInsets.zero,
           );
         }).toList(),
       ),
