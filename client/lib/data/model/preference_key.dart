@@ -8,4 +8,5 @@ enum PreferenceKey {
   resumeViewingMilliseconds,
   hasEarnedPartTimerReward,
   hasEarnedPartTimeLeaderReward,
+  chatBubbleDesign,
 }
