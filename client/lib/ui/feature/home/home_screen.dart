@@ -15,6 +15,7 @@ import 'package:house_worker/ui/feature/job_market/job_market_screen.dart';
 import 'package:house_worker/ui/feature/resume/resume_screen.dart';
 import 'package:house_worker/ui/feature/settings/settings_screen.dart';
 import 'package:house_worker/ui/feature/stats/user_statistics_screen.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key, required this.cavivaraId});
@@ -520,7 +521,8 @@ class _UserChatBubble extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final design = ref.watch(chatBubbleDesignRepositoryProvider).value;
+    final designAsync = ref.watch(chatBubbleDesignRepositoryProvider);
+    final design = designAsync.value;
 
     final bodyText = Text(
       message.content,
@@ -563,7 +565,13 @@ class _UserChatBubble extends ConsumerWidget {
       mainAxisAlignment: MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.end,
       spacing: 4,
-      children: [timeText, bubbleWithPointer],
+      children: [
+        timeText,
+        Skeletonizer(
+          enabled: designAsync.isLoading,
+          child: bubbleWithPointer,
+        ),
+      ],
     );
   }
 }
@@ -580,7 +588,8 @@ class _AiChatBubble extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cavivaraProfile = ref.watch(cavivaraByIdProvider(cavivaraId));
-    final design = ref.watch(chatBubbleDesignRepositoryProvider).value;
+    final designAsync = ref.watch(chatBubbleDesignRepositoryProvider);
+    final design = designAsync.value;
     final textColor = Theme.of(context).colorScheme.onSurface;
     final indicatorColor = Theme.of(context).colorScheme.primary;
 
@@ -680,7 +689,12 @@ class _AiChatBubble extends ConsumerWidget {
         children: [
           avatar,
           const SizedBox(width: 8),
-          Flexible(child: bubbleWithPointer),
+          Flexible(
+            child: Skeletonizer(
+              enabled: designAsync.isLoading,
+              child: bubbleWithPointer,
+            ),
+          ),
           if (!message.isStreaming || message.content.isNotEmpty) ...[
             const SizedBox(width: 4),
             Align(
@@ -703,7 +717,8 @@ class _AppChatBubble extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final design = ref.watch(chatBubbleDesignRepositoryProvider).value;
+    final designAsync = ref.watch(chatBubbleDesignRepositoryProvider);
+    final design = designAsync.value;
 
     final bodyText = Text(
       message.content,
@@ -727,7 +742,12 @@ class _AppChatBubble extends ConsumerWidget {
       child: bodyText,
     );
 
-    final expanded = Expanded(child: bubble);
+    final expanded = Expanded(
+      child: Skeletonizer(
+        enabled: designAsync.isLoading,
+        child: bubble,
+      ),
+    );
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       spacing: 4,
