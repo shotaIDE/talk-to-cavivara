@@ -14,10 +14,6 @@ class ChatBubbleDesignRepository extends _$ChatBubbleDesignRepository {
       PreferenceKey.chatBubbleDesign,
     );
 
-    if (value == null) {
-      return ChatBubbleDesign.square;
-    }
-
     return ChatBubbleDesign.values.firstWhere(
       (design) => design.name == value,
       orElse: () => ChatBubbleDesign.square,
