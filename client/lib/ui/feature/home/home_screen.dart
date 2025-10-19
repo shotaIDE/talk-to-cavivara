@@ -3,16 +3,19 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/data/model/chat_message.dart';
+import 'package:house_worker/data/repository/chat_bubble_design_repository.dart';
 import 'package:house_worker/data/repository/skip_clear_chat_confirmation_repository.dart';
 import 'package:house_worker/data/service/cavivara_directory_service.dart';
 import 'package:house_worker/ui/component/app_drawer.dart';
 import 'package:house_worker/ui/component/cavivara_avatar.dart';
+import 'package:house_worker/ui/component/chat_bubble_design_extension.dart';
 import 'package:house_worker/ui/component/clear_chat_confirmation_dialog.dart';
 import 'package:house_worker/ui/feature/home/home_presenter.dart';
 import 'package:house_worker/ui/feature/job_market/job_market_screen.dart';
 import 'package:house_worker/ui/feature/resume/resume_screen.dart';
 import 'package:house_worker/ui/feature/settings/settings_screen.dart';
 import 'package:house_worker/ui/feature/stats/user_statistics_screen.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key, required this.cavivaraId});
@@ -509,7 +512,7 @@ class _SuggestionCard extends StatelessWidget {
   }
 }
 
-class _UserChatBubble extends StatelessWidget {
+class _UserChatBubble extends ConsumerWidget {
   const _UserChatBubble({
     required this.message,
   });
@@ -517,7 +520,10 @@ class _UserChatBubble extends StatelessWidget {
   final ChatMessage message;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final designAsync = ref.watch(chatBubbleDesignRepositoryProvider);
+    final design = designAsync.value;
+
     final bodyText = Text(
       message.content,
       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -535,7 +541,7 @@ class _UserChatBubble extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: bubbleColor,
-        borderRadius: BorderRadius.circular(2),
+        borderRadius: design?.borderRadius ?? BorderRadius.circular(2),
       ),
       child: bodyText,
     );
@@ -559,7 +565,13 @@ class _UserChatBubble extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.end,
       spacing: 4,
-      children: [timeText, bubbleWithPointer],
+      children: [
+        timeText,
+        Skeletonizer(
+          enabled: designAsync.isLoading,
+          child: bubbleWithPointer,
+        ),
+      ],
     );
   }
 }
@@ -576,6 +588,8 @@ class _AiChatBubble extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cavivaraProfile = ref.watch(cavivaraByIdProvider(cavivaraId));
+    final designAsync = ref.watch(chatBubbleDesignRepositoryProvider);
+    final design = designAsync.value;
     final textColor = Theme.of(context).colorScheme.onSurface;
     final indicatorColor = Theme.of(context).colorScheme.primary;
 
@@ -641,7 +655,7 @@ class _AiChatBubble extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: bubbleColor,
-        borderRadius: BorderRadius.circular(2),
+        borderRadius: design?.borderRadius ?? BorderRadius.circular(2),
       ),
       child: bodyText,
     );
@@ -675,7 +689,12 @@ class _AiChatBubble extends ConsumerWidget {
         children: [
           avatar,
           const SizedBox(width: 8),
-          Flexible(child: bubbleWithPointer),
+          Flexible(
+            child: Skeletonizer(
+              enabled: designAsync.isLoading,
+              child: bubbleWithPointer,
+            ),
+          ),
           if (!message.isStreaming || message.content.isNotEmpty) ...[
             const SizedBox(width: 4),
             Align(
@@ -698,6 +717,9 @@ class _AppChatBubble extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final designAsync = ref.watch(chatBubbleDesignRepositoryProvider);
+    final design = designAsync.value;
+
     final bodyText = Text(
       message.content,
       style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -715,12 +737,17 @@ class _AppChatBubble extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceContainer.withAlpha(100),
-        borderRadius: BorderRadius.circular(2),
+        borderRadius: design?.borderRadius ?? BorderRadius.circular(2),
       ),
       child: bodyText,
     );
 
-    final expanded = Expanded(child: bubble);
+    final expanded = Expanded(
+      child: Skeletonizer(
+        enabled: designAsync.isLoading,
+        child: bubble,
+      ),
+    );
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       spacing: 4,
