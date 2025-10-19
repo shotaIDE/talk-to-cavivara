@@ -28,24 +28,23 @@ class _ChatBubbleDesignSelectionDialogState
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('吹き出しデザイン'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: ChatBubbleDesign.values.map((design) {
-          return RadioListTile<ChatBubbleDesign>(
-            value: design,
-            // ignore: deprecated_member_use
-            groupValue: _selectedDesign,
-            // ignore: deprecated_member_use
-            onChanged: (value) {
-              setState(() {
-                _selectedDesign = value;
-              });
-            },
-            title: Text(design.displayName),
-            subtitle: _DesignPreview(design: design),
-            contentPadding: EdgeInsets.zero,
-          );
-        }).toList(),
+      content: RadioGroup<ChatBubbleDesign>(
+        onChanged: (value) {
+          setState(() {
+            _selectedDesign = value;
+          });
+        },
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: ChatBubbleDesign.values.map((design) {
+            return RadioListTile<ChatBubbleDesign>(
+              value: design,
+              title: Text(design.displayName),
+              subtitle: _DesignPreview(design: design),
+              contentPadding: EdgeInsets.zero,
+            );
+          }).toList(),
+        ),
       ),
       actions: [
         TextButton(
