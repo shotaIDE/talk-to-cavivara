@@ -489,7 +489,7 @@ class _ChatBubbleDesignTile extends ConsumerWidget {
       onTap: () {
         showDialog<void>(
           context: context,
-          builder: (context) => const ChatBubbleDesignSelectionDialog(),
+          builder: (_) => const ChatBubbleDesignSelectionDialog(),
         );
       },
     );
