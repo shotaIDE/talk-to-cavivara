@@ -29,6 +29,7 @@ class _ChatBubbleDesignSelectionDialogState
     return AlertDialog(
       title: const Text('吹き出しデザイン'),
       content: RadioGroup<ChatBubbleDesign>(
+        groupValue: _selectedDesign,
         onChanged: (value) {
           setState(() {
             _selectedDesign = value;
