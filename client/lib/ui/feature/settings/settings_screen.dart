@@ -471,13 +471,18 @@ class _ChatBubbleDesignTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final designAsync = ref.watch(chatBubbleDesignRepositoryProvider);
 
+    final subtitleText = designAsync.when(
+      data: (design) => Text(design.displayName),
+      loading: () => const Text('読み込み中...'),
+      error: (_, _) => const Text('エラー'),
+    );
+
     return ListTile(
       leading: const Icon(Icons.chat_bubble_outline),
       title: const Text('吹き出しデザイン'),
-      subtitle: designAsync.when(
-        data: (design) => Text(design.displayName),
-        loading: () => const Text('読み込み中...'),
-        error: (_, _) => const Text('エラー'),
+      subtitle: Skeletonizer(
+        enabled: designAsync.isLoading,
+        child: subtitleText,
       ),
       trailing: const _MoveScreenTrailingIcon(),
       onTap: () {
