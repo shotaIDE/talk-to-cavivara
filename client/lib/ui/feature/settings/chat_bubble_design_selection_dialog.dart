@@ -33,9 +33,7 @@ class _ChatBubbleDesignSelectionDialogState
         children: ChatBubbleDesign.values.map((design) {
           return RadioListTile<ChatBubbleDesign>(
             value: design,
-            // ignore: deprecated_member_use
             groupValue: _selectedDesign,
-            // ignore: deprecated_member_use
             onChanged: (value) {
               setState(() {
                 _selectedDesign = value;
