@@ -475,7 +475,7 @@ class _ChatBubbleDesignTile extends ConsumerWidget {
     final subtitleText = designAsync.when(
       data: (design) => Text(design.displayName),
       loading: () => Text(ChatBubbleDesign.square.displayName),
-      error: (_, _) => const Text('エラー'),
+      error: (_, _) => const Text('デザイン情報を取得できませんでした'),
     );
 
     return ListTile(
