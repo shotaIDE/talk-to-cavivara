@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:house_worker/data/definition/app_definition.dart';
+import 'package:house_worker/data/model/chat_bubble_design.dart';
 import 'package:house_worker/data/model/sign_in_result.dart';
 import 'package:house_worker/data/model/user_profile.dart';
 import 'package:house_worker/data/repository/chat_bubble_design_repository.dart';
@@ -473,7 +474,7 @@ class _ChatBubbleDesignTile extends ConsumerWidget {
 
     final subtitleText = designAsync.when(
       data: (design) => Text(design.displayName),
-      loading: () => const Text('読み込み中...'),
+      loading: () => Text(ChatBubbleDesign.square.displayName),
       error: (_, _) => const Text('エラー'),
     );
 
