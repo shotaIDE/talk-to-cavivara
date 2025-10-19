@@ -31,6 +31,9 @@ class ChatBubbleDesignRepository extends _$ChatBubbleDesignRepository {
       value: design.name,
     );
 
+    if (!ref.mounted) {
+      return;
+    }
     state = AsyncValue.data(design);
   }
 }
