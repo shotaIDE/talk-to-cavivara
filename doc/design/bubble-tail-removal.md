@@ -317,30 +317,6 @@ group('borderRadiusForMessageType', () {
 
 マイグレーション不要。既存のユーザー設定はそのまま有効。
 
-## 制約事項と考慮事項
-
-### 技術的制約
-
-- Flutter の `BorderRadius.only()` を使用
-- iOS, Android 両プラットフォームで同一の見た目を保証
-- パフォーマンスへの影響: 微小（BorderRadius の生成コストのみ）
-
-### デザイン的制約
-
-- radius 値は要件定義書に従い、4 と 10 に固定
-- システムメッセージは対称的なデザイン（全角 radius 10）
-
-### 将来の拡張性
-
-- radius 値を設定可能にする場合:
-
-  - `borderRadiusForMessageType` にパラメータを追加
-  - または新しい設定項目を追加
-
-- 新しいメッセージタイプを追加する場合:
-  - `MessageType` enum に値を追加
-  - `borderRadiusForMessageType` に case を追加
-
 ## 関連ドキュメント
 
 - [要件定義書: 吹き出しのツノ排除と角丸デザイン](../requirement/bubble-tail-removal.md)
