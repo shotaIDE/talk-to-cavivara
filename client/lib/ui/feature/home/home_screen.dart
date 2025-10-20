@@ -541,7 +541,9 @@ class _UserChatBubble extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: bubbleColor,
-        borderRadius: design?.borderRadius ?? BorderRadius.circular(2),
+        borderRadius:
+            design?.borderRadiusForMessageType(MessageType.user) ??
+            BorderRadius.circular(2),
       ),
       child: bodyText,
     );
@@ -655,7 +657,9 @@ class _AiChatBubble extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: bubbleColor,
-        borderRadius: design?.borderRadius ?? BorderRadius.circular(2),
+        borderRadius:
+            design?.borderRadiusForMessageType(MessageType.ai) ??
+            BorderRadius.circular(2),
       ),
       child: bodyText,
     );
@@ -737,7 +741,9 @@ class _AppChatBubble extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceContainer.withAlpha(100),
-        borderRadius: design?.borderRadius ?? BorderRadius.circular(2),
+        borderRadius:
+            design?.borderRadiusForMessageType(MessageType.system) ??
+            BorderRadius.circular(2),
       ),
       child: bodyText,
     );

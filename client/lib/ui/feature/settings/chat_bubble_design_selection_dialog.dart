@@ -88,7 +88,7 @@ class _DesignPreview extends StatelessWidget {
             height: 32,
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.primaryContainer,
-              borderRadius: design.borderRadius,
+              borderRadius: design.borderRadiusForMessageType(MessageType.user),
             ),
           ),
           const SizedBox(width: 8),
@@ -97,7 +97,7 @@ class _DesignPreview extends StatelessWidget {
             height: 32,
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              borderRadius: design.borderRadius,
+              borderRadius: design.borderRadiusForMessageType(MessageType.ai),
             ),
           ),
         ],
