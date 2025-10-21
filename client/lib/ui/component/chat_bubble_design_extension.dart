@@ -25,17 +25,17 @@ extension ChatBubbleDesignExtension on ChatBubbleDesign {
         switch (messageType) {
           case MessageType.user:
             return const BorderRadius.only(
-              topLeft: Radius.circular(10),
-              topRight: Radius.circular(4), // ツノがあった位置
-              bottomRight: Radius.circular(10),
-              bottomLeft: Radius.circular(10),
+              topLeft: Radius.circular(16),
+              topRight: Radius.circular(2), // ツノがあった位置
+              bottomRight: Radius.circular(16),
+              bottomLeft: Radius.circular(16),
             );
           case MessageType.ai:
             return const BorderRadius.only(
-              topLeft: Radius.circular(4), // ツノがあった位置
-              topRight: Radius.circular(10),
-              bottomRight: Radius.circular(10),
-              bottomLeft: Radius.circular(10),
+              topLeft: Radius.circular(2), // ツノがあった位置
+              topRight: Radius.circular(16),
+              bottomRight: Radius.circular(16),
+              bottomLeft: Radius.circular(16),
             );
           case MessageType.system:
             return BorderRadius.circular(10);
