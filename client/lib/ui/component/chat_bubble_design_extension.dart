@@ -20,25 +20,25 @@ extension ChatBubbleDesignExtension on ChatBubbleDesign {
   BorderRadius borderRadiusForMessageType(MessageType messageType) {
     switch (this) {
       case ChatBubbleDesign.square:
-        return BorderRadius.circular(2);
+        return BorderRadius.circular(8);
       case ChatBubbleDesign.rounded:
         switch (messageType) {
           case MessageType.user:
             return const BorderRadius.only(
-              topLeft: Radius.circular(16),
+              topLeft: Radius.circular(14),
               topRight: Radius.circular(2), // ツノがあった位置
-              bottomRight: Radius.circular(16),
-              bottomLeft: Radius.circular(16),
+              bottomRight: Radius.circular(14),
+              bottomLeft: Radius.circular(14),
             );
           case MessageType.ai:
             return const BorderRadius.only(
               topLeft: Radius.circular(2), // ツノがあった位置
-              topRight: Radius.circular(16),
-              bottomRight: Radius.circular(16),
-              bottomLeft: Radius.circular(16),
+              topRight: Radius.circular(14),
+              bottomRight: Radius.circular(14),
+              bottomLeft: Radius.circular(14),
             );
           case MessageType.system:
-            return BorderRadius.circular(10);
+            return BorderRadius.circular(8);
         }
     }
   }
