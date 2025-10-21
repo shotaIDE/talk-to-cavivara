@@ -23,7 +23,7 @@ void main() {
     });
 
     group('初期状態', () {
-      test('永続化データがない場合はデフォルト値(square)が返されること', () async {
+      test('永続化データがない場合はデフォルト値(corporateStandard)が返されること', () async {
         final design = await container.read(
           chatBubbleDesignRepositoryProvider.future,
         );
@@ -34,11 +34,11 @@ void main() {
       test('永続化データが存在する場合は永続化された値で初期化されること', () async {
         container.dispose();
         SharedPreferences.setMockInitialValues({
-          PreferenceKey.chatBubbleDesign.name: 'rounded',
+          PreferenceKey.chatBubbleDesign.name: 'nextGeneration',
         });
         SharedPreferencesAsyncPlatform.instance =
             InMemorySharedPreferencesAsync.withData({
-              PreferenceKey.chatBubbleDesign.name: 'rounded',
+              PreferenceKey.chatBubbleDesign.name: 'nextGeneration',
             });
         container = ProviderContainer();
 
@@ -49,7 +49,7 @@ void main() {
         expect(design, equals(ChatBubbleDesign.nextGeneration));
       });
 
-      test('不正な値が保存されている場合はデフォルト値(square)が返されること', () async {
+      test('不正な値が保存されている場合はデフォルト値(corporateStandard)が返されること', () async {
         container.dispose();
         SharedPreferences.setMockInitialValues({
           PreferenceKey.chatBubbleDesign.name: 'invalid_value',
@@ -94,7 +94,7 @@ void main() {
         expect(design, equals(ChatBubbleDesign.nextGeneration));
       });
 
-      test('squareからroundedに変更できること', () async {
+      test('corporateStandardからnextGenerationに変更できること', () async {
         final notifier = container.read(
           chatBubbleDesignRepositoryProvider.notifier,
         );
@@ -112,7 +112,7 @@ void main() {
         expect(design, equals(ChatBubbleDesign.nextGeneration));
       });
 
-      test('roundedからsquareに変更できること', () async {
+      test('nextGenerationからcorporateStandardに変更できること', () async {
         final notifier = container.read(
           chatBubbleDesignRepositoryProvider.notifier,
         );
