@@ -46,9 +46,9 @@ extension ChatBubbleDesignExtension on ChatBubbleDesign {
   String get displayName {
     switch (this) {
       case ChatBubbleDesign.square:
-        return '社内標準';
+        return '社内標準様式';
       case ChatBubbleDesign.rounded:
-        return '次世代';
+        return '次世代様式';
     }
   }
 }
