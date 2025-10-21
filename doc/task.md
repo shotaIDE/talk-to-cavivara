@@ -1,126 +1,143 @@
-# チャット吹き出しデザイン切り替え機能 実装タスクリスト
+# 吹き出しのツノ排除と角丸デザイン 実装タスク
 
 ## 参考資料
 
-- [設計書: チャット吹き出しデザイン切り替え機能](./design/switch-design.md)
+- [要件定義書: 吹き出しのツノ排除と角丸デザイン](./requirement/bubble-tail-removal.md)
+- [技術設計書: 吹き出しのツノ排除と角丸デザイン](./design/bubble-tail-removal.md)
 
-## Data Layer
+## フェーズ 1: Extension の拡張
 
-### 1. ChatBubbleDesign ドメインモデルの作成
+### MessageType enum の追加
 
-- [x] `client/lib/data/model/chat_bubble_design.dart` を作成
-- [x] enum ChatBubbleDesign を定義
-  - [x] `square` - 四角デザイン
-  - [x] `rounded` - 角削りデザイン
+- [ ] `client/lib/ui/component/chat_bubble_design_extension.dart` を編集
+- [ ] `MessageType` enum を追加
+  - [ ] `MessageType.user` を定義
+  - [ ] `MessageType.ai` を定義
+  - [ ] `MessageType.system` を定義
 
-### 2. PreferenceKey の拡張
+### borderRadiusForMessageType メソッドの実装
 
-- [x] `client/lib/data/model/preference_key.dart` を編集
-- [x] enum に `chatBubbleDesign` を追加
+- [ ] `borderRadiusForMessageType` メソッドを実装
+  - [ ] `ChatBubbleDesign.square` の場合の実装（全メッセージタイプで radius 2）
+  - [ ] `ChatBubbleDesign.rounded` のユーザーメッセージの実装
+    - [ ] 左上: radius 10
+    - [ ] 右上: radius 4（ツノがあった位置）
+    - [ ] 右下: radius 10
+    - [ ] 左下: radius 10
+  - [ ] `ChatBubbleDesign.rounded` の AI メッセージの実装
+    - [ ] 左上: radius 4（ツノがあった位置）
+    - [ ] 右上: radius 10
+    - [ ] 右下: radius 10
+    - [ ] 左下: radius 10
+  - [ ] `ChatBubbleDesign.rounded` のシステムメッセージの実装（全て radius 10）
 
-### 3. ChatBubbleDesignRepository の実装
+### ユニットテストの作成
 
-- [x] `client/lib/data/repository/chat_bubble_design_repository.dart` を作成
-- [x] Riverpod の @riverpod アノテーションを使用
-- [x] `build()` メソッドを実装
-  - [x] SharedPreferences から設定を読み込み
-  - [x] デフォルト値として `square` を返す
-- [x] `save(ChatBubbleDesign design)` メソッドを実装
-  - [x] enum.name を文字列として SharedPreferences に保存
-  - [x] state を更新
+- [ ] `client/test/ui/component/chat_bubble_design_extension_test.dart` を作成または編集
+  - [ ] square デザインのテスト（全メッセージタイプで radius 2）
+  - [ ] rounded デザインのユーザーメッセージテスト
+    - [ ] 右上が radius 4
+    - [ ] 他の角が radius 10
+  - [ ] rounded デザインの AI メッセージテスト
+    - [ ] 左上が radius 4
+    - [ ] 他の角が radius 10
+  - [ ] rounded デザインのシステムメッセージテスト（全て radius 10）
 
-## UI Layer - Component
+### コード品質チェック
 
-### 4. ChatBubbleDesignExtension の作成
+- [ ] テストを実行して全て通ることを確認
+- [ ] `dart format client/lib/ui/component/chat_bubble_design_extension.dart` を実行
+- [ ] `dart fix --apply` を実行
+- [ ] `flutter analyze` でリンター・コンパイラ警告の確認と解決
 
-- [x] `client/lib/ui/component/chat_bubble_design_extension.dart` を作成
-- [x] ChatBubbleDesign の extension を定義
-- [x] `borderRadius` getter を実装
-  - [x] square → BorderRadius.circular(2)
-  - [x] rounded → BorderRadius.circular(16)
-- [x] `displayName` getter を実装
-  - [x] square → "四角"
-  - [x] rounded → "角削り"
+## フェーズ 2: 吹き出しウィジェットの更新
 
-## UI Layer - Home Screen
+### _UserChatBubble の更新
 
-### 5. 吹き出しウィジェットの更新
+- [ ] `client/lib/ui/feature/home/home_screen.dart` の `_UserChatBubble` を編集
+- [ ] `MessageType.user` を使用して borderRadius を取得
+- [ ] `design.borderRadiusForMessageType(MessageType.user)` を BoxDecoration に適用
 
-- [x] `client/lib/ui/feature/home/home_screen.dart` を編集
-- [x] `_UserChatBubble` を更新
-  - [x] ref.watch で ChatBubbleDesignRepository を監視
-  - [x] design.borderRadius を BoxDecoration に適用
-  - [x] 固定値を動的な値に変更
-- [x] `_AiChatBubble` を更新
-  - [x] ref.watch で ChatBubbleDesignRepository を監視
-  - [x] design.borderRadius を BoxDecoration に適用
-  - [x] 固定値を動的な値に変更
-- [x] `_AppChatBubble` を更新
-  - [x] ref.watch で ChatBubbleDesignRepository を監視
-  - [x] design.borderRadius を BoxDecoration に適用
-  - [x] 固定値を動的な値に変更
+### _AiChatBubble の更新
 
-## UI Layer - Settings
+- [ ] `client/lib/ui/feature/home/home_screen.dart` の `_AiChatBubble` を編集
+- [ ] `MessageType.ai` を使用して borderRadius を取得
+- [ ] `design.borderRadiusForMessageType(MessageType.ai)` を BoxDecoration に適用
 
-### 6. デザイン選択ダイアログの作成
+### _AppChatBubble の更新
 
-- [x] `client/lib/ui/feature/settings/chat_bubble_design_selection_dialog.dart` を作成
-- [x] ダイアログウィジェットを実装
-  - [x] 2 つのデザインを RadioListTile で表示
-  - [x] 各デザインのプレビューを表示
-  - [x] 初期値として現在のデザインを設定
-- [x] OK/キャンセルボタンを実装
-  - [x] OK タップ時に Repository.save() を呼び出し
-  - [x] キャンセルタップ時に変更を破棄
+- [ ] `client/lib/ui/feature/home/home_screen.dart` の `_AppChatBubble` を編集
+- [ ] `MessageType.system` を使用して borderRadius を取得
+- [ ] `design.borderRadiusForMessageType(MessageType.system)` を BoxDecoration に適用
 
-### 7. 設定画面の更新
+### コード品質チェック
 
-- [x] `client/lib/ui/feature/settings/settings_screen.dart` を編集
-- [x] "表示設定" セクションを追加
-- [x] "吹き出しデザイン" ListTile を追加
-  - [x] アイコン: Icons.chat_bubble_outline
-  - [x] サブタイトルに現在のデザイン名を表示
-  - [x] ref.watch で ChatBubbleDesignRepository を監視
-  - [x] タップでデザイン選択ダイアログを表示
+- [ ] `dart format client/lib/ui/feature/home/home_screen.dart` を実行
+- [ ] `dart fix --apply` を実行
+- [ ] `flutter analyze` でリンター・コンパイラ警告の確認と解決
+- [ ] ウィジェットテストで視覚確認（オプション）
 
-## Testing
+## フェーズ 3: プレビューの更新
 
-### 8. ユニットテストの作成
+### デザイン選択ダイアログのプレビュー更新
 
-- [x] `client/test/data/repository/chat_bubble_design_repository_test.dart` を作成
-  - [x] デフォルト値が square であることをテスト
-  - [x] save メソッドが正しく保存することをテスト
-  - [x] 保存した値が正しく読み込まれることをテスト
+- [ ] `client/lib/ui/feature/settings/chat_bubble_design_selection_dialog.dart` を編集
+- [ ] 「角削り」デザインのプレビューに新しい borderRadius を適用
+- [ ] 適切な MessageType を選択して `borderRadiusForMessageType` を使用
 
-### 9. ウィジェットテストの作成（オプション）
+### コード品質チェック
 
-- [ ] `client/test/ui/component/chat_bubble_design_extension_test.dart` を作成
-  - [ ] borderRadius が正しい値を返すことをテスト
-  - [ ] displayName が正しい値を返すことをテスト
+- [ ] `dart format client/lib/ui/feature/settings/chat_bubble_design_selection_dialog.dart` を実行
+- [ ] `dart fix --apply` を実行
+- [ ] `flutter analyze` でリンター・コンパイラ警告の確認と解決
+- [ ] 実機またはシミュレータで視覚確認
 
-## Code Quality
+## フェーズ 4: テストと検証
 
-### 10. コードフォーマットと静的解析
+### iOS での確認
 
-- [x] `dart format` を実行して全ファイルをフォーマット
-- [x] `dart fix --apply` を実行して自動修正を適用
-- [x] `flutter analyze` を実行して警告がないことを確認
+- [ ] iOS でビルド・実行
+- [ ] ユーザーメッセージの右上角が radius 4 で表示される
+- [ ] ユーザーメッセージの他の角が radius 10 で表示される
+- [ ] AI メッセージの左上角が radius 4 で表示される
+- [ ] AI メッセージの他の角が radius 10 で表示される
+- [ ] システムメッセージの全ての角が radius 10 で表示される
 
-### 11. テストの実行
+### Android での確認
 
-- [x] 全ユニットテストを実行して成功することを確認
-- [ ] 必要に応じてウィジェットテストを実行
+- [ ] Android でビルド・実行
+- [ ] ユーザーメッセージの右上角が radius 4 で表示される
+- [ ] ユーザーメッセージの他の角が radius 10 で表示される
+- [ ] AI メッセージの左上角が radius 4 で表示される
+- [ ] AI メッセージの他の角が radius 10 で表示される
+- [ ] システムメッセージの全ての角が radius 10 で表示される
 
-## Documentation
+### クロスプラットフォーム確認
 
-### 12. ドキュメントの更新
+- [ ] iOS/Android 間で見た目の差異がないことを確認
 
-- [x] 必要に応じて要件定義書を更新
-- [x] 必要に応じて設計書を更新
+### 機能テスト
 
-## Final
+- [ ] デザイン選択ダイアログを開く
+- [ ] 「四角」デザインは変更されていない（radius 2 の一律適用）
+- [ ] 「角削り」デザインを選択すると新しい角丸が適用される
+- [ ] デザイン選択ダイアログのプレビューが新しい仕様を反映している
 
-### 13. コミット
+### 永続化テスト
 
-- [x] 適切なコミットメッセージを作成
-- [x] 変更をコミット
+- [ ] デザイン選択が永続化される
+- [ ] アプリを完全に終了
+- [ ] アプリを再起動
+- [ ] 選択したデザインが保持されている
+
+## 完了後
+
+### ドキュメント更新
+
+- [ ] 必要に応じて要件定義書を更新
+- [ ] 必要に応じて設計書を更新
+
+### コミット
+
+- [ ] 適切なコミットメッセージを作成
+- [ ] 変更をコミット

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:house_worker/data/model/chat_bubble_design.dart';
 import 'package:house_worker/data/model/chat_message.dart';
 import 'package:house_worker/data/repository/chat_bubble_design_repository.dart';
 import 'package:house_worker/data/repository/skip_clear_chat_confirmation_repository.dart';
@@ -541,25 +542,29 @@ class _UserChatBubble extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: bubbleColor,
-        borderRadius: design?.borderRadius ?? BorderRadius.circular(2),
+        borderRadius:
+            design?.borderRadiusForMessageType(MessageType.user) ??
+            BorderRadius.circular(2),
       ),
       child: bodyText,
     );
 
-    final bubbleWithPointer = Stack(
-      clipBehavior: Clip.none,
-      children: [
-        bubble,
-        Positioned(
-          right: -10,
-          top: 12,
-          child: _BubblePointer(
-            color: bubbleColor,
-            direction: _BubblePointerDirection.right,
-          ),
-        ),
-      ],
-    );
+    final bubbleWithPointer = design == ChatBubbleDesign.nextGeneration
+        ? bubble
+        : Stack(
+            clipBehavior: Clip.none,
+            children: [
+              bubble,
+              Positioned(
+                right: -10,
+                top: 12,
+                child: _BubblePointer(
+                  color: bubbleColor,
+                  direction: _BubblePointerDirection.right,
+                ),
+              ),
+            ],
+          );
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
@@ -655,25 +660,29 @@ class _AiChatBubble extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: bubbleColor,
-        borderRadius: design?.borderRadius ?? BorderRadius.circular(2),
+        borderRadius:
+            design?.borderRadiusForMessageType(MessageType.ai) ??
+            BorderRadius.circular(2),
       ),
       child: bodyText,
     );
 
-    final bubbleWithPointer = Stack(
-      clipBehavior: Clip.none,
-      children: [
-        bubble,
-        Positioned(
-          left: -10,
-          top: 12,
-          child: _BubblePointer(
-            color: bubbleColor,
-            direction: _BubblePointerDirection.left,
-          ),
-        ),
-      ],
-    );
+    final bubbleWithPointer = design == ChatBubbleDesign.nextGeneration
+        ? bubble
+        : Stack(
+            clipBehavior: Clip.none,
+            children: [
+              bubble,
+              Positioned(
+                left: -10,
+                top: 12,
+                child: _BubblePointer(
+                  color: bubbleColor,
+                  direction: _BubblePointerDirection.left,
+                ),
+              ),
+            ],
+          );
 
     final avatar = CavivaraAvatar(
       assetPath: cavivaraProfile.iconPath,
@@ -737,7 +746,9 @@ class _AppChatBubble extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceContainer.withAlpha(100),
-        borderRadius: design?.borderRadius ?? BorderRadius.circular(2),
+        borderRadius:
+            design?.borderRadiusForMessageType(MessageType.system) ??
+            BorderRadius.circular(2),
       ),
       child: bodyText,
     );

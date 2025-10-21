@@ -16,7 +16,7 @@ class ChatBubbleDesignRepository extends _$ChatBubbleDesignRepository {
 
     return ChatBubbleDesign.values.firstWhere(
       (design) => design.name == value,
-      orElse: () => ChatBubbleDesign.square,
+      orElse: () => ChatBubbleDesign.corporateStandard,
     );
   }
 

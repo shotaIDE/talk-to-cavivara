@@ -21,7 +21,7 @@ class _ChatBubbleDesignSelectionDialogState
     super.initState();
     // 初期値として現在のデザインを設定
     final currentDesign = ref.read(chatBubbleDesignRepositoryProvider).value;
-    _selectedDesign = currentDesign ?? ChatBubbleDesign.square;
+    _selectedDesign = currentDesign ?? ChatBubbleDesign.corporateStandard;
   }
 
   @override
@@ -88,7 +88,7 @@ class _DesignPreview extends StatelessWidget {
             height: 32,
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.primaryContainer,
-              borderRadius: design.borderRadius,
+              borderRadius: design.borderRadiusForMessageType(MessageType.user),
             ),
           ),
           const SizedBox(width: 8),
@@ -97,7 +97,7 @@ class _DesignPreview extends StatelessWidget {
             height: 32,
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              borderRadius: design.borderRadius,
+              borderRadius: design.borderRadiusForMessageType(MessageType.ai),
             ),
           ),
         ],
