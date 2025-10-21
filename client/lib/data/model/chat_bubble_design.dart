@@ -1,4 +1,4 @@
 enum ChatBubbleDesign {
-  square,
-  rounded,
+  corporateStandard,
+  nextGeneration,
 }

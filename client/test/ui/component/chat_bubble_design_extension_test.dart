@@ -8,7 +8,7 @@ void main() {
     test(
       'square design returns uniform small radius for all message types',
       () {
-        const design = ChatBubbleDesign.square;
+        const design = ChatBubbleDesign.corporateStandard;
         expect(
           design.borderRadiusForMessageType(MessageType.user),
           BorderRadius.circular(2),
@@ -25,7 +25,7 @@ void main() {
     );
 
     test('rounded design returns custom radius for user message', () {
-      const design = ChatBubbleDesign.rounded;
+      const design = ChatBubbleDesign.nextGeneration;
       final result = design.borderRadiusForMessageType(MessageType.user);
       expect(result.topLeft, const Radius.circular(10));
       expect(result.topRight, const Radius.circular(4));
@@ -34,7 +34,7 @@ void main() {
     });
 
     test('rounded design returns custom radius for ai message', () {
-      const design = ChatBubbleDesign.rounded;
+      const design = ChatBubbleDesign.nextGeneration;
       final result = design.borderRadiusForMessageType(MessageType.ai);
       expect(result.topLeft, const Radius.circular(4));
       expect(result.topRight, const Radius.circular(10));
@@ -43,7 +43,7 @@ void main() {
     });
 
     test('rounded design returns uniform radius for system message', () {
-      const design = ChatBubbleDesign.rounded;
+      const design = ChatBubbleDesign.nextGeneration;
       final result = design.borderRadiusForMessageType(MessageType.system);
       expect(result, BorderRadius.circular(10));
     });

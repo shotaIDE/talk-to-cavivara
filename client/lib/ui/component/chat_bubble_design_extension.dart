@@ -10,32 +10,32 @@ enum MessageType {
 extension ChatBubbleDesignExtension on ChatBubbleDesign {
   BorderRadius get borderRadius {
     switch (this) {
-      case ChatBubbleDesign.square:
+      case ChatBubbleDesign.corporateStandard:
         return BorderRadius.circular(2);
-      case ChatBubbleDesign.rounded:
+      case ChatBubbleDesign.nextGeneration:
         return BorderRadius.circular(16);
     }
   }
 
   BorderRadius borderRadiusForMessageType(MessageType messageType) {
     switch (this) {
-      case ChatBubbleDesign.square:
+      case ChatBubbleDesign.corporateStandard:
         return BorderRadius.circular(8);
-      case ChatBubbleDesign.rounded:
+      case ChatBubbleDesign.nextGeneration:
         switch (messageType) {
           case MessageType.user:
             return const BorderRadius.only(
-              topLeft: Radius.circular(14),
+              topLeft: Radius.circular(20),
               topRight: Radius.circular(2), // ツノがあった位置
-              bottomRight: Radius.circular(14),
-              bottomLeft: Radius.circular(14),
+              bottomRight: Radius.circular(20),
+              bottomLeft: Radius.circular(20),
             );
           case MessageType.ai:
             return const BorderRadius.only(
               topLeft: Radius.circular(2), // ツノがあった位置
-              topRight: Radius.circular(14),
-              bottomRight: Radius.circular(14),
-              bottomLeft: Radius.circular(14),
+              topRight: Radius.circular(20),
+              bottomRight: Radius.circular(20),
+              bottomLeft: Radius.circular(20),
             );
           case MessageType.system:
             return BorderRadius.circular(8);
@@ -45,9 +45,9 @@ extension ChatBubbleDesignExtension on ChatBubbleDesign {
 
   String get displayName {
     switch (this) {
-      case ChatBubbleDesign.square:
+      case ChatBubbleDesign.corporateStandard:
         return '社内標準様式';
-      case ChatBubbleDesign.rounded:
+      case ChatBubbleDesign.nextGeneration:
         return '次世代様式';
     }
   }

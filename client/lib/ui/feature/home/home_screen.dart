@@ -549,7 +549,7 @@ class _UserChatBubble extends ConsumerWidget {
       child: bodyText,
     );
 
-    final bubbleWithPointer = design == ChatBubbleDesign.rounded
+    final bubbleWithPointer = design == ChatBubbleDesign.nextGeneration
         ? bubble
         : Stack(
             clipBehavior: Clip.none,
@@ -667,7 +667,7 @@ class _AiChatBubble extends ConsumerWidget {
       child: bodyText,
     );
 
-    final bubbleWithPointer = design == ChatBubbleDesign.rounded
+    final bubbleWithPointer = design == ChatBubbleDesign.nextGeneration
         ? bubble
         : Stack(
             clipBehavior: Clip.none,

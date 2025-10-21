@@ -21,7 +21,7 @@ class _ChatBubbleDesignSelectionDialogState
     super.initState();
     // 初期値として現在のデザインを設定
     final currentDesign = ref.read(chatBubbleDesignRepositoryProvider).value;
-    _selectedDesign = currentDesign ?? ChatBubbleDesign.square;
+    _selectedDesign = currentDesign ?? ChatBubbleDesign.corporateStandard;
   }
 
   @override

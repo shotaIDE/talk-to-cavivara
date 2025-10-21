@@ -28,7 +28,7 @@ void main() {
           chatBubbleDesignRepositoryProvider.future,
         );
 
-        expect(design, equals(ChatBubbleDesign.square));
+        expect(design, equals(ChatBubbleDesign.corporateStandard));
       });
 
       test('永続化データが存在する場合は永続化された値で初期化されること', () async {
@@ -46,7 +46,7 @@ void main() {
           chatBubbleDesignRepositoryProvider.future,
         );
 
-        expect(design, equals(ChatBubbleDesign.rounded));
+        expect(design, equals(ChatBubbleDesign.nextGeneration));
       });
 
       test('不正な値が保存されている場合はデフォルト値(square)が返されること', () async {
@@ -64,7 +64,7 @@ void main() {
           chatBubbleDesignRepositoryProvider.future,
         );
 
-        expect(design, equals(ChatBubbleDesign.square));
+        expect(design, equals(ChatBubbleDesign.corporateStandard));
       });
     });
 
@@ -72,18 +72,18 @@ void main() {
       test('デザインを保存できること', () async {
         await container
             .read(chatBubbleDesignRepositoryProvider.notifier)
-            .save(ChatBubbleDesign.rounded);
+            .save(ChatBubbleDesign.nextGeneration);
 
         final design = await container.read(
           chatBubbleDesignRepositoryProvider.future,
         );
-        expect(design, equals(ChatBubbleDesign.rounded));
+        expect(design, equals(ChatBubbleDesign.nextGeneration));
       });
 
       test('保存したデザインが永続化されること', () async {
         await container
             .read(chatBubbleDesignRepositoryProvider.notifier)
-            .save(ChatBubbleDesign.rounded);
+            .save(ChatBubbleDesign.nextGeneration);
 
         final newContainer = ProviderContainer();
         addTearDown(newContainer.dispose);
@@ -91,7 +91,7 @@ void main() {
           chatBubbleDesignRepositoryProvider.future,
         );
 
-        expect(design, equals(ChatBubbleDesign.rounded));
+        expect(design, equals(ChatBubbleDesign.nextGeneration));
       });
 
       test('squareからroundedに変更できること', () async {
@@ -102,14 +102,14 @@ void main() {
         var design = await container.read(
           chatBubbleDesignRepositoryProvider.future,
         );
-        expect(design, equals(ChatBubbleDesign.square));
+        expect(design, equals(ChatBubbleDesign.corporateStandard));
 
-        await notifier.save(ChatBubbleDesign.rounded);
+        await notifier.save(ChatBubbleDesign.nextGeneration);
 
         design = await container.read(
           chatBubbleDesignRepositoryProvider.future,
         );
-        expect(design, equals(ChatBubbleDesign.rounded));
+        expect(design, equals(ChatBubbleDesign.nextGeneration));
       });
 
       test('roundedからsquareに変更できること', () async {
@@ -117,18 +117,18 @@ void main() {
           chatBubbleDesignRepositoryProvider.notifier,
         );
 
-        await notifier.save(ChatBubbleDesign.rounded);
+        await notifier.save(ChatBubbleDesign.nextGeneration);
         var design = await container.read(
           chatBubbleDesignRepositoryProvider.future,
         );
-        expect(design, equals(ChatBubbleDesign.rounded));
+        expect(design, equals(ChatBubbleDesign.nextGeneration));
 
-        await notifier.save(ChatBubbleDesign.square);
+        await notifier.save(ChatBubbleDesign.corporateStandard);
 
         design = await container.read(
           chatBubbleDesignRepositoryProvider.future,
         );
-        expect(design, equals(ChatBubbleDesign.square));
+        expect(design, equals(ChatBubbleDesign.corporateStandard));
       });
     });
 
@@ -149,10 +149,10 @@ void main() {
           },
         );
 
-        await notifier.save(ChatBubbleDesign.rounded);
+        await notifier.save(ChatBubbleDesign.nextGeneration);
         expect(notificationCount, equals(1));
 
-        await notifier.save(ChatBubbleDesign.square);
+        await notifier.save(ChatBubbleDesign.corporateStandard);
         expect(notificationCount, equals(2));
       });
     });
