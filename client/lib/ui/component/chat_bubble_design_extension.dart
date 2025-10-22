@@ -14,6 +14,9 @@ extension ChatBubbleDesignExtension on ChatBubbleDesign {
         return BorderRadius.circular(2);
       case ChatBubbleDesign.nextGeneration:
         return BorderRadius.circular(16);
+      case ChatBubbleDesign.harmonized:
+        // harmonized uses CustomClipper, not BorderRadius
+        return BorderRadius.zero;
     }
   }
 
@@ -40,6 +43,9 @@ extension ChatBubbleDesignExtension on ChatBubbleDesign {
           case MessageType.system:
             return BorderRadius.circular(8);
         }
+      case ChatBubbleDesign.harmonized:
+        // harmonized uses CustomClipper, not BorderRadius
+        return BorderRadius.zero;
     }
   }
 
@@ -49,6 +55,8 @@ extension ChatBubbleDesignExtension on ChatBubbleDesign {
         return '社内標準様式';
       case ChatBubbleDesign.nextGeneration:
         return '次世代様式';
+      case ChatBubbleDesign.harmonized:
+        return '調整済様式';
     }
   }
 }

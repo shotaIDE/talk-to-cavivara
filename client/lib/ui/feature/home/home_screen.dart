@@ -11,6 +11,7 @@ import 'package:house_worker/ui/component/app_drawer.dart';
 import 'package:house_worker/ui/component/cavivara_avatar.dart';
 import 'package:house_worker/ui/component/chat_bubble_design_extension.dart';
 import 'package:house_worker/ui/component/clear_chat_confirmation_dialog.dart';
+import 'package:house_worker/ui/component/harmonized_bubble_clipper.dart';
 import 'package:house_worker/ui/feature/home/home_presenter.dart';
 import 'package:house_worker/ui/feature/job_market/job_market_screen.dart';
 import 'package:house_worker/ui/feature/resume/resume_screen.dart';
@@ -535,21 +536,43 @@ class _UserChatBubble extends ConsumerWidget {
 
     final bubbleColor = Theme.of(context).colorScheme.primaryContainer;
 
-    final bubble = Container(
-      constraints: BoxConstraints(
-        maxWidth: MediaQuery.of(context).size.width * 0.8,
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: bubbleColor,
-        borderRadius:
-            design?.borderRadiusForMessageType(MessageType.user) ??
-            BorderRadius.circular(2),
-      ),
-      child: bodyText,
-    );
+    Widget buildBubble() {
+      if (design == ChatBubbleDesign.harmonized) {
+        return ClipPath(
+          clipper: const HarmonizedBubbleClipper(
+            messageType: MessageType.user,
+          ),
+          child: Container(
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.8,
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            color: bubbleColor,
+            child: bodyText,
+          ),
+        );
+      } else {
+        return Container(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.8,
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: bubbleColor,
+            borderRadius:
+                design?.borderRadiusForMessageType(MessageType.user) ??
+                BorderRadius.circular(2),
+          ),
+          child: bodyText,
+        );
+      }
+    }
 
-    final bubbleWithPointer = design == ChatBubbleDesign.nextGeneration
+    final bubble = buildBubble();
+
+    final bubbleWithPointer =
+        design == ChatBubbleDesign.nextGeneration ||
+            design == ChatBubbleDesign.harmonized
         ? bubble
         : Stack(
             clipBehavior: Clip.none,
@@ -653,21 +676,43 @@ class _AiChatBubble extends ConsumerWidget {
 
     final bubbleColor = Theme.of(context).colorScheme.surfaceContainerHighest;
 
-    final bubble = Container(
-      constraints: BoxConstraints(
-        maxWidth: MediaQuery.of(context).size.width * 0.8,
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: bubbleColor,
-        borderRadius:
-            design?.borderRadiusForMessageType(MessageType.ai) ??
-            BorderRadius.circular(2),
-      ),
-      child: bodyText,
-    );
+    Widget buildBubble() {
+      if (design == ChatBubbleDesign.harmonized) {
+        return ClipPath(
+          clipper: const HarmonizedBubbleClipper(
+            messageType: MessageType.ai,
+          ),
+          child: Container(
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.8,
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            color: bubbleColor,
+            child: bodyText,
+          ),
+        );
+      } else {
+        return Container(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.8,
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: bubbleColor,
+            borderRadius:
+                design?.borderRadiusForMessageType(MessageType.ai) ??
+                BorderRadius.circular(2),
+          ),
+          child: bodyText,
+        );
+      }
+    }
 
-    final bubbleWithPointer = design == ChatBubbleDesign.nextGeneration
+    final bubble = buildBubble();
+
+    final bubbleWithPointer =
+        design == ChatBubbleDesign.nextGeneration ||
+            design == ChatBubbleDesign.harmonized
         ? bubble
         : Stack(
             clipBehavior: Clip.none,
@@ -739,19 +784,43 @@ class _AppChatBubble extends ConsumerWidget {
       timestamp: message.timestamp,
     );
 
-    final bubble = Container(
-      constraints: BoxConstraints(
-        maxWidth: MediaQuery.of(context).size.width * 0.8,
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainer.withAlpha(100),
-        borderRadius:
-            design?.borderRadiusForMessageType(MessageType.system) ??
-            BorderRadius.circular(2),
-      ),
-      child: bodyText,
-    );
+    final bubbleColor = Theme.of(
+      context,
+    ).colorScheme.surfaceContainer.withAlpha(100);
+
+    Widget buildBubble() {
+      if (design == ChatBubbleDesign.harmonized) {
+        return ClipPath(
+          clipper: const HarmonizedBubbleClipper(
+            messageType: MessageType.system,
+          ),
+          child: Container(
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.8,
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            color: bubbleColor,
+            child: bodyText,
+          ),
+        );
+      } else {
+        return Container(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.8,
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: bubbleColor,
+            borderRadius:
+                design?.borderRadiusForMessageType(MessageType.system) ??
+                BorderRadius.circular(2),
+          ),
+          child: bodyText,
+        );
+      }
+    }
+
+    final bubble = buildBubble();
 
     final expanded = Expanded(
       child: Skeletonizer(

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/data/model/chat_bubble_design.dart';
 import 'package:house_worker/data/repository/chat_bubble_design_repository.dart';
 import 'package:house_worker/ui/component/chat_bubble_design_extension.dart';
+import 'package:house_worker/ui/component/harmonized_bubble_clipper.dart';
 
 class ChatBubbleDesignSelectionDialog extends ConsumerStatefulWidget {
   const ChatBubbleDesignSelectionDialog({super.key});
@@ -79,26 +80,45 @@ class _DesignPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Widget buildPreviewBubble({
+      required Color color,
+      required MessageType messageType,
+    }) {
+      if (design == ChatBubbleDesign.harmonized) {
+        return ClipPath(
+          clipper: HarmonizedBubbleClipper(
+            messageType: messageType,
+          ),
+          child: Container(
+            width: 80,
+            height: 32,
+            color: color,
+          ),
+        );
+      } else {
+        return Container(
+          width: 80,
+          height: 32,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: design.borderRadiusForMessageType(messageType),
+          ),
+        );
+      }
+    }
+
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Row(
         children: [
-          Container(
-            width: 80,
-            height: 32,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primaryContainer,
-              borderRadius: design.borderRadiusForMessageType(MessageType.user),
-            ),
+          buildPreviewBubble(
+            color: Theme.of(context).colorScheme.primaryContainer,
+            messageType: MessageType.user,
           ),
           const SizedBox(width: 8),
-          Container(
-            width: 80,
-            height: 32,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              borderRadius: design.borderRadiusForMessageType(MessageType.ai),
-            ),
+          buildPreviewBubble(
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+            messageType: MessageType.ai,
           ),
         ],
       ),

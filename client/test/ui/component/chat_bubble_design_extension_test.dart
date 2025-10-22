@@ -49,4 +49,11 @@ void main() {
       expect(result, BorderRadius.circular(8));
     });
   });
+
+  group('harmonized design', () {
+    test('displayName returns correct Japanese name', () {
+      const design = ChatBubbleDesign.harmonized;
+      expect(design.displayName, '調整済様式');
+    });
+  });
 }
