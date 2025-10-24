@@ -9,18 +9,6 @@ enum MessageType {
 }
 
 extension ChatBubbleDesignExtension on ChatBubbleDesign {
-  BorderRadius get borderRadius {
-    switch (this) {
-      case ChatBubbleDesign.corporateStandard:
-        return BorderRadius.circular(2);
-      case ChatBubbleDesign.nextGeneration:
-        return BorderRadius.circular(16);
-      case ChatBubbleDesign.harmonized:
-        // harmonized uses CustomClipper, not BorderRadius
-        return BorderRadius.zero;
-    }
-  }
-
   BorderRadius borderRadiusForMessageType(MessageType messageType) {
     switch (this) {
       case ChatBubbleDesign.corporateStandard:
