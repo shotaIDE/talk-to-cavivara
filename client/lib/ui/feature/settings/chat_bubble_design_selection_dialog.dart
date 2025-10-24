@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/data/model/chat_bubble_design.dart';
 import 'package:house_worker/data/repository/chat_bubble_design_repository.dart';
 import 'package:house_worker/ui/component/chat_bubble_design_extension.dart';
-import 'package:house_worker/ui/component/harmonized_bubble_clipper.dart';
 
 class ChatBubbleDesignSelectionDialog extends ConsumerStatefulWidget {
   const ChatBubbleDesignSelectionDialog({super.key});
@@ -80,45 +79,35 @@ class _DesignPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget buildPreviewBubble({
-      required Color color,
-      required MessageType messageType,
-    }) {
-      if (design == ChatBubbleDesign.harmonized) {
-        return ClipPath(
-          clipper: HarmonizedBubbleClipper(
-            messageType: messageType,
-          ),
-          child: Container(
-            width: 80,
-            height: 32,
-            color: color,
-          ),
-        );
-      } else {
-        return Container(
-          width: 80,
-          height: 32,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: design.borderRadiusForMessageType(messageType),
-          ),
-        );
-      }
-    }
+    const dummyBox = SizedBox(
+      width: 40,
+      height: 16,
+    );
 
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Row(
+        spacing: 8,
         children: [
-          buildPreviewBubble(
-            color: Theme.of(context).colorScheme.primaryContainer,
+          design.buildBubble(
+            context: context,
             messageType: MessageType.user,
+            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+            child: const SizedBox(
+              width: 40,
+              height: 16,
+            ),
           ),
-          const SizedBox(width: 8),
-          buildPreviewBubble(
-            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          design.buildBubble(
+            context: context,
             messageType: MessageType.ai,
+            backgroundColor: Theme.of(
+              context,
+            ).colorScheme.surfaceContainerHighest,
+            child: const SizedBox(
+              width: 40,
+              height: 16,
+            ),
           ),
         ],
       ),

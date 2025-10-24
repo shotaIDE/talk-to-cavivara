@@ -534,7 +534,7 @@ class _UserChatBubble extends ConsumerWidget {
     );
     final timeText = _TimestampText(timestamp: message.timestamp);
     final bubbleColor = Theme.of(context).colorScheme.primaryContainer;
-    final bubble = design.bubble(
+    final bubble = design.buildBubble(
       context: context,
       messageType: MessageType.user,
       backgroundColor: bubbleColor,
@@ -647,7 +647,7 @@ class _AiChatBubble extends ConsumerWidget {
 
     final bubbleColor = Theme.of(context).colorScheme.surfaceContainerHighest;
 
-    final bubble = design.bubble(
+    final bubble = design.buildBubble(
       context: context,
       messageType: MessageType.ai,
       backgroundColor: bubbleColor,
@@ -730,7 +730,7 @@ class _AppChatBubble extends ConsumerWidget {
     final timeText = _TimestampText(
       timestamp: message.timestamp,
     );
-    final bubble = design.bubble(
+    final bubble = design.buildBubble(
       context: context,
       messageType: MessageType.system,
       backgroundColor: bubbleColor,
