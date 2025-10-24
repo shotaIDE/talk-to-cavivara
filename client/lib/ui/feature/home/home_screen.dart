@@ -11,7 +11,6 @@ import 'package:house_worker/ui/component/app_drawer.dart';
 import 'package:house_worker/ui/component/cavivara_avatar.dart';
 import 'package:house_worker/ui/component/chat_bubble_design_extension.dart';
 import 'package:house_worker/ui/component/clear_chat_confirmation_dialog.dart';
-import 'package:house_worker/ui/component/harmonized_bubble_clipper.dart';
 import 'package:house_worker/ui/feature/home/home_presenter.dart';
 import 'package:house_worker/ui/feature/job_market/job_market_screen.dart';
 import 'package:house_worker/ui/feature/resume/resume_screen.dart';
@@ -526,49 +525,18 @@ class _UserChatBubble extends ConsumerWidget {
     final designAsync = ref.watch(chatBubbleDesignRepositoryProvider);
     final design = designAsync.value;
 
-    final bodyText = Text(
-      message.content,
-      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-        color: Theme.of(context).colorScheme.onPrimaryContainer,
-      ),
-    );
     final timeText = _TimestampText(timestamp: message.timestamp);
 
+    final textColor = Theme.of(context).colorScheme.onPrimaryContainer;
     final bubbleColor = Theme.of(context).colorScheme.primaryContainer;
 
-    Widget buildBubble() {
-      if (design == ChatBubbleDesign.harmonized) {
-        return ClipPath(
-          clipper: const HarmonizedBubbleClipper(
-            messageType: MessageType.user,
-          ),
-          child: Container(
-            constraints: BoxConstraints(
-              maxWidth: MediaQuery.of(context).size.width * 0.8,
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            color: bubbleColor,
-            child: bodyText,
-          ),
-        );
-      } else {
-        return Container(
-          constraints: BoxConstraints(
-            maxWidth: MediaQuery.of(context).size.width * 0.8,
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            color: bubbleColor,
-            borderRadius:
-                design?.borderRadiusForMessageType(MessageType.user) ??
-                BorderRadius.circular(2),
-          ),
-          child: bodyText,
-        );
-      }
-    }
-
-    final bubble = buildBubble();
+    final bubble = design.bubble(
+      context: context,
+      messageType: MessageType.user,
+      text: message.content,
+      textColor: textColor,
+      backgroundColor: bubbleColor,
+    );
 
     final bubbleWithPointer =
         design == ChatBubbleDesign.nextGeneration ||
@@ -676,39 +644,12 @@ class _AiChatBubble extends ConsumerWidget {
 
     final bubbleColor = Theme.of(context).colorScheme.surfaceContainerHighest;
 
-    Widget buildBubble() {
-      if (design == ChatBubbleDesign.harmonized) {
-        return ClipPath(
-          clipper: const HarmonizedBubbleClipper(
-            messageType: MessageType.ai,
-          ),
-          child: Container(
-            constraints: BoxConstraints(
-              maxWidth: MediaQuery.of(context).size.width * 0.8,
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            color: bubbleColor,
-            child: bodyText,
-          ),
-        );
-      } else {
-        return Container(
-          constraints: BoxConstraints(
-            maxWidth: MediaQuery.of(context).size.width * 0.8,
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            color: bubbleColor,
-            borderRadius:
-                design?.borderRadiusForMessageType(MessageType.ai) ??
-                BorderRadius.circular(2),
-          ),
-          child: bodyText,
-        );
-      }
-    }
-
-    final bubble = buildBubble();
+    final bubble = design.bubbleWithChild(
+      context: context,
+      messageType: MessageType.ai,
+      backgroundColor: bubbleColor,
+      child: bodyText,
+    );
 
     final bubbleWithPointer =
         design == ChatBubbleDesign.nextGeneration ||
@@ -788,39 +729,13 @@ class _AppChatBubble extends ConsumerWidget {
       context,
     ).colorScheme.surfaceContainer.withAlpha(100);
 
-    Widget buildBubble() {
-      if (design == ChatBubbleDesign.harmonized) {
-        return ClipPath(
-          clipper: const HarmonizedBubbleClipper(
-            messageType: MessageType.system,
-          ),
-          child: Container(
-            constraints: BoxConstraints(
-              maxWidth: MediaQuery.of(context).size.width * 0.8,
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            color: bubbleColor,
-            child: bodyText,
-          ),
-        );
-      } else {
-        return Container(
-          constraints: BoxConstraints(
-            maxWidth: MediaQuery.of(context).size.width * 0.8,
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: BoxDecoration(
-            color: bubbleColor,
-            borderRadius:
-                design?.borderRadiusForMessageType(MessageType.system) ??
-                BorderRadius.circular(2),
-          ),
-          child: bodyText,
-        );
-      }
-    }
-
-    final bubble = buildBubble();
+    final bubble = design.bubbleWithChild(
+      context: context,
+      messageType: MessageType.system,
+      backgroundColor: bubbleColor,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      child: bodyText,
+    );
 
     final expanded = Expanded(
       child: Skeletonizer(

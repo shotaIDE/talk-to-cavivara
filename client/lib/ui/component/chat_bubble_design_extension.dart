@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:house_worker/data/model/chat_bubble_design.dart';
+import 'package:house_worker/ui/component/harmonized_bubble_clipper.dart';
 
 enum MessageType {
   user, // ユーザーメッセージ
@@ -58,5 +59,138 @@ extension ChatBubbleDesignExtension on ChatBubbleDesign {
       case ChatBubbleDesign.harmonized:
         return '調整済様式';
     }
+  }
+
+  Widget bubble({
+    required BuildContext context,
+    required MessageType messageType,
+    required String text,
+    required Color textColor,
+    required Color backgroundColor,
+  }) {
+    return bubbleWithChild(
+      context: context,
+      messageType: messageType,
+      backgroundColor: backgroundColor,
+      child: Text(
+        text,
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          color: textColor,
+        ),
+      ),
+    );
+  }
+
+  Widget bubbleWithChild({
+    required BuildContext context,
+    required MessageType messageType,
+    required Widget child,
+    required Color backgroundColor,
+    EdgeInsets padding = const EdgeInsets.symmetric(
+      horizontal: 16,
+      vertical: 12,
+    ),
+  }) {
+    if (this == ChatBubbleDesign.harmonized) {
+      return ClipPath(
+        clipper: HarmonizedBubbleClipper(
+          messageType: messageType,
+        ),
+        child: Container(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.8,
+          ),
+          padding: padding,
+          color: backgroundColor,
+          child: child,
+        ),
+      );
+    } else {
+      return Container(
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width * 0.8,
+        ),
+        padding: padding,
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: borderRadiusForMessageType(messageType),
+        ),
+        child: child,
+      );
+    }
+  }
+}
+
+extension ChatBubbleDesignOrNullExtension on ChatBubbleDesign? {
+  Widget bubble({
+    required BuildContext context,
+    required MessageType messageType,
+    required String text,
+    required Color textColor,
+    required Color backgroundColor,
+  }) {
+    final design = this;
+    if (design != null) {
+      return design.bubble(
+        context: context,
+        messageType: messageType,
+        text: text,
+        textColor: textColor,
+        backgroundColor: backgroundColor,
+      );
+    }
+
+    // null時のデフォルト動作
+    return Container(
+      constraints: BoxConstraints(
+        maxWidth: MediaQuery.of(context).size.width * 0.8,
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(2),
+      ),
+      child: Text(
+        text,
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          color: textColor,
+        ),
+      ),
+    );
+  }
+
+  Widget bubbleWithChild({
+    required BuildContext context,
+    required MessageType messageType,
+    required Widget child,
+    required Color backgroundColor,
+    EdgeInsets padding = const EdgeInsets.symmetric(
+      horizontal: 16,
+      vertical: 12,
+    ),
+  }) {
+    final design = this;
+    if (design != null) {
+      return design.bubbleWithChild(
+        context: context,
+        messageType: messageType,
+        child: child,
+        backgroundColor: backgroundColor,
+        padding: padding,
+      );
+    }
+
+    // null時のデフォルト動作
+    return Container(
+      constraints: BoxConstraints(
+        maxWidth: MediaQuery.of(context).size.width * 0.8,
+      ),
+      padding: padding,
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(2),
+      ),
+      child: child,
+    );
   }
 }
