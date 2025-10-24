@@ -523,7 +523,7 @@ class _UserChatBubble extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final designAsync = ref.watch(chatBubbleDesignRepositoryProvider);
-    final design = designAsync.value;
+    final design = designAsync.value ?? ChatBubbleDesign.corporateStandard;
 
     final timeText = _TimestampText(timestamp: message.timestamp);
 
@@ -585,7 +585,7 @@ class _AiChatBubble extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final cavivaraProfile = ref.watch(cavivaraByIdProvider(cavivaraId));
     final designAsync = ref.watch(chatBubbleDesignRepositoryProvider);
-    final design = designAsync.value;
+    final design = designAsync.value ?? ChatBubbleDesign.corporateStandard;
     final textColor = Theme.of(context).colorScheme.onSurface;
     final indicatorColor = Theme.of(context).colorScheme.primary;
 
@@ -713,7 +713,7 @@ class _AppChatBubble extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final designAsync = ref.watch(chatBubbleDesignRepositoryProvider);
-    final design = designAsync.value;
+    final design = designAsync.value ?? ChatBubbleDesign.corporateStandard;
 
     final bodyText = Text(
       message.content,
