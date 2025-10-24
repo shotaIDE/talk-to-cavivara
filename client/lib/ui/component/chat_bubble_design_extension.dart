@@ -83,9 +83,7 @@ extension ChatBubbleDesignExtension on ChatBubbleDesign {
             messageType: messageType,
           ),
           child: Container(
-            constraints: BoxConstraints(
-              maxWidth: MediaQuery.of(context).size.width * 0.8,
-            ),
+            constraints: constraints,
             padding: padding,
             color: backgroundColor,
             child: child,
