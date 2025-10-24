@@ -79,11 +79,6 @@ class _DesignPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const dummyBox = SizedBox(
-      width: 40,
-      height: 16,
-    );
-
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Row(
