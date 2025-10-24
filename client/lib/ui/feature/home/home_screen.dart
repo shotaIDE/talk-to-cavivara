@@ -541,11 +541,8 @@ class _UserChatBubble extends ConsumerWidget {
       child: bodyText,
     );
 
-    final bubbleWithPointer =
-        design == ChatBubbleDesign.nextGeneration ||
-            design == ChatBubbleDesign.harmonized
-        ? bubble
-        : Stack(
+    final bubbleWithPointer = design.shouldWithPointer
+        ? Stack(
             clipBehavior: Clip.none,
             children: [
               bubble,
@@ -558,7 +555,8 @@ class _UserChatBubble extends ConsumerWidget {
                 ),
               ),
             ],
-          );
+          )
+        : bubble;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
@@ -654,11 +652,8 @@ class _AiChatBubble extends ConsumerWidget {
       child: bodyText,
     );
 
-    final bubbleWithPointer =
-        design == ChatBubbleDesign.nextGeneration ||
-            design == ChatBubbleDesign.harmonized
-        ? bubble
-        : Stack(
+    final bubbleWithPointer = design.shouldWithPointer
+        ? Stack(
             clipBehavior: Clip.none,
             children: [
               bubble,
@@ -671,7 +666,8 @@ class _AiChatBubble extends ConsumerWidget {
                 ),
               ),
             ],
-          );
+          )
+        : bubble;
 
     final avatar = CavivaraAvatar(
       assetPath: cavivaraProfile.iconPath,

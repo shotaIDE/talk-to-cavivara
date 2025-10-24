@@ -20,6 +20,17 @@ extension ChatBubbleDesignExtension on ChatBubbleDesign {
     }
   }
 
+  bool get shouldWithPointer {
+    switch (this) {
+      case ChatBubbleDesign.corporateStandard:
+        return true;
+      case ChatBubbleDesign.nextGeneration:
+        return false;
+      case ChatBubbleDesign.harmonized:
+        return false;
+    }
+  }
+
   Widget buildBubble({
     required BuildContext context,
     required MessageType messageType,
