@@ -4,54 +4,194 @@ import 'package:house_worker/data/model/chat_bubble_design.dart';
 import 'package:house_worker/ui/component/chat_bubble_design_extension.dart';
 
 void main() {
-  group('borderRadiusForMessageType', () {
-    test(
-      'corporateStandard design returns uniform small radius '
+  group('buildBubble', () {
+    testWidgets(
+      'corporateStandard design creates bubble with uniform small radius '
       'for all message types',
-      () {
+      (WidgetTester tester) async {
         const design = ChatBubbleDesign.corporateStandard;
-        expect(
-          design.borderRadiusForMessageType(MessageType.user),
-          BorderRadius.circular(8),
+
+        // Test user message
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: Builder(
+                builder: (context) {
+                  return design.buildBubble(
+                    context: context,
+                    messageType: MessageType.user,
+                    backgroundColor: Colors.blue,
+                    child: const Text('User message'),
+                  );
+                },
+              ),
+            ),
+          ),
         );
-        expect(
-          design.borderRadiusForMessageType(MessageType.ai),
-          BorderRadius.circular(8),
+        var container = tester.widget<Container>(find.byType(Container).first);
+        var decoration = container.decoration! as BoxDecoration;
+        expect(decoration.borderRadius, BorderRadius.circular(8));
+
+        // Test ai message
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: Builder(
+                builder: (context) {
+                  return design.buildBubble(
+                    context: context,
+                    messageType: MessageType.ai,
+                    backgroundColor: Colors.grey,
+                    child: const Text('AI message'),
+                  );
+                },
+              ),
+            ),
+          ),
         );
-        expect(
-          design.borderRadiusForMessageType(MessageType.system),
-          BorderRadius.circular(8),
+        container = tester.widget<Container>(find.byType(Container).first);
+        decoration = container.decoration! as BoxDecoration;
+        expect(decoration.borderRadius, BorderRadius.circular(8));
+
+        // Test system message
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: Builder(
+                builder: (context) {
+                  return design.buildBubble(
+                    context: context,
+                    messageType: MessageType.system,
+                    backgroundColor: Colors.yellow,
+                    child: const Text('System message'),
+                  );
+                },
+              ),
+            ),
+          ),
         );
+        container = tester.widget<Container>(find.byType(Container).first);
+        decoration = container.decoration! as BoxDecoration;
+        expect(decoration.borderRadius, BorderRadius.circular(8));
       },
     );
 
-    test('nextGeneration design returns custom radius for user message', () {
-      const design = ChatBubbleDesign.nextGeneration;
-      final result = design.borderRadiusForMessageType(MessageType.user);
-      expect(result.topLeft, const Radius.circular(20));
-      expect(result.topRight, const Radius.circular(2));
-      expect(result.bottomRight, const Radius.circular(20));
-      expect(result.bottomLeft, const Radius.circular(20));
-    });
+    testWidgets(
+      'nextGeneration design creates bubble with custom radius '
+      'for user message',
+      (WidgetTester tester) async {
+        const design = ChatBubbleDesign.nextGeneration;
 
-    test('nextGeneration design returns custom radius for ai message', () {
-      const design = ChatBubbleDesign.nextGeneration;
-      final result = design.borderRadiusForMessageType(MessageType.ai);
-      expect(result.topLeft, const Radius.circular(2));
-      expect(result.topRight, const Radius.circular(20));
-      expect(result.bottomRight, const Radius.circular(20));
-      expect(result.bottomLeft, const Radius.circular(20));
-    });
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: Builder(
+                builder: (context) {
+                  return design.buildBubble(
+                    context: context,
+                    messageType: MessageType.user,
+                    backgroundColor: Colors.blue,
+                    child: const Text('User message'),
+                  );
+                },
+              ),
+            ),
+          ),
+        );
 
-    test('nextGeneration design returns uniform radius for system message', () {
-      const design = ChatBubbleDesign.nextGeneration;
-      final result = design.borderRadiusForMessageType(MessageType.system);
-      expect(result, BorderRadius.circular(8));
-    });
+        final container = tester.widget<Container>(
+          find.byType(Container).first,
+        );
+        final decoration = container.decoration! as BoxDecoration;
+        final borderRadius = decoration.borderRadius! as BorderRadius;
+
+        expect(borderRadius.topLeft, const Radius.circular(20));
+        expect(borderRadius.topRight, const Radius.circular(2));
+        expect(borderRadius.bottomRight, const Radius.circular(20));
+        expect(borderRadius.bottomLeft, const Radius.circular(20));
+      },
+    );
+
+    testWidgets(
+      'nextGeneration design creates bubble with custom radius '
+      'for ai message',
+      (WidgetTester tester) async {
+        const design = ChatBubbleDesign.nextGeneration;
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: Builder(
+                builder: (context) {
+                  return design.buildBubble(
+                    context: context,
+                    messageType: MessageType.ai,
+                    backgroundColor: Colors.grey,
+                    child: const Text('AI message'),
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+
+        final container = tester.widget<Container>(
+          find.byType(Container).first,
+        );
+        final decoration = container.decoration! as BoxDecoration;
+        final borderRadius = decoration.borderRadius! as BorderRadius;
+
+        expect(borderRadius.topLeft, const Radius.circular(2));
+        expect(borderRadius.topRight, const Radius.circular(20));
+        expect(borderRadius.bottomRight, const Radius.circular(20));
+        expect(borderRadius.bottomLeft, const Radius.circular(20));
+      },
+    );
+
+    testWidgets(
+      'nextGeneration design creates bubble with uniform radius '
+      'for system message',
+      (WidgetTester tester) async {
+        const design = ChatBubbleDesign.nextGeneration;
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: Builder(
+                builder: (context) {
+                  return design.buildBubble(
+                    context: context,
+                    messageType: MessageType.system,
+                    backgroundColor: Colors.yellow,
+                    child: const Text('System message'),
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+
+        final container = tester.widget<Container>(
+          find.byType(Container).first,
+        );
+        final decoration = container.decoration! as BoxDecoration;
+        expect(decoration.borderRadius, BorderRadius.circular(8));
+      },
+    );
   });
 
-  group('harmonized design', () {
-    test('displayName returns correct Japanese name', () {
+  group('displayName', () {
+    test('corporateStandard returns correct Japanese name', () {
+      const design = ChatBubbleDesign.corporateStandard;
+      expect(design.displayName, '社内標準様式');
+    });
+
+    test('nextGeneration returns correct Japanese name', () {
+      const design = ChatBubbleDesign.nextGeneration;
+      expect(design.displayName, '次世代様式');
+    });
+
+    test('harmonized returns correct Japanese name', () {
       const design = ChatBubbleDesign.harmonized;
       expect(design.displayName, '調整済様式');
     });
