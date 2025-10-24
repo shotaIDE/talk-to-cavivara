@@ -79,26 +79,29 @@ class _DesignPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const dummyBox = SizedBox(
+      width: 40,
+      height: 16,
+    );
+
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Row(
+        spacing: 8,
         children: [
-          Container(
-            width: 80,
-            height: 32,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primaryContainer,
-              borderRadius: design.borderRadiusForMessageType(MessageType.user),
-            ),
+          design.buildBubble(
+            context: context,
+            messageType: MessageType.user,
+            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+            child: dummyBox,
           ),
-          const SizedBox(width: 8),
-          Container(
-            width: 80,
-            height: 32,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              borderRadius: design.borderRadiusForMessageType(MessageType.ai),
-            ),
+          design.buildBubble(
+            context: context,
+            messageType: MessageType.ai,
+            backgroundColor: Theme.of(
+              context,
+            ).colorScheme.surfaceContainerHighest,
+            child: dummyBox,
           ),
         ],
       ),

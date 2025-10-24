@@ -523,35 +523,26 @@ class _UserChatBubble extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final designAsync = ref.watch(chatBubbleDesignRepositoryProvider);
-    final design = designAsync.value;
+    final design = designAsync.value ?? ChatBubbleDesign.corporateStandard;
 
+    final textColor = Theme.of(context).colorScheme.onPrimaryContainer;
     final bodyText = Text(
       message.content,
       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-        color: Theme.of(context).colorScheme.onPrimaryContainer,
+        color: textColor,
       ),
     );
     final timeText = _TimestampText(timestamp: message.timestamp);
-
     final bubbleColor = Theme.of(context).colorScheme.primaryContainer;
-
-    final bubble = Container(
-      constraints: BoxConstraints(
-        maxWidth: MediaQuery.of(context).size.width * 0.8,
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: bubbleColor,
-        borderRadius:
-            design?.borderRadiusForMessageType(MessageType.user) ??
-            BorderRadius.circular(2),
-      ),
+    final bubble = design.buildBubble(
+      context: context,
+      messageType: MessageType.user,
+      backgroundColor: bubbleColor,
       child: bodyText,
     );
 
-    final bubbleWithPointer = design == ChatBubbleDesign.nextGeneration
-        ? bubble
-        : Stack(
+    final bubbleWithPointer = design.shouldWithPointer
+        ? Stack(
             clipBehavior: Clip.none,
             children: [
               bubble,
@@ -564,7 +555,8 @@ class _UserChatBubble extends ConsumerWidget {
                 ),
               ),
             ],
-          );
+          )
+        : bubble;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
@@ -594,7 +586,7 @@ class _AiChatBubble extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final cavivaraProfile = ref.watch(cavivaraByIdProvider(cavivaraId));
     final designAsync = ref.watch(chatBubbleDesignRepositoryProvider);
-    final design = designAsync.value;
+    final design = designAsync.value ?? ChatBubbleDesign.corporateStandard;
     final textColor = Theme.of(context).colorScheme.onSurface;
     final indicatorColor = Theme.of(context).colorScheme.primary;
 
@@ -653,23 +645,15 @@ class _AiChatBubble extends ConsumerWidget {
 
     final bubbleColor = Theme.of(context).colorScheme.surfaceContainerHighest;
 
-    final bubble = Container(
-      constraints: BoxConstraints(
-        maxWidth: MediaQuery.of(context).size.width * 0.8,
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: bubbleColor,
-        borderRadius:
-            design?.borderRadiusForMessageType(MessageType.ai) ??
-            BorderRadius.circular(2),
-      ),
+    final bubble = design.buildBubble(
+      context: context,
+      messageType: MessageType.ai,
+      backgroundColor: bubbleColor,
       child: bodyText,
     );
 
-    final bubbleWithPointer = design == ChatBubbleDesign.nextGeneration
-        ? bubble
-        : Stack(
+    final bubbleWithPointer = design.shouldWithPointer
+        ? Stack(
             clipBehavior: Clip.none,
             children: [
               bubble,
@@ -682,7 +666,8 @@ class _AiChatBubble extends ConsumerWidget {
                 ),
               ),
             ],
-          );
+          )
+        : bubble;
 
     final avatar = CavivaraAvatar(
       assetPath: cavivaraProfile.iconPath,
@@ -727,7 +712,7 @@ class _AppChatBubble extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final designAsync = ref.watch(chatBubbleDesignRepositoryProvider);
-    final design = designAsync.value;
+    final design = designAsync.value ?? ChatBubbleDesign.corporateStandard;
 
     final bodyText = Text(
       message.content,
@@ -735,21 +720,16 @@ class _AppChatBubble extends ConsumerWidget {
         color: Theme.of(context).colorScheme.onSurface.withAlpha(150),
       ),
     );
+    final bubbleColor = Theme.of(
+      context,
+    ).colorScheme.surfaceContainer.withAlpha(100);
     final timeText = _TimestampText(
       timestamp: message.timestamp,
     );
-
-    final bubble = Container(
-      constraints: BoxConstraints(
-        maxWidth: MediaQuery.of(context).size.width * 0.8,
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainer.withAlpha(100),
-        borderRadius:
-            design?.borderRadiusForMessageType(MessageType.system) ??
-            BorderRadius.circular(2),
-      ),
+    final bubble = design.buildBubble(
+      context: context,
+      messageType: MessageType.system,
+      backgroundColor: bubbleColor,
       child: bodyText,
     );
 

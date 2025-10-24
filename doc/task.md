@@ -1,143 +1,154 @@
-# 吹き出しのツノ排除と角丸デザイン 実装タスク
+# 調整済吹き出しデザイン 実装タスク一覧
 
-## 参考資料
+## 概要
 
-- [要件定義書: 吹き出しのツノ排除と角丸デザイン](./requirement/bubble-tail-removal.md)
-- [技術設計書: 吹き出しのツノ排除と角丸デザイン](./design/bubble-tail-removal.md)
+チャット画面の吹き出しに「調整済様式」(harmonized)を追加する。調整済様式は、ツノを持たず、3隅の角を二等辺三角形（等辺10pt）で削り取った7角形（システムメッセージは6角形）の幾何学的な形状。
 
-## フェーズ 1: Extension の拡張
+## フェーズ 1: enum の追加
 
-### MessageType enum の追加
+- [x] `client/lib/data/model/chat_bubble_design.dart` に `harmonized` を追加
+  - `ChatBubbleDesign` enum に `harmonized` 値を追加
+- [x] `dart format` を実行
+- [x] コンパイルエラーの確認（全ての switch 文で exhaustive check が働く）
 
-- [ ] `client/lib/ui/component/chat_bubble_design_extension.dart` を編集
-- [ ] `MessageType` enum を追加
-  - [ ] `MessageType.user` を定義
-  - [ ] `MessageType.ai` を定義
-  - [ ] `MessageType.system` を定義
+## フェーズ 2: CustomClipper の実装
 
-### borderRadiusForMessageType メソッドの実装
+- [x] `client/lib/ui/component/harmonized_bubble_clipper.dart` を新規作成
+- [x] `HarmonizedBubbleClipper` クラスを実装
+  - [x] クラス定義とコンストラクタ（messageType, cutSize パラメータ）
+  - [x] `MessageType.user` 用の Path 生成ロジック（7角形、左上の角を残す）
+  - [x] `MessageType.ai` 用の Path 生成ロジック（7角形、右上の角を残す）
+  - [x] `MessageType.system` 用の Path 生成ロジック（6角形）
+  - [x] `shouldReclip` メソッドの実装（false を返す）
+- [x] `dart format` を実行
+- [x] `dart fix --apply` を実行
+- [x] ユニットテストを作成
+  - [x] `client/test/ui/component/harmonized_bubble_clipper_test.dart` を作成
+  - [x] user message creates 7-point path のテスト
+  - [x] ai message creates 7-point path のテスト
+  - [x] system message creates 6-point path のテスト
+  - [x] shouldReclip returns false のテスト
+- [x] ユニットテストを実行して全て成功することを確認
 
-- [ ] `borderRadiusForMessageType` メソッドを実装
-  - [ ] `ChatBubbleDesign.square` の場合の実装（全メッセージタイプで radius 2）
-  - [ ] `ChatBubbleDesign.rounded` のユーザーメッセージの実装
-    - [ ] 左上: radius 10
-    - [ ] 右上: radius 4（ツノがあった位置）
-    - [ ] 右下: radius 10
-    - [ ] 左下: radius 10
-  - [ ] `ChatBubbleDesign.rounded` の AI メッセージの実装
-    - [ ] 左上: radius 4（ツノがあった位置）
-    - [ ] 右上: radius 10
-    - [ ] 右下: radius 10
-    - [ ] 左下: radius 10
-  - [ ] `ChatBubbleDesign.rounded` のシステムメッセージの実装（全て radius 10）
+## フェーズ 3: Extension の拡張
 
-### ユニットテストの作成
+- [x] `client/lib/ui/component/chat_bubble_design_extension.dart` を更新
+  - [x] `displayName` プロパティに `harmonized` のケースを追加（戻り値: `'調整済様式'`）
+  - [x] **注意**: `borderRadiusForMessageType` には追加しない
+- [x] `dart format` を実行
+- [x] `dart fix --apply` を実行
+- [x] ユニットテストを更新
+  - [x] `client/test/ui/component/chat_bubble_design_extension_test.dart` に harmonized design のテストケースを追加
+  - [x] displayName returns correct Japanese name のテスト
+- [x] ユニットテストを実行して全て成功することを確認
 
-- [ ] `client/test/ui/component/chat_bubble_design_extension_test.dart` を作成または編集
-  - [ ] square デザインのテスト（全メッセージタイプで radius 2）
-  - [ ] rounded デザインのユーザーメッセージテスト
-    - [ ] 右上が radius 4
-    - [ ] 他の角が radius 10
-  - [ ] rounded デザインの AI メッセージテスト
-    - [ ] 左上が radius 4
-    - [ ] 他の角が radius 10
-  - [ ] rounded デザインのシステムメッセージテスト（全て radius 10）
+## フェーズ 4: 吹き出しウィジェットの更新
 
-### コード品質チェック
-
-- [ ] テストを実行して全て通ることを確認
-- [ ] `dart format client/lib/ui/component/chat_bubble_design_extension.dart` を実行
-- [ ] `dart fix --apply` を実行
-- [ ] `flutter analyze` でリンター・コンパイラ警告の確認と解決
-
-## フェーズ 2: 吹き出しウィジェットの更新
-
-### _UserChatBubble の更新
-
-- [ ] `client/lib/ui/feature/home/home_screen.dart` の `_UserChatBubble` を編集
-- [ ] `MessageType.user` を使用して borderRadius を取得
-- [ ] `design.borderRadiusForMessageType(MessageType.user)` を BoxDecoration に適用
-
-### _AiChatBubble の更新
-
-- [ ] `client/lib/ui/feature/home/home_screen.dart` の `_AiChatBubble` を編集
-- [ ] `MessageType.ai` を使用して borderRadius を取得
-- [ ] `design.borderRadiusForMessageType(MessageType.ai)` を BoxDecoration に適用
-
-### _AppChatBubble の更新
-
-- [ ] `client/lib/ui/feature/home/home_screen.dart` の `_AppChatBubble` を編集
-- [ ] `MessageType.system` を使用して borderRadius を取得
-- [ ] `design.borderRadiusForMessageType(MessageType.system)` を BoxDecoration に適用
-
-### コード品質チェック
-
-- [ ] `dart format client/lib/ui/feature/home/home_screen.dart` を実行
-- [ ] `dart fix --apply` を実行
-- [ ] `flutter analyze` でリンター・コンパイラ警告の確認と解決
-- [ ] ウィジェットテストで視覚確認（オプション）
-
-## フェーズ 3: プレビューの更新
-
-### デザイン選択ダイアログのプレビュー更新
-
-- [ ] `client/lib/ui/feature/settings/chat_bubble_design_selection_dialog.dart` を編集
-- [ ] 「角削り」デザインのプレビューに新しい borderRadius を適用
-- [ ] 適切な MessageType を選択して `borderRadiusForMessageType` を使用
-
-### コード品質チェック
-
-- [ ] `dart format client/lib/ui/feature/settings/chat_bubble_design_selection_dialog.dart` を実行
-- [ ] `dart fix --apply` を実行
-- [ ] `flutter analyze` でリンター・コンパイラ警告の確認と解決
+- [x] `client/lib/ui/feature/home/home_screen.dart` を更新
+  - [x] `_UserChatBubble` を更新
+    - [x] `buildBubble()` メソッドを実装
+    - [x] `harmonized` の場合に `ClipPath` + `HarmonizedBubbleClipper` を使用
+    - [x] それ以外の場合は既存の `BoxDecoration` + `BorderRadius` を使用
+  - [x] `_AiChatBubble` を更新
+    - [x] `buildBubble()` メソッドを実装
+    - [x] `harmonized` の場合に `ClipPath` + `HarmonizedBubbleClipper` を使用
+    - [x] それ以外の場合は既存の `BoxDecoration` + `BorderRadius` を使用
+  - [x] `_AppChatBubble` を更新
+    - [x] `buildBubble()` メソッドを実装
+    - [x] `harmonized` の場合に `ClipPath` + `HarmonizedBubbleClipper` を使用
+    - [x] それ以外の場合は既存の `BoxDecoration` + `BorderRadius` を使用
+- [x] `dart format` を実行
+- [x] `dart fix --apply` を実行
+- [x] 警告がないことを確認
 - [ ] 実機またはシミュレータで視覚確認
+  - [ ] ユーザーメッセージが7角形で表示されること（左上の角が残る）
+  - [ ] AIメッセージが7角形で表示されること（右上の角が残る）
+  - [ ] システムメッセージが6角形で表示されること
 
-## フェーズ 4: テストと検証
+## フェーズ 5: デザイン選択ダイアログの更新
 
-### iOS での確認
+- [x] `client/lib/ui/feature/settings/chat_bubble_design_selection_dialog.dart` を更新
+  - [x] RadioListTile に「調整済様式」の選択肢を追加
+  - [x] プレビュー部分に調整済様式のサンプル吹き出しを追加
+    - [x] `ClipPath` + `HarmonizedBubbleClipper` を使用
+    - [x] サンプルテキストとスタイリングを既存のデザインと統一
+- [x] `dart format` を実行
+- [x] `dart fix --apply` を実行
+- [x] 警告がないことを確認
+- [ ] 実機またはシミュレータで視覚確認
+  - [ ] ダイアログに「調整済様式」の選択肢が表示されること
+  - [ ] プレビューが7角形で表示されること
+  - [ ] 選択してOKをタップすると設定が保存されること
 
+## フェーズ 6: テストと検証
+
+- [x] 全ユニットテストを実行して成功することを確認
+  - [x] `flutter test` または `dart test` を実行（69テスト全て成功）
 - [ ] iOS でビルド・実行
-- [ ] ユーザーメッセージの右上角が radius 4 で表示される
-- [ ] ユーザーメッセージの他の角が radius 10 で表示される
-- [ ] AI メッセージの左上角が radius 4 で表示される
-- [ ] AI メッセージの他の角が radius 10 で表示される
-- [ ] システムメッセージの全ての角が radius 10 で表示される
-
-### Android での確認
-
+  - [ ] エラーなくビルドできること
+  - [ ] 吹き出しが正しく表示されること
 - [ ] Android でビルド・実行
-- [ ] ユーザーメッセージの右上角が radius 4 で表示される
-- [ ] ユーザーメッセージの他の角が radius 10 で表示される
-- [ ] AI メッセージの左上角が radius 4 で表示される
-- [ ] AI メッセージの他の角が radius 10 で表示される
-- [ ] システムメッセージの全ての角が radius 10 で表示される
+  - [ ] エラーなくビルドできること
+  - [ ] 吹き出しが正しく表示されること
+- [ ] デザイン切り替え動作確認
+  - [ ] 社内標準様式 → 調整済様式
+  - [ ] 次世代様式 → 調整済様式
+  - [ ] 調整済様式 → 社内標準様式
+  - [ ] 調整済様式 → 次世代様式
+- [ ] 永続化の確認
+  - [ ] 調整済様式を選択
+  - [ ] アプリを完全に終了
+  - [ ] アプリを再起動
+  - [ ] 調整済様式が保持されていることを確認
 
-### クロスプラットフォーム確認
+## フェーズ 7: ドキュメントとコミット
 
-- [ ] iOS/Android 間で見た目の差異がないことを確認
+- [x] 必要に応じてドキュメントを更新
+  - [x] 要件定義書: `doc/requirement/harmonized-bubble-design.md`（既存）
+  - [x] 技術設計書: `doc/design/harmonized-bubble-design.md`（既存）
+- [x] 適切なコミットメッセージを考える
+- [x] 変更をコミット（コミットID: 9b607b2）
 
-### 機能テスト
+## 注意事項
 
-- [ ] デザイン選択ダイアログを開く
-- [ ] 「四角」デザインは変更されていない（radius 2 の一律適用）
-- [ ] 「角削り」デザインを選択すると新しい角丸が適用される
-- [ ] デザイン選択ダイアログのプレビューが新しい仕様を反映している
+### 実装時の注意
 
-### 永続化テスト
+- `ChatBubbleDesignExtension` の `borderRadiusForMessageType` には `harmonized` のケースを追加しない（CustomClipper を使用するため BorderRadius は不要）
+- `cutSize` パラメータは正確に 10.0 とする
+- 削り取られた辺は直線とする（曲線は使用しない）
+- ツノ(tail)は実装しない
 
-- [ ] デザイン選択が永続化される
-- [ ] アプリを完全に終了
-- [ ] アプリを再起動
-- [ ] 選択したデザインが保持されている
+### コーディング規約
 
-## 完了後
+実装前に以下を確認すること:
+- [doc/coding-rule/](/doc/coding-rule/) のコーディング規約
+- 類似の既存コード約5つを参照
 
-### ドキュメント更新
+実装後は必ず以下を実行すること:
+1. `dart format` でフォーマット
+2. `dart fix --apply` で自動修正
+3. linter と compiler の警告を解決
+4. ユニットテストを実行して全て成功することを確認
 
-- [ ] 必要に応じて要件定義書を更新
-- [ ] 必要に応じて設計書を更新
+## 関連ファイル
 
-### コミット
+### 既存ファイル（変更対象）
 
-- [ ] 適切なコミットメッセージを作成
-- [ ] 変更をコミット
+- [client/lib/data/model/chat_bubble_design.dart](client/lib/data/model/chat_bubble_design.dart)
+- [client/lib/ui/component/chat_bubble_design_extension.dart](client/lib/ui/component/chat_bubble_design_extension.dart)
+- [client/lib/ui/feature/home/home_screen.dart](client/lib/ui/feature/home/home_screen.dart)
+- [client/lib/ui/feature/settings/chat_bubble_design_selection_dialog.dart](client/lib/ui/feature/settings/chat_bubble_design_selection_dialog.dart)
+
+### 新規ファイル（作成対象）
+
+- [client/lib/ui/component/harmonized_bubble_clipper.dart](client/lib/ui/component/harmonized_bubble_clipper.dart)
+- [client/test/ui/component/harmonized_bubble_clipper_test.dart](client/test/ui/component/harmonized_bubble_clipper_test.dart)
+
+### 既存ファイル（変更なし）
+
+- [client/lib/data/repository/chat_bubble_design_repository.dart](client/lib/data/repository/chat_bubble_design_repository.dart) - enum.name を使用した保存・復元により自動的に対応
+
+## 設計書
+
+- [doc/design/harmonized-bubble-design.md](doc/design/harmonized-bubble-design.md) - 技術設計書
+- [doc/requirement/harmonized-bubble-design.md](doc/requirement/harmonized-bubble-design.md) - 要件定義書
