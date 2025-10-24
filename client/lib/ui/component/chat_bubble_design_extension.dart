@@ -52,33 +52,14 @@ extension ChatBubbleDesignExtension on ChatBubbleDesign {
   Widget bubble({
     required BuildContext context,
     required MessageType messageType,
-    required String text,
-    required Color textColor,
     required Color backgroundColor,
-  }) {
-    return bubbleWithChild(
-      context: context,
-      messageType: messageType,
-      backgroundColor: backgroundColor,
-      child: Text(
-        text,
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-          color: textColor,
-        ),
-      ),
-    );
-  }
-
-  Widget bubbleWithChild({
-    required BuildContext context,
-    required MessageType messageType,
     required Widget child,
-    required Color backgroundColor,
-    EdgeInsets padding = const EdgeInsets.symmetric(
+  }) {
+    const padding = EdgeInsets.symmetric(
       horizontal: 16,
       vertical: 12,
-    ),
-  }) {
+    );
+
     if (this == ChatBubbleDesign.harmonized) {
       return ClipPath(
         clipper: HarmonizedBubbleClipper(
@@ -93,18 +74,18 @@ extension ChatBubbleDesignExtension on ChatBubbleDesign {
           child: child,
         ),
       );
-    } else {
-      return Container(
-        constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.8,
-        ),
-        padding: padding,
-        decoration: BoxDecoration(
-          color: backgroundColor,
-          borderRadius: borderRadiusForMessageType(messageType),
-        ),
-        child: child,
-      );
     }
+
+    return Container(
+      constraints: BoxConstraints(
+        maxWidth: MediaQuery.of(context).size.width * 0.8,
+      ),
+      padding: padding,
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: borderRadiusForMessageType(messageType),
+      ),
+      child: child,
+    );
   }
 }

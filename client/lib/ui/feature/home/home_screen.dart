@@ -525,17 +525,20 @@ class _UserChatBubble extends ConsumerWidget {
     final designAsync = ref.watch(chatBubbleDesignRepositoryProvider);
     final design = designAsync.value ?? ChatBubbleDesign.corporateStandard;
 
-    final timeText = _TimestampText(timestamp: message.timestamp);
-
     final textColor = Theme.of(context).colorScheme.onPrimaryContainer;
+    final bodyText = Text(
+      message.content,
+      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+        color: textColor,
+      ),
+    );
+    final timeText = _TimestampText(timestamp: message.timestamp);
     final bubbleColor = Theme.of(context).colorScheme.primaryContainer;
-
     final bubble = design.bubble(
       context: context,
       messageType: MessageType.user,
-      text: message.content,
-      textColor: textColor,
       backgroundColor: bubbleColor,
+      child: bodyText,
     );
 
     final bubbleWithPointer =
@@ -644,7 +647,7 @@ class _AiChatBubble extends ConsumerWidget {
 
     final bubbleColor = Theme.of(context).colorScheme.surfaceContainerHighest;
 
-    final bubble = design.bubbleWithChild(
+    final bubble = design.bubble(
       context: context,
       messageType: MessageType.ai,
       backgroundColor: bubbleColor,
@@ -721,19 +724,16 @@ class _AppChatBubble extends ConsumerWidget {
         color: Theme.of(context).colorScheme.onSurface.withAlpha(150),
       ),
     );
-    final timeText = _TimestampText(
-      timestamp: message.timestamp,
-    );
-
     final bubbleColor = Theme.of(
       context,
     ).colorScheme.surfaceContainer.withAlpha(100);
-
-    final bubble = design.bubbleWithChild(
+    final timeText = _TimestampText(
+      timestamp: message.timestamp,
+    );
+    final bubble = design.bubble(
       context: context,
       messageType: MessageType.system,
       backgroundColor: bubbleColor,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: bodyText,
     );
 
