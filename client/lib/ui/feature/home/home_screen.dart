@@ -260,23 +260,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
           const SizedBox(width: 8),
-          DecoratedBox(
-            decoration: BoxDecoration(
-              color: isSendUnavailable
-                  ? null
-                  : Theme.of(context).colorScheme.primaryContainer,
-              shape: BoxShape.circle,
+          IconButton.filled(
+            onPressed: isSendUnavailable ? null : _sendMessage,
+            tooltip: 'メッセージを送信',
+            style: IconButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+              foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
+              disabledBackgroundColor: Theme.of(
+                context,
+              ).colorScheme.surface,
             ),
-            child: IconButton(
-              onPressed: isSendUnavailable ? null : _sendMessage,
-              tooltip: 'メッセージを送信',
-              icon: Icon(
-                Icons.send,
-                color: isSendUnavailable
-                    ? Theme.of(context).colorScheme.surfaceContainerHighest
-                    : Theme.of(context).colorScheme.onPrimaryContainer,
-              ),
-            ),
+            icon: const Icon(Icons.send),
           ),
         ],
       ),
