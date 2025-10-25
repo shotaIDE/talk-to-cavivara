@@ -221,24 +221,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       child: Row(
         children: [
           Expanded(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainerHigh,
-                borderRadius: BorderRadius.circular(24),
-              ),
-              child: TextField(
-                controller: _messageController,
-                decoration: const InputDecoration(
-                  hintText: 'メッセージを入力...',
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
+            child: TextField(
+              controller: _messageController,
+              decoration: InputDecoration(
+                hintText: 'メッセージを入力...',
+                filled: true,
+                fillColor: Theme.of(context).colorScheme.surfaceContainerHigh,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(24),
+                  borderSide: BorderSide.none,
                 ),
-                maxLines: null,
-                textInputAction: TextInputAction.newline,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
               ),
+              maxLines: null,
+              textInputAction: TextInputAction.newline,
             ),
           ),
           const SizedBox(width: 8),
@@ -653,7 +652,7 @@ class _AiChatBubble extends ConsumerWidget {
 
     final timeText = _TimestampText(timestamp: message.timestamp);
 
-    final bubbleColor = Theme.of(context).colorScheme.surfaceContainerHighest;
+    final bubbleColor = Theme.of(context).colorScheme.surfaceContainer;
 
     final bubble = design.buildBubble(
       context: context,
