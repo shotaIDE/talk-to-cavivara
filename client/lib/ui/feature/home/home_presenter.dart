@@ -178,6 +178,13 @@ class ChatMessages extends _$ChatMessages {
   }
 }
 
+/// 指定されたカヴィヴァラIDでAIがメッセージを受信中かどうかを返すプロバイダー
+@riverpod
+bool isReceivingMessages(Ref ref, String cavivaraId) {
+  final messages = ref.watch(chatMessagesProvider(cavivaraId));
+  return messages.any((message) => message.isStreaming);
+}
+
 /// 指定されたカヴィヴァラIDのチャット履歴をクリアするヘルパー関数
 @riverpod
 void clearChatMessages(Ref ref, String cavivaraId) {

@@ -41,10 +41,13 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  bool _isMessageEmpty = true;
 
   @override
   void initState() {
     super.initState();
+
+    _messageController.addListener(_onMessageChanged);
 
     unawaited(
       ref.read(updateLastTalkedCavivaraIdProvider(widget.cavivaraId).future),
@@ -53,6 +56,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     ref.listenManual(awardReceivedChatStringProvider, (_, _) {
       // Providerの副作用のみを利用するため、何もしない
     });
+  }
+
+  void _onMessageChanged() {
+    final isEmpty = _messageController.text.trim().isEmpty;
+    if (_isMessageEmpty != isEmpty) {
+      setState(() {
+        _isMessageEmpty = isEmpty;
+      });
+    }
   }
 
   @override
@@ -68,7 +80,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   void dispose() {
-    _messageController.dispose();
+    _messageController
+      ..removeListener(_onMessageChanged)
+      ..dispose();
     _scrollController.dispose();
     super.dispose();
   }
@@ -208,6 +222,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _messageInput() {
+    final isReceiving = ref.watch(
+      isReceivingMessagesProvider(widget.cavivaraId),
+    );
+    final isSendUnavailable = _isMessageEmpty || isReceiving;
+
     return Container(
       padding: EdgeInsets.only(
         left: 16 + MediaQuery.of(context).viewPadding.left,
@@ -217,21 +236,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        border: Border(
-          top: BorderSide(
-            color: Theme.of(context).dividerColor,
-          ),
-        ),
       ),
       child: Row(
         children: [
           Expanded(
             child: TextField(
               controller: _messageController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: 'メッセージを入力...',
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.symmetric(
+                filled: true,
+                fillColor: Theme.of(context).colorScheme.surfaceContainerHigh,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(24),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 12,
                 ),
@@ -241,9 +260,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
           const SizedBox(width: 8),
-          IconButton(
-            onPressed: _sendMessage,
+          IconButton.filled(
+            onPressed: isSendUnavailable ? null : _sendMessage,
             tooltip: 'メッセージを送信',
+            style: IconButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+              foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
+              disabledBackgroundColor: Theme.of(
+                context,
+              ).colorScheme.surface,
+            ),
             icon: const Icon(Icons.send),
           ),
         ],
@@ -643,7 +669,7 @@ class _AiChatBubble extends ConsumerWidget {
 
     final timeText = _TimestampText(timestamp: message.timestamp);
 
-    final bubbleColor = Theme.of(context).colorScheme.surfaceContainerHighest;
+    final bubbleColor = Theme.of(context).colorScheme.surfaceContainer;
 
     final bubble = design.buildBubble(
       context: context,
