@@ -100,7 +100,7 @@ class _DesignPreview extends StatelessWidget {
             messageType: MessageType.ai,
             backgroundColor: Theme.of(
               context,
-            ).colorScheme.surfaceContainerHighest,
+            ).colorScheme.surfaceContainerHigh,
             child: dummyBox,
           ),
         ],
