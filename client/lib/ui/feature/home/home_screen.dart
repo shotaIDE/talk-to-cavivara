@@ -216,7 +216,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         bottom: 16 + MediaQuery.of(context).padding.bottom,
       ),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        color: Theme.of(context).colorScheme.surface,
       ),
       child: Row(
         children: [
