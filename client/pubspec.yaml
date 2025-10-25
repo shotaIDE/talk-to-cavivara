@@ -41,7 +41,7 @@ dependencies:
 dev_dependencies:
   # riverpod_generator を 3.0.0 にあげた際に以下のエラーが出たため、問題のあるバージョン 0.13.0 を避ける
   # The method 'publiclyExporting2' isn't defined for the type 'TopLevelDeclarations'.
-  analyzer_plugin: 0.13.1
+  analyzer_plugin: 0.13.11
   build_runner: ^2.4.15
   cider: ^0.2.8
   custom_lint: 0.8.0
