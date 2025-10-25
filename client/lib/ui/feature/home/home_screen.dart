@@ -41,10 +41,13 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  bool _isMessageEmpty = true;
 
   @override
   void initState() {
     super.initState();
+
+    _messageController.addListener(_onMessageChanged);
 
     unawaited(
       ref.read(updateLastTalkedCavivaraIdProvider(widget.cavivaraId).future),
@@ -53,6 +56,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     ref.listenManual(awardReceivedChatStringProvider, (_, _) {
       // Providerの副作用のみを利用するため、何もしない
     });
+  }
+
+  void _onMessageChanged() {
+    final isEmpty = _messageController.text.trim().isEmpty;
+    if (_isMessageEmpty != isEmpty) {
+      setState(() {
+        _isMessageEmpty = isEmpty;
+      });
+    }
   }
 
   @override
@@ -68,7 +80,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   void dispose() {
-    _messageController.dispose();
+    _messageController
+      ..removeListener(_onMessageChanged)
+      ..dispose();
     _scrollController.dispose();
     super.dispose();
   }
@@ -243,15 +257,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           const SizedBox(width: 8),
           DecoratedBox(
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primaryContainer,
+              color: _isMessageEmpty
+                  ? Theme.of(context).colorScheme.surfaceContainerHighest
+                  : Theme.of(context).colorScheme.primaryContainer,
               shape: BoxShape.circle,
             ),
             child: IconButton(
-              onPressed: _sendMessage,
+              onPressed: _isMessageEmpty ? null : _sendMessage,
               tooltip: 'メッセージを送信',
               icon: Icon(
                 Icons.send,
-                color: Theme.of(context).colorScheme.onPrimaryContainer,
+                color: _isMessageEmpty
+                    ? Theme.of(context).colorScheme.onSurface.withAlpha(100)
+                    : Theme.of(context).colorScheme.onPrimaryContainer,
               ),
             ),
           ),
