@@ -519,7 +519,7 @@ class _SuggestionCard extends StatelessWidget {
       child: Card(
         color: Theme.of(context).colorScheme.surfaceContainerHigh,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(2),
+          borderRadius: BorderRadius.circular(8),
         ),
         child: InkWell(
           onTap: onTap,
