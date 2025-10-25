@@ -44,7 +44,7 @@ dev_dependencies:
   analyzer_plugin: 0.13.1
   build_runner: ^2.4.15
   cider: ^0.2.8
-  custom_lint: 0.8.0
+  custom_lint: 0.8.1
   flutter_launcher_icons: ^0.14.3
   flutter_test:
     sdk: flutter
