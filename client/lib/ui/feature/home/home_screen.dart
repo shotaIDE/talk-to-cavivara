@@ -258,7 +258,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           DecoratedBox(
             decoration: BoxDecoration(
               color: _isMessageEmpty
-                  ? Theme.of(context).colorScheme.surfaceContainerHighest
+                  ? null
                   : Theme.of(context).colorScheme.primaryContainer,
               shape: BoxShape.circle,
             ),
@@ -268,7 +268,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               icon: Icon(
                 Icons.send,
                 color: _isMessageEmpty
-                    ? Theme.of(context).colorScheme.onSurface.withAlpha(100)
+                    ? Theme.of(context).colorScheme.surfaceContainerHighest
                     : Theme.of(context).colorScheme.onPrimaryContainer,
               ),
             ),
