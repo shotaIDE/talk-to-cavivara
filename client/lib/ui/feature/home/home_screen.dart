@@ -222,6 +222,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _messageInput() {
+    final isReceiving = ref.watch(
+      isReceivingMessagesProvider(widget.cavivaraId),
+    );
+    final isSendUnavailable = _isMessageEmpty || isReceiving;
+
     return Container(
       padding: EdgeInsets.only(
         left: 16 + MediaQuery.of(context).viewPadding.left,
@@ -257,17 +262,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           const SizedBox(width: 8),
           DecoratedBox(
             decoration: BoxDecoration(
-              color: _isMessageEmpty
+              color: isSendUnavailable
                   ? null
                   : Theme.of(context).colorScheme.primaryContainer,
               shape: BoxShape.circle,
             ),
             child: IconButton(
-              onPressed: _isMessageEmpty ? null : _sendMessage,
+              onPressed: isSendUnavailable ? null : _sendMessage,
               tooltip: 'メッセージを送信',
               icon: Icon(
                 Icons.send,
-                color: _isMessageEmpty
+                color: isSendUnavailable
                     ? Theme.of(context).colorScheme.surfaceContainerHighest
                     : Theme.of(context).colorScheme.onPrimaryContainer,
               ),
