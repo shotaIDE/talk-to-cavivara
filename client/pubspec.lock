@@ -34,7 +34,7 @@ packages:
     source: hosted
     version: "0.1.10"
   analyzer_plugin:
-    dependency: "direct dev"
+    dependency: transitive
     description:
       name: analyzer_plugin
       sha256: ee188b6df6c85f1441497c7171c84f1392affadc0384f71089cb10a3bc508cef
