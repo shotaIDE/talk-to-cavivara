@@ -24,15 +24,15 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  flutter_riverpod: 3.0.0
+  flutter_riverpod: 3.0.3
   font_awesome_flutter: ^10.8.0
   freezed_annotation: ^3.0.0
   google_sign_in: ^7.0.0
   in_app_review: ^2.0.10
   logging: ^1.3.0
   package_info_plus: ^9.0.0
-  riverpod: 3.0.0
-  riverpod_annotation: 3.0.0
+  riverpod: 3.0.3
+  riverpod_annotation: 3.0.3
   share_plus: 12.0.0
   shared_preferences: ^2.5.3
   skeletonizer: ^2.0.0
@@ -52,8 +52,8 @@ dev_dependencies:
   json_serializable: ^6.9.5
   mocktail: ^1.0.4
   pedantic_mono: ^1.33.0
-  riverpod_generator: 3.0.0
-  riverpod_lint: 3.0.0
+  riverpod_generator: 3.0.3
+  riverpod_lint: 3.0.3
   shared_preferences_platform_interface: ^2.0.0
 
 flutter:
