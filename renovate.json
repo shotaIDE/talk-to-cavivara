@@ -18,6 +18,16 @@
         "firebase_remote_config"
       ],
       "groupName": "firebase"
+    },
+    {
+      "matchPackageNames": [
+        "flutter_riverpod",
+        "riverpod_annotation",
+        "riverpod_generator",
+        "riverpod_lint",
+        "riverpod"
+      ],
+      "groupName": "flutter_riverpod_libs"
     }
   ],
   "rangeStrategy": "widen"
