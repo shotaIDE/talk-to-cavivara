@@ -35,6 +35,21 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>INAlternativeAppNames</key>
+	<array>
+		<dict>
+			<key>INAlternativeAppName</key>
+			<string>カビバラチャット</string>
+			<key>INAlternativeAppNamePronunciationHint</key>
+			<string>カピパラチャット</string>
+		</dict>
+		<dict>
+			<key>INAlternativeAppName</key>
+			<string>ビバチャ</string>
+			<key>INAlternativeAppNamePronunciationHint</key>
+			<string>ピパチャ</string>
+		</dict>
+	</array>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LSRequiresIPhoneOS</key>
