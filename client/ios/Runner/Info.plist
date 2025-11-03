@@ -73,5 +73,7 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>kMDItemKeywords</key>
+	<string>カビバラ, カピパラ, プレクトラム, 結社</string>
 </dict>
 </plist>
