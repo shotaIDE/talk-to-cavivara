@@ -7,6 +7,7 @@ import 'package:house_worker/data/service/auth_service.dart';
 import 'package:house_worker/data/service/preference_service.dart';
 import 'package:house_worker/data/service/remote_config_service.dart';
 import 'package:house_worker/ui/app_initial_route.dart';
+import 'package:house_worker/ui/feature/home/home_screen.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'root_presenter.g.dart';
@@ -32,17 +33,22 @@ Future<AppInitialRoute> appInitialRoute(Ref ref) async {
   final appSession = await appSessionFuture;
   switch (appSession) {
     case AppSessionSignedIn():
-      final lastTalkedCavivaraId = await ref.read(
-        lastTalkedCavivaraIdProvider.future,
-      );
-      if (lastTalkedCavivaraId != null) {
-        return AppInitialRoute.home(cavivaraId: lastTalkedCavivaraId);
-      }
-
-      return const AppInitialRoute.jobMarket();
+      final cavivaraId = await _resolveInitialCavivaraId(ref);
+      return AppInitialRoute.home(cavivaraId: cavivaraId);
     case AppSessionNotSignedIn():
-      return const AppInitialRoute.login();
+      await ref
+          .read(currentAppSessionProvider.notifier)
+          .ensureSignedInAnonymously();
+      final cavivaraId = await _resolveInitialCavivaraId(ref);
+      return AppInitialRoute.home(cavivaraId: cavivaraId);
   }
+}
+
+Future<String> _resolveInitialCavivaraId(Ref ref) async {
+  final lastTalkedCavivaraId = await ref.read(
+    lastTalkedCavivaraIdProvider.future,
+  );
+  return lastTalkedCavivaraId ?? HomeScreen.defaultCavivaraId;
 }
 
 @riverpod
@@ -54,17 +60,7 @@ class CurrentAppSession extends _$CurrentAppSession {
       return AppSession.notSignedIn();
     }
 
-    final preferenceService = ref.read(preferenceServiceProvider);
-
-    final houseId =
-        await preferenceService.getString(PreferenceKey.currentHouseId) ??
-        // TODO(ide): 開発用。本番リリース時には削除する
-        'default-house-id';
-
-    // TODO(ide): RevenueCatから取得する開発用。本番リリース時には削除する
-    const isPro = false;
-
-    return AppSession.signedIn(counterId: houseId, isPro: isPro);
+    return _createSignedInSession();
   }
 
   Future<void> signIn({required String userId, required String houseId}) async {
@@ -87,6 +83,38 @@ class CurrentAppSession extends _$CurrentAppSession {
       final newState = currentAppSession.copyWith(isPro: true);
       state = AsyncValue.data(newState);
     }
+  }
+
+  Future<AppSessionSignedIn> ensureSignedInAnonymously() async {
+    final currentAppSession = state.valueOrNull ?? await future;
+    if (currentAppSession case AppSessionSignedIn()) {
+      return currentAppSession;
+    }
+
+    final authService = ref.read(authServiceProvider);
+    await authService.signInAnonymously();
+
+    final newSession = await _createSignedInSession();
+    if (newSession case AppSessionSignedIn()) {
+      state = AsyncValue.data(newSession);
+      return newSession;
+    }
+
+    throw StateError('Failed to sign in anonymously.');
+  }
+
+  Future<AppSession> _createSignedInSession() async {
+    final preferenceService = ref.read(preferenceServiceProvider);
+
+    final houseId =
+        await preferenceService.getString(PreferenceKey.currentHouseId) ??
+        // TODO(ide): 開発用。本番リリース時には削除する
+        'default-house-id';
+
+    // TODO(ide): RevenueCatから取得する開発用。本番リリース時には削除する
+    const isPro = false;
+
+    return AppSession.signedIn(counterId: houseId, isPro: isPro);
   }
 }
 
