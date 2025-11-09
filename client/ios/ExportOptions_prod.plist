@@ -10,8 +10,8 @@
 	<string>app-store-connect</string>
 	<key>provisioningProfiles</key>
 	<dict>
-		<key>ide.shota.colomney.FlutterFirebaseBase</key>
-		<string>Flutter Firebase Base App Store</string>
+		<key>ide.shota.colomney.CavivaraTalk</key>
+		<string>Cavivara Talk App Store</string>
 	</dict>
 	<key>signingCertificate</key>
 	<string>Apple Distribution</string>

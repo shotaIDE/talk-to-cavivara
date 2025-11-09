@@ -68,7 +68,7 @@ platform :android do
 
   desc 'Prod環境向けアプリをGoogle Playにデプロイします。'
   lane :deploy_prod do
-    package_name = 'ide.shota.colomney.FlutterFirebaseBase'
+    package_name = 'ide.shota.colomney.CavivaraTalk'
     # action で利用するパスなので、fastlane コマンドを実行するディレクトリからの相対パスで指定
     google_play_json_key_path = 'fastlane/google-play-service-account-key.json'
 
