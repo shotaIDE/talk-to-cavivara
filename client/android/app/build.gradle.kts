@@ -56,7 +56,7 @@ android {
         }
         create("prod") {
             dimension = "environment"
-            applicationIdSuffix = ".FlutterFirebaseBase"
+            applicationIdSuffix = ".CavivaraTalk"
             manifestPlaceholders["usesCleartextTraffic"] = "false"
         }
     }
