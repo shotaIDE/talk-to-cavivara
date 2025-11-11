@@ -1,10 +1,8 @@
 import 'package:house_worker/data/model/app_session.dart';
-import 'package:house_worker/data/model/preference_key.dart';
 import 'package:house_worker/data/model/root_app_not_initialized.dart';
 import 'package:house_worker/data/repository/last_talked_cavivara_id_repository.dart';
 import 'package:house_worker/data/service/app_info_service.dart';
 import 'package:house_worker/data/service/auth_service.dart';
-import 'package:house_worker/data/service/preference_service.dart';
 import 'package:house_worker/data/service/remote_config_service.dart';
 import 'package:house_worker/ui/app_initial_route.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -54,25 +52,18 @@ class CurrentAppSession extends _$CurrentAppSession {
       return AppSession.notSignedIn();
     }
 
-    final preferenceService = ref.read(preferenceServiceProvider);
-
-    final houseId =
-        await preferenceService.getString(PreferenceKey.currentHouseId) ??
-        // TODO(ide): 開発用。本番リリース時には削除する
-        'default-house-id';
-
     // TODO(ide): RevenueCatから取得する開発用。本番リリース時には削除する
     const isPro = false;
 
-    return AppSession.signedIn(counterId: houseId, isPro: isPro);
+    return AppSession.signedIn(isPro: isPro);
   }
 
-  Future<void> signIn({required String userId, required String houseId}) async {
+  Future<void> signIn({required String userId}) async {
     // TODO(ide): RevenueCatから取得する開発用。本番リリース時には削除する
     const isPro = false;
 
     state = AsyncValue.data(
-      AppSession.signedIn(counterId: houseId, isPro: isPro),
+      AppSession.signedIn(isPro: isPro),
     );
   }
 

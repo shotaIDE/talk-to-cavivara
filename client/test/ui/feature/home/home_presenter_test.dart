@@ -2,7 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:house_worker/data/model/cavivara_profile.dart';
 import 'package:house_worker/data/model/chat_message.dart';
-import 'package:house_worker/data/model/preference_key.dart';
 import 'package:house_worker/data/repository/received_chat_string_count_repository.dart';
 import 'package:house_worker/data/repository/sent_chat_string_count_repository.dart';
 import 'package:house_worker/data/service/ai_chat_service.dart';
@@ -38,15 +37,11 @@ class TestSentChatStringCountRepository extends SentChatStringCountRepository {
 }
 
 void main() {
-  setUpAll(() {
-    registerFallbackValue(PreferenceKey.currentHouseId);
-  });
-
   group('Home Presenter - Chat Messages', () {
     late MockAiChatService mockAiChatService;
     late MockPreferenceService mockPreferenceService;
     late TestReceivedChatStringCountRepository
-        testReceivedChatStringCountRepository;
+    testReceivedChatStringCountRepository;
     late TestSentChatStringCountRepository testSentChatStringCountRepository;
     late ProviderContainer container;
 
@@ -78,7 +73,7 @@ void main() {
         tags: ['test'],
         resumeSections: [],
       );
-      
+
       const testCavivaraProfile2 = CavivaraProfile(
         id: 'cavivara_mascot',
         displayName: 'テストカヴィヴァラ2',
@@ -96,10 +91,12 @@ void main() {
           preferenceServiceProvider.overrideWith(
             (ref) => mockPreferenceService,
           ),
-          receivedChatStringCountRepositoryProvider
-              .overrideWith(() => testReceivedChatStringCountRepository),
-          sentChatStringCountRepositoryProvider
-              .overrideWith(() => testSentChatStringCountRepository),
+          receivedChatStringCountRepositoryProvider.overrideWith(
+            () => testReceivedChatStringCountRepository,
+          ),
+          sentChatStringCountRepositoryProvider.overrideWith(
+            () => testSentChatStringCountRepository,
+          ),
           cavivaraDirectoryProvider.overrideWith(
             (ref) => [testCavivaraProfile1, testCavivaraProfile2],
           ),

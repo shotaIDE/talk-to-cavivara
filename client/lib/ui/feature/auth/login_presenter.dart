@@ -1,5 +1,4 @@
 import 'package:house_worker/data/service/auth_service.dart';
-import 'package:house_worker/data/service/functions_service.dart';
 import 'package:house_worker/ui/root_presenter.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -27,11 +26,7 @@ class StartResult extends _$StartResult {
       'Google sign-in successful. User ID = $userId, new user = $isNewUser',
     );
 
-    final myHouseId = await ref.read(generateMyHouseProvider.future);
-
-    await ref
-        .read(currentAppSessionProvider.notifier)
-        .signIn(userId: userId, houseId: myHouseId);
+    await ref.read(currentAppSessionProvider.notifier).signIn(userId: userId);
   }
 
   Future<void> startWithApple() async {
@@ -46,11 +41,7 @@ class StartResult extends _$StartResult {
       'Apple sign-in successful. User ID = $userId, new user = $isNewUser',
     );
 
-    final myHouseId = await ref.read(generateMyHouseProvider.future);
-
-    await ref
-        .read(currentAppSessionProvider.notifier)
-        .signIn(userId: userId, houseId: myHouseId);
+    await ref.read(currentAppSessionProvider.notifier).signIn(userId: userId);
   }
 
   Future<void> startWithoutAccount() async {
@@ -59,10 +50,6 @@ class StartResult extends _$StartResult {
     final authService = ref.read(authServiceProvider);
     final userId = await authService.signInAnonymously();
 
-    final myHouseId = await ref.read(generateMyHouseProvider.future);
-
-    await ref
-        .read(currentAppSessionProvider.notifier)
-        .signIn(userId: userId, houseId: myHouseId);
+    await ref.read(currentAppSessionProvider.notifier).signIn(userId: userId);
   }
 }
