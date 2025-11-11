@@ -12,6 +12,11 @@
             "projectId": "colomney-cavivara-talk-dev-1",
             "appId": "1:571066834399:android:6fef9a1ce2c9682361b86a",
             "fileOutput": "android/app/src/emulator/google-services.json"
+          },
+          "src/prod": {
+            "projectId": "colomney-cavivara-talk",
+            "appId": "1:35688612242:android:9fda21e25684b0cdb8c14b",
+            "fileOutput": "android/app/src/prod/google-services.json"
           }
         }
       },
@@ -52,6 +57,24 @@
             "appId": "1:571066834399:ios:b3bb0e428913c0b461b86a",
             "uploadDebugSymbols": true,
             "fileOutput": "ios/Runner/Firebase/Dev/GoogleService-Info.plist"
+          },
+          "Debug-prod": {
+            "projectId": "colomney-cavivara-talk",
+            "appId": "1:35688612242:ios:7291c8d119c33f61b8c14b",
+            "uploadDebugSymbols": true,
+            "fileOutput": "ios/Runner/Firebase/Prod/GoogleService-Info.plist"
+          },
+          "Profile-prod": {
+            "projectId": "colomney-cavivara-talk",
+            "appId": "1:35688612242:ios:7291c8d119c33f61b8c14b",
+            "uploadDebugSymbols": true,
+            "fileOutput": "ios/Runner/Firebase/Prod/GoogleService-Info.plist"
+          },
+          "Release-prod": {
+            "projectId": "colomney-cavivara-talk",
+            "appId": "1:35688612242:ios:7291c8d119c33f61b8c14b",
+            "uploadDebugSymbols": true,
+            "fileOutput": "ios/Runner/Firebase/Prod/GoogleService-Info.plist"
           }
         }
       },
@@ -68,6 +91,13 @@
           "configurations": {
             "android": "1:571066834399:android:cdaa6ac90428c6a461b86a",
             "ios": "1:571066834399:ios:b3bb0e428913c0b461b86a"
+          }
+        },
+        "lib/firebase_options_prod.dart": {
+          "projectId": "colomney-cavivara-talk",
+          "configurations": {
+            "android": "1:35688612242:android:9fda21e25684b0cdb8c14b",
+            "ios": "1:35688612242:ios:7291c8d119c33f61b8c14b"
           }
         }
       }
