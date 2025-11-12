@@ -39,14 +39,15 @@ class TestSentChatStringCountRepository extends SentChatStringCountRepository {
 
 void main() {
   setUpAll(() {
-    registerFallbackValue(PreferenceKey.currentHouseId);
+    // Register fallback values for mocktail matchers
+    registerFallbackValue(PreferenceKey.employedCavivaraIds);
   });
 
   group('Home Presenter - Chat Messages', () {
     late MockAiChatService mockAiChatService;
     late MockPreferenceService mockPreferenceService;
     late TestReceivedChatStringCountRepository
-        testReceivedChatStringCountRepository;
+    testReceivedChatStringCountRepository;
     late TestSentChatStringCountRepository testSentChatStringCountRepository;
     late ProviderContainer container;
 
@@ -78,7 +79,7 @@ void main() {
         tags: ['test'],
         resumeSections: [],
       );
-      
+
       const testCavivaraProfile2 = CavivaraProfile(
         id: 'cavivara_mascot',
         displayName: 'テストカヴィヴァラ2',
@@ -96,10 +97,12 @@ void main() {
           preferenceServiceProvider.overrideWith(
             (ref) => mockPreferenceService,
           ),
-          receivedChatStringCountRepositoryProvider
-              .overrideWith(() => testReceivedChatStringCountRepository),
-          sentChatStringCountRepositoryProvider
-              .overrideWith(() => testSentChatStringCountRepository),
+          receivedChatStringCountRepositoryProvider.overrideWith(
+            () => testReceivedChatStringCountRepository,
+          ),
+          sentChatStringCountRepositoryProvider.overrideWith(
+            () => testSentChatStringCountRepository,
+          ),
           cavivaraDirectoryProvider.overrideWith(
             (ref) => [testCavivaraProfile1, testCavivaraProfile2],
           ),
