@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:house_worker/data/model/sign_in_result.dart';
 import 'package:house_worker/ui/component/color.dart';
 import 'package:house_worker/ui/feature/auth/login_presenter.dart';
+import 'package:house_worker/ui/feature/home/home_screen.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -124,7 +125,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Future<void> _startWithoutAccount() async {
     await ref.read(startResultProvider.notifier).startWithoutAccount();
 
-    // ホーム画面への遷移は RootApp で自動で行われる
+    if (!mounted) {
+      return;
+    }
+
+    await Navigator.of(context).pushReplacement(
+      HomeScreen.route(),
+    );
   }
 }
 

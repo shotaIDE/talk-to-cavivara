@@ -57,12 +57,6 @@ class StartResult extends _$StartResult {
     state = const AsyncValue.loading();
 
     final authService = ref.read(authServiceProvider);
-    final userId = await authService.signInAnonymously();
-
-    final myHouseId = await ref.read(generateMyHouseProvider.future);
-
-    await ref
-        .read(currentAppSessionProvider.notifier)
-        .signIn(userId: userId, houseId: myHouseId);
+    await authService.signInAnonymously();
   }
 }

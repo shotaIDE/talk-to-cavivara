@@ -10,16 +10,19 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'root_presenter.g.dart';
 
+/// アプリの初期ルート
+///
+/// アプリの起動時に表示される画面を決定するものであるため、
+/// 依存関係の変更に伴った再計算はしない。
+/// そのため、`watch` ではなく `read` を使用している。
 @riverpod
 Future<AppInitialRoute> appInitialRoute(Ref ref) async {
-  final minimumBuildNumber = ref.watch(minimumBuildNumberProvider);
-  final appSessionFuture = ref.watch(currentAppSessionProvider.future);
-
   // Remote Config ですでにフェッチされた値を有効化する
   await ref
       .read(updatedRemoteConfigKeysProvider.notifier)
       .ensureActivateFetchedRemoteConfigs();
 
+  final minimumBuildNumber = ref.read(minimumBuildNumberProvider);
   if (minimumBuildNumber != null) {
     final currentAppVersion = await ref.watch(currentAppVersionProvider.future);
     final currentBuildNumber = currentAppVersion.buildNumber;
@@ -28,20 +31,19 @@ Future<AppInitialRoute> appInitialRoute(Ref ref) async {
     }
   }
 
-  final appSession = await appSessionFuture;
-  switch (appSession) {
-    case AppSessionSignedIn():
-      return AppInitialRoute.home;
-    case AppSessionNotSignedIn():
-      return AppInitialRoute.login;
+  final isSignedIn = ref.read(isSignedInProvider);
+  if (!isSignedIn) {
+    return AppInitialRoute.login;
   }
+
+  return AppInitialRoute.home;
 }
 
 @riverpod
 class CurrentAppSession extends _$CurrentAppSession {
   @override
   Future<AppSession> build() async {
-    final isSignedIn = await ref.watch(isSignedInProvider.future);
+    final isSignedIn = ref.watch(isSignedInProvider);
     if (!isSignedIn) {
       return AppSession.notSignedIn();
     }
