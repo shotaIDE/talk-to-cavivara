@@ -30,7 +30,7 @@ Future<AppInitialRoute> appInitialRoute(Ref ref) async {
     }
   }
 
-  final isSignedIn = await ref.read(isSignedInProvider.future);
+  final isSignedIn = ref.read(isSignedInProvider);
   if (!isSignedIn) {
     return const AppInitialRoute.login();
   }
@@ -49,7 +49,7 @@ Future<AppInitialRoute> appInitialRoute(Ref ref) async {
 class CurrentAppSession extends _$CurrentAppSession {
   @override
   Future<AppSession> build() async {
-    final isSignedIn = await ref.watch(isSignedInProvider.future);
+    final isSignedIn = ref.watch(isSignedInProvider);
     if (!isSignedIn) {
       return AppSession.notSignedIn();
     }
