@@ -9,38 +9,40 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'root_presenter.g.dart';
 
+/// アプリの初期ルート
+///
+/// アプリの起動時に表示される画面を決定するものであるため、
+/// 依存関係の変更に伴った再計算はしない。
+/// そのため、`watch` ではなく `read` を使用している。
 @riverpod
 Future<AppInitialRoute> appInitialRoute(Ref ref) async {
-  final minimumBuildNumber = ref.watch(minimumBuildNumberProvider);
-  final appSessionFuture = ref.watch(currentAppSessionProvider.future);
-
   // Remote Config ですでにフェッチされた値を有効化する
   await ref
       .read(updatedRemoteConfigKeysProvider.notifier)
       .ensureActivateFetchedRemoteConfigs();
 
+  final minimumBuildNumber = ref.read(minimumBuildNumberProvider);
   if (minimumBuildNumber != null) {
-    final currentAppVersion = await ref.watch(currentAppVersionProvider.future);
+    final currentAppVersion = await ref.read(currentAppVersionProvider.future);
     final currentBuildNumber = currentAppVersion.buildNumber;
     if (currentBuildNumber < minimumBuildNumber) {
       return const AppInitialRoute.updateApp();
     }
   }
 
-  final appSession = await appSessionFuture;
-  switch (appSession) {
-    case AppSessionSignedIn():
-      final lastTalkedCavivaraId = await ref.read(
-        lastTalkedCavivaraIdProvider.future,
-      );
-      if (lastTalkedCavivaraId != null) {
-        return AppInitialRoute.home(cavivaraId: lastTalkedCavivaraId);
-      }
-
-      return const AppInitialRoute.jobMarket();
-    case AppSessionNotSignedIn():
-      return const AppInitialRoute.login();
+  final isSignedIn = await ref.read(isSignedInProvider.future);
+  if (!isSignedIn) {
+    return const AppInitialRoute.login();
   }
+
+  final lastTalkedCavivaraId = await ref.read(
+    lastTalkedCavivaraIdProvider.future,
+  );
+  if (lastTalkedCavivaraId != null) {
+    return AppInitialRoute.home(cavivaraId: lastTalkedCavivaraId);
+  }
+
+  return const AppInitialRoute.jobMarket();
 }
 
 @riverpod
