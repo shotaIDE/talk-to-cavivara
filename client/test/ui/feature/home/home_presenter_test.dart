@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:house_worker/data/model/cavivara_profile.dart';
 import 'package:house_worker/data/model/chat_message.dart';
+import 'package:house_worker/data/model/preference_key.dart';
 import 'package:house_worker/data/repository/received_chat_string_count_repository.dart';
 import 'package:house_worker/data/repository/sent_chat_string_count_repository.dart';
 import 'package:house_worker/data/service/ai_chat_service.dart';
@@ -37,6 +38,11 @@ class TestSentChatStringCountRepository extends SentChatStringCountRepository {
 }
 
 void main() {
+  setUpAll(() {
+    // Register fallback values for mocktail matchers
+    registerFallbackValue(PreferenceKey.employedCavivaraIds);
+  });
+
   group('Home Presenter - Chat Messages', () {
     late MockAiChatService mockAiChatService;
     late MockPreferenceService mockPreferenceService;
